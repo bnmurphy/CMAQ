@@ -86,36 +86,38 @@ C
 C                   Name       Alpha    CStar     Enth     SOA           Decay  Drog
 C                                                          Name   Origin        Name
 C                  -------    -------  --------  -------  ------    --   ----   -------
-     & vapor_type('SV_ALK1',  0.0334,   0.1472,  53.0E3, 'AALK1J ', 'A', 12.0, 'ALKRXN' ),
-     & vapor_type('SV_ALK2',  0.2164,  51.8775,  53.0E3, 'AALK2J ', 'A', 12.0, 'ALKRXN' ),
-     & vapor_type('SV_XYL1',  0.0310,   1.3140,  32.0E3, 'AXYL1J ', 'A',  8.0, 'XYLNRXN'),
-     & vapor_type('SV_XYL2',  0.0900,  34.4830,  32.0E3, 'AXYL2J ', 'A',  8.0, 'XYLNRXN'),
-     & vapor_type('SV_TOL1',  0.0580,   2.3260,  18.0E3, 'ATOL1J ', 'A',  7.0, 'TOLNRXN'),
-     & vapor_type('SV_TOL2',  0.1130,  21.2770,  18.0E3, 'ATOL2J ', 'A',  7.0, 'TOLNRXN'),
-     & vapor_type('SV_BNZ1',  0.0720,   0.3020,  18.0E3, 'ABNZ1J ', 'A',  6.0, 'BNZNRXN'),
-     & vapor_type('SV_BNZ2',  0.8880, 111.1100,  18.0E3, 'ABNZ2J ', 'A',  6.0, 'BNZNRXN'),
-     & vapor_type('SV_PAH1',  0.2100,   1.6598,  18.0E3, 'APAH1J ', 'A', 10.0, 'PAHNRXN'),
-     & vapor_type('SV_PAH2',  1.0700, 264.6675,  18.0E3, 'APAH2J ', 'A', 10.0, 'PAHNRXN'),
-     & vapor_type('SV_TRP1',  0.1393,  14.7920,  40.0E3, 'ATRP1J ', 'B', 10.0, 'TRPRXN '),
-     & vapor_type('SV_TRP2',  0.4542, 133.7297,  40.0E3, 'ATRP2J ', 'B', 10.0, 'TRPRXN '), 
-     & vapor_type('MTNO3'  ,     0.0,     12.0,  40.0E3, 'AMTNO3J', 'B', 10.0, ''       ),
-     & vapor_type('ISOPNN' ,     0.0,     8.9,   40.0E3, 'AISOPNNJ','B', 5.0,  ''       ),
-     & vapor_type('SV_ISO1',  0.2320, 116.0100,  40.0E3, 'AISO1J ', 'B',  5.0, 'ISOPRXN'),
-     & vapor_type('SV_ISO2',  0.0288,   0.6170,  40.0E3, 'AISO2J ', 'B',  5.0, 'ISOPRXN'),
-     & vapor_type('SV_SQT ',  1.5370,  24.9840,  40.0E3, 'ASQTJ  ', 'B', 15.0, 'SESQRXN'),
-     & vapor_type('LV_PCSOG', 1.0   ,   1.0e-5,  40.0E3, 'APCSOJ ', 'A', 10.0, 'PCSOARXN'),
-     & vapor_type('VLVPO1 ',  0.0000,    1.e-1,  96.0E3, 'ALVPO1J', 'A',  0.0, ''       ),
-     & vapor_type('VSVPO1 ',  0.0000,    1.e+0,  85.0E3, 'ASVPO1J', 'A',  0.0, ''       ),
-     & vapor_type('VSVPO2 ',  0.0000,    1.e+1,  74.0E3, 'ASVPO2J', 'A',  0.0, ''       ),
-     & vapor_type('VSVPO3 ',  0.0000,    1.e+2,  63.0E3, 'ASVPO3J', 'A',  0.0, ''       ),
-     & vapor_type('VIVPO1 ',  0.0000,    1.e+3,  52.0E3, 'AIVPO1J', 'A',  0.0, ''       ),
-     & vapor_type('VLVOO1 ',  0.0000,    1.e-2, 107.0E3, 'ALVOO1J', 'A',  0.0, ''       ),
-     & vapor_type('VLVOO2 ',  0.0000,    1.e-1,  96.0E3, 'ALVOO2J', 'A',  0.0, ''       ),
-     & vapor_type('VSVOO1 ',  0.0000,    1.e+0,  85.0E3, 'ASVOO1J', 'A',  0.0, ''       ),
-     & vapor_type('VSVOO2 ',  0.0000,    1.e+1,  74.0E3, 'ASVOO2J', 'A',  0.0, ''       ),
-     & vapor_type('VSVOO3 ',  0.0000,    1.e+2,  63.0E3, 'ASVOO3J', 'A',  0.0, ''       )/)
-
-C Required species
+     & vapor_type('SV_ALK1',  0.0334,   0.1472,  53.0E3, 'AALK1  ', 'A', 12.0, 'ALKRXN' ),
+     & vapor_type('SV_ALK2',  0.2164,  51.8775,  53.0E3, 'AALK2  ', 'A', 12.0, 'ALKRXN' ),
+     & vapor_type('SV_XYL1',  0.0310,   1.3140,  32.0E3, 'AXYL1  ', 'A',  8.0, 'XYLNRXN'),
+     & vapor_type('SV_XYL2',  0.0900,  34.4830,  32.0E3, 'AXYL2  ', 'A',  8.0, 'XYLNRXN'),
+     & vapor_type('SV_TOL1',  0.0580,   2.3260,  18.0E3, 'ATOL1  ', 'A',  7.0, 'TOLNRXN'),
+     & vapor_type('SV_TOL2',  0.1130,  21.2770,  18.0E3, 'ATOL2  ', 'A',  7.0, 'TOLNRXN'),
+     & vapor_type('SV_BNZ1',  0.0720,   0.3020,  18.0E3, 'ABNZ1  ', 'A',  6.0, 'BNZNRXN'),
+     & vapor_type('SV_BNZ2',  0.8880, 111.1100,  18.0E3, 'ABNZ2  ', 'A',  6.0, 'BNZNRXN'),
+     & vapor_type('SV_PAH1',  0.2100,   1.6598,  18.0E3, 'APAH1  ', 'A', 10.0, 'PAHNRXN'),
+     & vapor_type('SV_PAH2',  1.0700, 264.6675,  18.0E3, 'APAH2  ', 'A', 10.0, 'PAHNRXN'),
+     & vapor_type('SV_TRP1',  0.1393,  14.7920,  40.0E3, 'ATRP1  ', 'B', 10.0, 'TRPRXN '),
+     & vapor_type('SV_TRP2',  0.4542, 133.7297,  40.0E3, 'ATRP2  ', 'B', 10.0, 'TRPRXN '), 
+     & vapor_type('MTNO3'  ,     0.0,     12.0,  40.0E3, 'AMTNO3 ', 'B', 10.0, ''       ),
+     & vapor_type('ISOPNN' ,     0.0,     8.9,   40.0E3, 'AISOPNN','B', 5.0,  ''       ),
+     & vapor_type('SV_ISO1',  0.2320, 116.0100,  40.0E3, 'AISO1  ', 'B',  5.0, 'ISOPRXN'),
+     & vapor_type('SV_ISO2',  0.0288,   0.6170,  40.0E3, 'AISO2  ', 'B',  5.0, 'ISOPRXN'),
+     & vapor_type('SV_SQT ',  1.5370,  24.9840,  40.0E3, 'ASQT   ', 'B', 15.0, 'SESQRXN'),
+     & vapor_type('LV_PCSOG', 1.0   ,   1.0e-5,  40.0E3, 'APCSO  ', 'A', 10.0, 'PCSOARXN'),
+     & vapor_type('MBTCA'  ,  0.0000,   1.0E-2, 126.5E3, 'AMBTCA ', 'B', 10.0, ''       ),
+     & vapor_type('ELVOC'  ,  0.0000,   1.6E-1, 110.0E3, 'AELVO1 ', 'B', 10.0, ''       ),
+     & vapor_type('VLVPO1 ',  0.0000,    1.e-1,  96.0E3, 'ALVPO1 ', 'A',  0.0, ''       ),
+     & vapor_type('VSVPO1 ',  0.0000,    1.e+0,  85.0E3, 'ASVPO1 ', 'A',  0.0, ''       ),
+     & vapor_type('VSVPO2 ',  0.0000,    1.e+1,  74.0E3, 'ASVPO2 ', 'A',  0.0, ''       ),
+     & vapor_type('VSVPO3 ',  0.0000,    1.e+2,  63.0E3, 'ASVPO3 ', 'A',  0.0, ''       ),
+     & vapor_type('VIVPO1 ',  0.0000,    1.e+3,  52.0E3, 'AIVPO1 ', 'A',  0.0, ''       ),
+     & vapor_type('VLVOO1 ',  0.0000,    1.e-2, 107.0E3, 'ALVOO1 ', 'A',  0.0, ''       ),
+     & vapor_type('VLVOO2 ',  0.0000,    1.e-1,  96.0E3, 'ALVOO2 ', 'A',  0.0, ''       ),
+     & vapor_type('VSVOO1 ',  0.0000,    1.e+0,  85.0E3, 'ASVOO1 ', 'A',  0.0, ''       ),
+     & vapor_type('VSVOO2 ',  0.0000,    1.e+1,  74.0E3, 'ASVOO2 ', 'A',  0.0, ''       ),
+     & vapor_type('VSVOO3 ',  0.0000,    1.e+2,  63.0E3, 'ASVOO3 ', 'A',  0.0, ''       )/)
+                                                                 
+C Required species                                               
       Character( 16 ), Private, Parameter :: req_sviso1  = 'SV_ISO1'
       Character( 16 ), Private, Parameter :: req_sviso2  = 'SV_ISO2'
       Character( 16 ), Private, Parameter :: req_mtno3   = 'MTNO3'
@@ -147,6 +149,9 @@ C Indices of required species
       Real, Allocatable    :: vapor_conc( : )   ! vapor concentration
       Integer, Allocatable :: drog_map  ( : )   ! drog mapping assignments
 
+      Real, Parameter :: alphorg = 1.0      !Accomodation Coefficient
+      Real, Parameter :: difforg = 9.36E-6  !Diffusivity [m2 s-1]
+
 C orgprod species
 
       Type orgprod_type
@@ -164,13 +169,13 @@ C                      Name      Parent     Aerospc  AlphaH
 C                     -------    -------    ------   ------ 
      & orgprod_type( 'ALKRXN',  'SOAALK ', '      ', 0.000 ),
      & orgprod_type( 'XYLNRXN', 'XYL    ', '      ', 0.000 ),
-     & orgprod_type( 'XYLHRXN', 'XYL    ', 'AXYL3J', 0.360 ),
+     & orgprod_type( 'XYLHRXN', 'XYL    ', 'AXYL3 ', 0.360 ),
      & orgprod_type( 'TOLNRXN', 'TOL    ', '      ', 0.000 ),
-     & orgprod_type( 'TOLHRXN', 'TOL    ', 'ATOL3J', 0.300 ),
+     & orgprod_type( 'TOLHRXN', 'TOL    ', 'ATOL3 ', 0.300 ),
      & orgprod_type( 'BNZNRXN', 'BENZENE', '      ', 0.000 ),
-     & orgprod_type( 'BNZHRXN', 'BENZENE', 'ABNZ3J', 0.370 ),
+     & orgprod_type( 'BNZHRXN', 'BENZENE', 'ABNZ3 ', 0.370 ),
      & orgprod_type( 'PAHNRXN', 'NAPH   ', '      ', 0.000 ),
-     & orgprod_type( 'PAHHRXN', 'NAPH   ', 'APAH3J', 0.730 ),
+     & orgprod_type( 'PAHHRXN', 'NAPH   ', 'APAH3 ', 0.730 ),
      & orgprod_type( 'TRPRXN ', 'TRPRXN ', '      ', 0.000 ),
      & orgprod_type( 'ISOPRXN', 'ISOPRXN', '      ', 0.000 ),
      & orgprod_type( 'SESQRXN', 'SESQRXN', '      ', 0.000 ),
@@ -179,8 +184,8 @@ C                     -------    -------    ------   ------
 
       Real    :: orgprod_mw     ( n_orgprod )  ! Mol weight of reactive organic gases
       Real    :: orgprod_conc   ( n_orgprod )  ! orgprod concentration
-      Integer :: orgprod_aeroMap( n_orgprod )  ! orgprod pointers to aerospc
-      Integer, Allocatable :: soa_aeroMap    ( : )    ! soa pointers to aerospc
+      Integer :: orgprod_aeroMap( n_orgprod,n_mode )  ! orgprod pointers to aerospc
+      Integer, Allocatable :: soa_aeroMap    ( :,n_mode )    ! soa pointers to aerospc
 
 
 C mapping variables used for loading and unloading to CGRID array
@@ -189,7 +194,7 @@ C mapping variables used for loading and unloading to CGRID array
 
       Logical, Private, Save :: mapped              = .False.
       Logical, Private, Save :: IEPOX_SOA_mechanism = .False. ! IEPOX uptake in mechanism reactions?
-
+      Character ( 16 ) :: tmpName
 !     Integer, Save :: pfc = 0   ! possible false soabisect convergence counter
 
       Character( 16 ), Private, Save :: pname = 'Soa_Defn        '
@@ -406,9 +411,16 @@ C Build mapping array of Semivolatile Vapors (vaporspc) to the Aerosol
 C Species they correspond to (aerospc is used inside findAero)
          soa_aeroMap = 0
          Do spc = 1, n_vapor
-            If ( vaporspc( spc )%soa_name .Ne. ' ' ) Then
-               soa_aeroMap( spc ) = findAero( vaporspc( spc )%soa_name, .True. )
-            End If
+           If ( vaporspc( spc )%soa_name .Ne. ' ' ) Then
+             Do imode = ia_nuc, ia_crs
+               tmpName = trim(vaporspc( spc )%soa_name) // size_subscript( imode )
+               soa_aeroMap( spc,imode ) = findAero( tmpName, .False. )
+             End Do
+             If ( .NOT. any( soa_aeroMap( spc,: ) ) ) Then
+                !Exit since this species from the master namelist is not
+                !in the aero_data table
+             End If
+           End If
          End Do
 
 C Build Mapping array of Reactive variables that track production rates
