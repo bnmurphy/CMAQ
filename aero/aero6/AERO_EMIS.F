@@ -517,7 +517,7 @@ C *** Map sea salt emission species
 #ifdef Verbose1
             write( logdev,* ) 'ssspc_map: ', s, idx, ssspc_map( s )
 #endif
-            DO N = 2, N_MODE   ! add SEASALT indices to EM_MAP
+            DO N = IA_ACC, N_MODE   ! add SEASALT indices to EM_MAP
                IF ( .NOT. AERO_MISSING( IDX,N ) ) THEN
                   EM_MAP( IDX,N ) = INDEX1( AEROSPC( IDX )%NAME( N ), N_AE_EMIS, AE_EMIS )
                   SS_MAP( IDX,N ) = S
@@ -531,7 +531,7 @@ C *** Map sea salt emission species
          IF ( WB_DUST ) THEN
 C *** Map windblown dust emission species
             DUST_MAP = 0   ! array assignment
-            DO N = 2, N_MODE
+            DO N = IA_ACC, N_MODE
                DO S = 1, NDUST_SPC
                   IF ( DUST_SPC( S )%NAME( N ) .NE. ' ' ) THEN
                      IDX = FINDAERO( DUST_SPC( S )%NAME( N ), .FALSE. )

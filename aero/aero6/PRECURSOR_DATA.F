@@ -85,6 +85,9 @@ C                    ----------   ----------  ------
      & precursor_type( 'PAHNRXN', .True.  , .True.  ),
      & precursor_type( 'PAHHRXN', .True.  , .True.  ),
      & precursor_type( 'PCSOARXN',.True.  , .True.  ),
+     & precursor_type( 'DMA    ', .False. , .True.  ),
+     & precursor_type( 'MBTCA  ', .False. , .True.  ),
+     & precursor_type( 'ELVOC  ', .False. , .True.  ),
      & precursor_type( 'PHGRXN ', .True.  , .True. )/)
 
 C Required species

@@ -789,10 +789,10 @@ C *** get KN2O5 rate constants YIELD_CLNO2 for each mode
                YIELDIJ     = 0.0D0
                DO N = 1, N_MODE          
 
-                  IF ( N .LE. 2 ) THEN
+                  IF ( N .LE. IA_ACC ) THEN
                      GAMMA = N2O5_GAMMA( AIRTEMP, AIRRH, 0 )
                      IF ( PMDIAG .OR. APMDIAG ) GAMMA_N2O5IJ( C,R,L ) = REAL( GAMMA, 4 )
-                  ELSE IF ( N .EQ. 3 ) THEN
+                  ELSE IF ( N .EQ. IA_CRS ) THEN
                      GAMMA = N2O5_GAMMA( AIRTEMP, AIRRH, 5 )
                      IF ( PMDIAG .OR. APMDIAG ) GAMMA_N2O5K( C,R,L ) = REAL( GAMMA, 4 )
                   ELSE
@@ -854,14 +854,14 @@ c *** compute yield from lumped Aitken and Accumulations concentrations
               
                KN2O5 = CBAR * DPI * KN2O5
 C *** calculate aerosol surface area
-               TOTSURFA = ( WET_M2( 1 ) + WET_M2( 2 ) ) * DPI
+               TOTSURFA = ( WET_M2( IA_NUC ) + WET_M2( IA_AIT ) + WET_M2( IA_ACC ) ) * DPI
 
 C *** set up variables needed for calculating K_BRONO2
                CBAR_BRONO2     = CBAR_COEFF * INV_SQRT_MWBRONO2
                BRONO2_RXN_TIME = 4.0D0 * INV_GAMMA_BRONO2 / CBAR_BRONO2
 
 C *** Calculate IEPOX and MAE uptake information for accumulation mode
-               RADIUS       = 0.5D0 * DE_WET( 2 ) ! particle size
+               RADIUS       = 0.5D0 * DE_WET( IA_ACC ) ! particle size
                CBARIEPOX    = CFACTOR_IEPOX * DSQRT( AIRTEMP )
                CBARIMAE     = CFACTOR_IMAE  * DSQRT( AIRTEMP )
 
@@ -870,7 +870,7 @@ C *** Calculate IEPOX and MAE uptake information for accumulation mode
      &             GAMMAIMAE, KPIEPOX, FH2O, FOS, FDIM1, FDIM2)
 
                IF( GAMMAIEPOX .gt. 0.0d0 ) THEN
-                  KIEPOX       = WET_M2( 2 ) * DPI
+                  KIEPOX       = WET_M2( IA_ACC ) * DPI
      &                        / ( RADIUS * INV_DIFFUSIVITY +  4.0D0 / ( CBARIEPOX * GAMMAIEPOX) )
                   If ( AIETET_IDX .gt. 0 ) Then
                      TETROL_PPM  = PPM_FACTOR
@@ -891,7 +891,7 @@ C *** Calculate IEPOX and MAE uptake information for accumulation mode
                END IF
 
                IF( GAMMAIMAE .gt. 0.0d0 ) THEN
-                  KIMAE        = WET_M2( 2 ) * DPI
+                  KIMAE        = WET_M2( IA_ACC ) * DPI
      &                        / ( RADIUS * INV_DIFFUSIVITY +  4.0D0 / ( CBARIMAE * GAMMAIMAE) )
                ELSE
                   KIMAE = 0.0d0
@@ -908,29 +908,29 @@ C *** Calculate IEPOX and MAE uptake information for accumulation mode
                SELECT CASE( WHICH_AERO_RATE( IRATE ) )
                   CASE( IA_N2O5IJ )  
 
-                     KHETERO( IRATE, C,R,L ) = 60.0D0 * ( KN2O5( 1 ) + KN2O5( 2 ) )! convert to min-1
+                     KHETERO( IRATE, C,R,L ) = 60.0D0 * ( KN2O5( IA_AIT ) + KN2O5( IA_ACC ) )! convert to min-1
                           
                   CASE( IA_N2O5K )  
 
-                     KHETERO( IRATE, C,R,L ) = 60.0D0 * KN2O5 (3) ! convert to min-1
+                     KHETERO( IRATE, C,R,L ) = 60.0D0 * KN2O5 ( IA_CRS ) ! convert to min-1
                      
                   CASE( IA_N2O5J )  
 
-                     KHETERO( IRATE, C,R,L ) = 60.0D0 * KN2O5 (2) ! convert to min-1
+                     KHETERO( IRATE, C,R,L ) = 60.0D0 * KN2O5 ( IA_ACC ) ! convert to min-1
                      
                   CASE( IA_N2O5I )  
 
-                     KHETERO( IRATE, C,R,L ) = 60.0D0 * KN2O5 (1) ! convert to min-1
+                     KHETERO( IRATE, C,R,L ) = 60.0D0 * KN2O5 ( IA_AIT ) ! convert to min-1
                      
                   CASE( IA_N2O5IJY )  
                  
-                     KHETERO( IRATE, C,R,L ) = 60.0D0 * YIELDIJ * ( KN2O5( 1 ) + KN2O5( 2 ) ) ! convert to min-1                    
+                     KHETERO( IRATE, C,R,L ) = 60.0D0 * YIELDIJ * ( KN2O5( IA_AIT ) + KN2O5( IA_ACC ) ) ! convert to min-1                    
                      IF ( PMDIAG .OR. APMDIAG ) YCLNO2IJ( C,R,L ) = REAL( YIELDIJ, 4 )
                      
                   CASE( IA_N2O5KY )  
                  
-                     KHETERO( IRATE, C,R,L )  = 60.0D0 * YIELD_CLNO2( 3 ) * KN2O5( 3 ) 
-                     IF ( PMDIAG .OR. APMDIAG ) YCLNO2K( C,R,L ) = REAL( YIELD_CLNO2( 3 ), 4 )
+                     KHETERO( IRATE, C,R,L )  = 60.0D0 * YIELD_CLNO2( IA_CRS ) * KN2O5( IA_CRS ) 
+                     IF ( PMDIAG .OR. APMDIAG ) YCLNO2K( C,R,L ) = REAL( YIELD_CLNO2( IA_CRS ), 4 )
 
                   CASE( IA_H2NO3PAIJ )  
                 
@@ -942,7 +942,7 @@ C *** Calculate IEPOX and MAE uptake information for accumulation mode
                  
                      IF ( YIELDIJ .GT. 0.0D0 ) THEN
                         KHETERO( IRATE, C,R,L ) = 60.0D0 * AQUEOUS_FREQUENCY * YIELDIJ 
-     &                                          / (CL_PPM( 1 ) + CL_PPM( 2 ))   ! 1/(min*ppm)
+     &                                          / (CL_PPM( IA_AIT ) + CL_PPM( IA_ACC ))   ! 1/(min*ppm)
                      ELSE
                         KHETERO( IRATE, C,R,L ) = 0.0D0
                      END IF
@@ -950,16 +950,16 @@ C *** Calculate IEPOX and MAE uptake information for accumulation mode
                   CASE( IA_H2NO3PAI )
 
                      KHETERO( IRATE, C,R,L ) = 60.0D0 * AQUEOUS_FREQUENCY
-     &                                       * MAX( (1.0D0 - YIELD_CLNO2( 1 ) ), 0.0D0) 
+     &                                       * MAX( (1.0D0 - YIELD_CLNO2( IA_AIT ) ), 0.0D0) 
 
                   CASE( IA_H2NO3PBI )
 
-                     IF ( YIELD_CLNO2( 1 ) .GT. 0.0D0 ) THEN
+                     IF ( YIELD_CLNO2( IA_AIT ) .GT. 0.0D0 ) THEN
                         KHETERO( IRATE, C,R,L ) = 60.0D0 * AQUEOUS_FREQUENCY
-     &                                          *  YIELD_CLNO2( 1 ) / CL_PPM( 1 ) ! (min*ppm)-1
+     &                                          *  YIELD_CLNO2( IA_AIT ) / CL_PPM( IA_AIT ) ! (min*ppm)-1
                         IF ( PMDIAG .OR. APMDIAG ) THEN
-                           FACTOR = CL_PPM( 1 ) / ( CL_PPM( 1 )+ CL_PPM( 2 ) )
-                           YCLNO2IJ( C,R,L ) = REAL( FACTOR * YIELD_CLNO2( 1 ), 4 ) 
+                           FACTOR = CL_PPM( IA_AIT ) / ( CL_PPM( IA_AIT )+ CL_PPM( IA_ACC ) )
+                           YCLNO2IJ( C,R,L ) = REAL( FACTOR * YIELD_CLNO2( IA_AIT ), 4 ) 
      &                                       + YCLNO2IJ( C,R,L )
                         END IF
                      ELSE
@@ -969,16 +969,16 @@ C *** Calculate IEPOX and MAE uptake information for accumulation mode
                   CASE( IA_H2NO3PAJ )
                                      
                      KHETERO( IRATE, C,R,L ) = 60.0D0 * AQUEOUS_FREQUENCY
-     &                                       * MAX( (1.0D0 - YIELD_CLNO2( 2 ) ), 0.0D0) 
+     &                                       * MAX( (1.0D0 - YIELD_CLNO2( IA_ACC ) ), 0.0D0) 
                                
                   CASE( IA_H2NO3PBJ )
                                      
-                     IF (  YIELD_CLNO2( 2 ) .GT. 0.0D0 ) THEN
+                     IF (  YIELD_CLNO2( IA_ACC ) .GT. 0.0D0 ) THEN
                         KHETERO( IRATE, C,R,L ) =  60.0D0 * AQUEOUS_FREQUENCY
-     &                                          *  YIELD_CLNO2( 2 ) / CL_PPM( 2 ) ! (min*ppm)-1
+     &                                          *  YIELD_CLNO2( IA_ACC ) / CL_PPM( IA_ACC ) ! (min*ppm)-1
                         IF ( PMDIAG .OR. APMDIAG ) THEN
-                           FACTOR = CL_PPM( 2 ) / ( CL_PPM( 1 )+ CL_PPM( 2 ) )
-                           YCLNO2IJ( C,R,L ) = REAL( FACTOR * YIELD_CLNO2( 2 ), 4 ) 
+                           FACTOR = CL_PPM( IA_ACC ) / ( CL_PPM( IA_AIT )+ CL_PPM( IA_ACC ) )
+                           YCLNO2IJ( C,R,L ) = REAL( FACTOR * YIELD_CLNO2( IA_ACC ), 4 ) 
      &                                       + YCLNO2IJ( C,R,L )
                         END IF                               
                      ELSE
@@ -987,29 +987,29 @@ C *** Calculate IEPOX and MAE uptake information for accumulation mode
                                 
                   CASE( IA_PNCOMLI )
                                      
-                     POC   = aerospc_conc( APOC_IDX,1 )
-                     PNCOM = aerospc_conc( APNCOM_IDX,1 )
+                     POC   = aerospc_conc( APOC_IDX,IA_AIT )
+                     PNCOM = aerospc_conc( APNCOM_IDX,IA_AIT )
                       
                      KHETERO( IRATE, C,R,L ) = RFACTOR * PNCOM_LOSS( POC, PNCOM )
                       
                   CASE( IA_PNCOMLJ )
                                      
-                     POC   = aerospc_conc( APOC_IDX,2 )
-                     PNCOM = aerospc_conc( APNCOM_IDX,2 )
+                     POC   = aerospc_conc( APOC_IDX,IA_ACC )
+                     PNCOM = aerospc_conc( APNCOM_IDX,IA_ACC )
                       
                      KHETERO( IRATE, C,R,L ) = RFACTOR * PNCOM_LOSS( POC, PNCOM )
 
                   CASE( IA_H2NO3PAK )
                                      
                      KHETERO( IRATE, C,R,L ) = 60.0D0 * AQUEOUS_FREQUENCY
-     &                                       *  MAX((1.0D0 -  YIELD_CLNO2( 3 )), 0.0D0) ! * KN2O5( 3 )
+     &                                       *  MAX((1.0D0 -  YIELD_CLNO2( IA_CRS )), 0.0D0) ! * KN2O5( 3 )
                                
                   CASE( IA_H2NO3PBK )
                                      
-                     IF ( YIELD_CLNO2( 3 ) .GT. 0.0D0 ) THEN
+                     IF ( YIELD_CLNO2( IA_CRS ) .GT. 0.0D0 ) THEN
                         KHETERO( IRATE, C,R,L ) =  60.0D0 * AQUEOUS_FREQUENCY
-     &                                          *  YIELD_CLNO2( 3 ) / CL_PPM( 3 ) ! (min*ppm)-1
-                        IF ( PMDIAG .OR. APMDIAG ) YCLNO2K( C,R,L ) = REAL( YIELD_CLNO2( 3 ), 4 ) 
+     &                                          *  YIELD_CLNO2( IA_CRS ) / CL_PPM( IA_CRS ) ! (min*ppm)-1
+                        IF ( PMDIAG .OR. APMDIAG ) YCLNO2K( C,R,L ) = REAL( YIELD_CLNO2( IA_CRS ), 4 ) 
                      ELSE
                         KHETERO( IRATE, C,R,L ) = 0.0D0
                      END IF 
@@ -1083,20 +1083,20 @@ C ***            Isoprene epoxide uptake
 C *** calculate gas-particle partitioning of NTR2
                     CON_TOA = 0.0
                     If ( INDEX( MECHNAME, 'NVPOA' ) .NE. 0 ) Then
-                      CON_TOA = aerospc_conc(   apoc_idx,1 ) + aerospc_conc(   apoc_idx,2 )
-     &                      + aerospc_conc( apncom_idx,1 ) + aerospc_conc( apncom_idx,2 )
+                      CON_TOA = aerospc_conc(   apoc_idx,IA_AIT ) + aerospc_conc(   apoc_idx,IA_ACC )
+     &                      + aerospc_conc( apncom_idx,IA_AIT ) + aerospc_conc( apncom_idx,IA_ACC )
                     End If
 
                     Do i = 1, n_aerospc
                        If ( aerospc( i )%nonVol_soa ) Then
                            If( aerospc( i )%tracer )Cycle
-                           CON_TOA = CON_TOA + aerospc_conc( i,2 )
+                           CON_TOA = CON_TOA + aerospc_conc( i,IA_ACC )
                        End If
                     End Do
                     Do i = 1, n_vapor
                       n = soa_aeroMap( i )
                       If( aerospc( n )%tracer )Cycle
-                      CON_TOA = CON_TOA + aerospc_conc( n,2 )
+                      CON_TOA = CON_TOA + aerospc_conc( n,IA_ACC )
                     End Do
 
                     F_PART_NTR2 = 0.0
@@ -1118,19 +1118,19 @@ C hydrolysis
 
                  CASE( IA_BRONO2IJ )
 C *** calculate total KBRONO2 from fine modes
-                     KBRONO2 = WET_M2( 1 ) * DPI
-     &                       / ( 0.5D0 * DE_WET( 1 ) * INV_DIFF_BRONO2
+                     KBRONO2 = WET_M2( IA_AIT ) * DPI
+     &                       / ( 0.5D0 * DE_WET( IA_AIT ) * INV_DIFF_BRONO2
      &                           + BRONO2_RXN_TIME )
-     &                       + WET_M2( 2 ) * DPI
-     &                       / ( 0.5D0 * DE_WET( 2 ) * INV_DIFF_BRONO2
+     &                       + WET_M2( IA_ACC ) * DPI
+     &                       / ( 0.5D0 * DE_WET( IA_ACC ) * INV_DIFF_BRONO2
      &                           + BRONO2_RXN_TIME )
 
                      KHETERO( IRATE, C,R,L ) = 60.0D0 * KBRONO2
 
                  CASE( IA_BRONO2K )
 C *** calculate KBRONO2 from coarse mode
-                     KBRONO2 = WET_M2( 3 ) * DPI
-     &                       / ( 0.5D0 * DE_WET( 3 ) * INV_DIFF_BRONO2
+                     KBRONO2 = WET_M2( IA_CRS ) * DPI
+     &                       / ( 0.5D0 * DE_WET( IA_CRS ) * INV_DIFF_BRONO2
      &                            + BRONO2_RXN_TIME )
 
                      KHETERO( IRATE, C,R,L ) = 60.0D0 * KBRONO2
@@ -1187,9 +1187,9 @@ C *** calculate KBRONO2 from coarse mode
                WRITE(LOGDEV,'(A,ES12.4)') 'ACLK  = ',(aerospc_conc( ACL_IDX, 3))
                WRITE(LOGDEV,'(A,ES12.4)') 'AH2OK = ',(aerospc_conc( AH2O_IDX,3))
                WRITE(LOGDEV,'(A,ES12.4)') 'GAMMAK     = ',N2O5_GAMMA( AIRTEMP, AIRRH, 5 )
-               WRITE(LOGDEV,'(A,ES12.4)') 'XXF_AT     = ',XXF( 1 )
-               WRITE(LOGDEV,'(A,ES12.4)') 'XXF_AC     = ',XXF( 2 )
-               WRITE(LOGDEV,'(A,ES12.4)') 'XXF_COR    = ',XXF( 3 )
+               WRITE(LOGDEV,'(A,ES12.4)') 'XXF_AT     = ',XXF( IA_AIT )
+               WRITE(LOGDEV,'(A,ES12.4)') 'XXF_AC     = ',XXF( IA_ACC )
+               WRITE(LOGDEV,'(A,ES12.4)') 'XXF_COR    = ',XXF( IA_CRS )
                Write( logdev,'( a )' ) 'Product/Nucleophile mapping for epox uptake:'
                Do n = 1, n_nucpairs
                    Write( logdev,'( 5x, a, i4 )' ) acid_nuc_pairs(n)%prod, acid_prodmap_idx(n)
@@ -1586,19 +1586,19 @@ C     in Eq 7 by Davis et al (2008)
 C-----------------------------------------------------------------------
 
 C *** retrieve fine-mode particle-phase ammonium, nitrate, and sulfate [ug/m3]
-      ANH4 = aerospc_conc( ANH4_IDX,1 ) + aerospc_conc( ANH4_IDX,2 )
-      ANO3 = aerospc_conc( ANO3_IDX,1 ) + aerospc_conc( ANO3_IDX,2 )
-      ASO4 = aerospc_conc( ASO4_IDX,1 ) + aerospc_conc( ASO4_IDX,2 )
+      ANH4 = aerospc_conc( ANH4_IDX,IA_AIT ) + aerospc_conc( ANH4_IDX,IA_ACC )
+      ANO3 = aerospc_conc( ANO3_IDX,IA_AIT ) + aerospc_conc( ANO3_IDX,IA_ACC )
+      ASO4 = aerospc_conc( ASO4_IDX,IA_AIT ) + aerospc_conc( ASO4_IDX,IA_ACC )
 
 c *** Retrieve fine-mode particle-phase liquid water, chloride, nitrate [ug/m3]
-      AH2OF  = aerospc_conc( AH2O_IDX,1 ) + aerospc_conc( AH2O_IDX,2 ) 
-      ACLF   = aerospc_conc( ACL_IDX,1 )  + aerospc_conc( ACL_IDX,2 ) 
-      ANO3F  = aerospc_conc( ANO3_IDX,1 ) + aerospc_conc( ANO3_IDX,2 )
+      AH2OF  = aerospc_conc( AH2O_IDX,IA_AIT ) + aerospc_conc( AH2O_IDX,IA_ACC ) 
+      ACLF   = aerospc_conc( ACL_IDX,IA_AIT )  + aerospc_conc( ACL_IDX, IA_ACC ) 
+      ANO3F  = aerospc_conc( ANO3_IDX,IA_AIT ) + aerospc_conc( ANO3_IDX,IA_ACC )
 
 c *** Retrieve coarse-mode particle-phase liquid water, chloride, nitrate [ug/m3]
-      AH2OK  = aerospc_conc( AH2O_IDX,3 )
-      ACLK   = aerospc_conc(  ACL_IDX,3 )
-      ANO3K  = aerospc_conc( ANO3_IDX,3 )      
+      AH2OK  = aerospc_conc( AH2O_IDX,IA_CRS )
+      ACLK   = aerospc_conc(  ACL_IDX,IA_CRS )
+      ANO3K  = aerospc_conc( ANO3_IDX,IA_CRS )      
 
       WHAT_OPTION: SELECT CASE( GPARAM )
 
@@ -1668,7 +1668,7 @@ C        sign of BETA has been switched in this code.
 C *** User Option: GPARAM = 4  (fine-mode particles)
 C *** It calculates N2O5_GAMMA based on Bertran and Thornton, 2009
   
-            INV_VOL = 1.0E-9 * f6pi / REAL( ( WET_M3( 1 ) + WET_M3( 2 ) ), 4 )
+            INV_VOL = 1.0E-9 * f6pi / REAL( ( WET_M3( IA_AIT ) + WET_M3( IA_ACC ) ), 4 )
         
             AH2OM = AH2OF * INV_VOL / aerospc_mw( AH2O_IDX )
             ACLM  = ACLF  * INV_VOL / aerospc_mw( ACL_IDX )
@@ -1691,7 +1691,7 @@ C *** It calculates N2O5_GAMMA based on Bertran and Thornton, 2009
 C *** User Option: GPARAM = 5 (coarse-mode particles)
 C     It calculates N2O5_GAMMA based on Bertran and Thornton, 2009
 
-            INV_VOL = 1.0E-9 * f6pi / REAL( WET_M3( 3 ), 4 )
+            INV_VOL = 1.0E-9 * f6pi / REAL( WET_M3( IA_CRS ), 4 )
         
             AH2OM = AH2OK * INV_VOL / aerospc_mw( AH2O_IDX )
             ACLM  = ACLK  * INV_VOL / aerospc_mw( ACL_IDX )
@@ -1880,11 +1880,11 @@ C     calculation can be avoided when RH > 35.1%.
       END IF
 
 C *** calculate total particle-phase composition [micromoles/m3]
-      NNO3 = ( aerospc_conc( ANO3_IDX,1 ) + aerospc_conc( ANO3_IDX,2 ) )
+      NNO3 = ( aerospc_conc( ANO3_IDX,IA_AIT ) + aerospc_conc( ANO3_IDX,IA_ACC ) )
      &     / aerospc_mw( ANO3_IDX )
-      NSO4 = ( aerospc_conc( ASO4_IDX,1 ) + aerospc_conc( ASO4_IDX,2 ) )
+      NSO4 = ( aerospc_conc( ASO4_IDX,IA_AIT ) + aerospc_conc( ASO4_IDX,IA_ACC ) )
      &     / aerospc_mw( ASO4_IDX )
-      NNH4 = ( aerospc_conc( ANH4_IDX,1 ) + aerospc_conc( ANH4_IDX,2 ) )
+      NNH4 = ( aerospc_conc( ANH4_IDX,IA_AIT ) + aerospc_conc( ANH4_IDX,IA_ACC ) )
      &     / aerospc_mw( ANH4_IDX )
 
 C *** calculate total anion and cation concentrations
@@ -2158,7 +2158,7 @@ C *** External functions
 C-----------------------------------------------------------------------
 
 C *** Determine H+ acid concentration of j mode [mol/m3]
-      eqlbh = aerospc_conc( ah3op_idx, 2 ) / aerospc_mw( ah3op_idx ) * 1.0d-6
+      eqlbh = aerospc_conc( ah3op_idx, IA_ACC ) / aerospc_mw( ah3op_idx ) * 1.0d-6
       acidmolconc( hacid_idx ) = Max( eqlbh, 0.0d0 ) 
 
 C *** Calculate HSO4 by charge balance
@@ -2168,8 +2168,8 @@ C     in catalyzing the ring-opening)
       charge = 0.0d0  ! umol/m3
       Do i = 1, n_aerospc
          If ( aerospc( i )%tracer ) Cycle
-         If ( aero_missing(i,2) ) Cycle
-         charge = charge - aerospc( i )%charge * aerospc_conc( i,2 )
+         If ( aero_missing(i,IA_ACC) ) Cycle
+         charge = charge - aerospc( i )%charge * aerospc_conc( i,IA_ACC )
      &          / aerospc_mw( i )
       End Do
       acidmolconc( hso4acid_idx ) = Max( ( charge*1.0d-6 - acidmolconc( hacid_idx ) ), 0.0d0 ) 
@@ -2178,9 +2178,9 @@ C *** J-mode particle volume [L/m**3 air]
       inv_volume = 0.0d0
       Do i = 1, n_aerospc 
          If ( aerospc( i )%tracer ) Cycle
-         If ( aero_missing(i,2) ) Cycle
+         If ( aero_missing(i,IA_ACC) ) Cycle
 !        If ( aerospc( i )%no_M2Wet ) Cycle
-         inv_volume = inv_volume + Real( aerospc_conc( i, 2 ) / aerospc(i)%density, 8 ) !  * 1.0d-6
+         inv_volume = inv_volume + Real( aerospc_conc( i, IA_ACC ) / aerospc(i)%density, 8 ) !  * 1.0d-6
       End Do
       inv_volume = 1.0d6 / inv_volume
 
@@ -2196,7 +2196,7 @@ C     and calculate rate of particle phase reaction
       Do i = 1, n_nucpairs
 
 C        Find J-mode nucleophile concentration in ug/m3 and convert to mol/m3
-         nuc = aerospc_conc( acid_nucmap_idx(i), 2 ) 
+         nuc = aerospc_conc( acid_nucmap_idx(i), IA_ACC ) 
      &       /  aerospc_mw( acid_nucmap_idx(i) ) * 1.0d-6
 
          acid = acidmolconc( acid_nuc_pairs(i)%idx_acid ) ! mol/m3
