@@ -39,7 +39,7 @@ C 08 Jun 12 J.Young: remove full character blank padding for GNU Fortran (GCC) 4
 C 13 Aug 13 H. Pye: Xylene and toluene low-NOx yields switched. Values now
 C               follow experimental data of Ng et al. 2007 ACP as shown in Table 3.
 C               Values in Table 6 of Ng et al. (previously used) are incorrect.
-C 18 Dec 13 G.Sarwar: added orgprod parent names based on RACM2 
+C 18 Dec 13 G.Sarwar: added orgprod parent names based on RACM2
 C 07 Jul 14 B.Hutzell: replaced mechanism include file(s) with fortran module
 C 21 Jul 14 B.Hutzell: used ifdef statement to make oligomerization
 C                      optional because process represented in chemical
@@ -48,11 +48,11 @@ C 26 Sep 14 H. Pye: Added isoprene + NO3 SOA (see mech.def, no changes
 C                   here). When IEPOX uptake present in gas phase for
 C                   cb05e51, replace preivous acid enhanced isoprene SOA
 C                   with IEPOX uptake SOA now handled as a heterogeneous
-C                   rxn. For saprc07tic_ae6i, perform more detailed 
-C                   IEPOX and MAE uptake and do not do Carlton et al. 2010 
+C                   rxn. For saprc07tic_ae6i, perform more detailed
+C                   IEPOX and MAE uptake and do not do Carlton et al. 2010
 C                   acid enhancement. Note that saprc07tic_ae6i is a research
 C                   version and it is unclear how duplicative AISO1+AISO2+their oligomers
-C                   are with  IEPOX+MAE uptake and their oligomers. 
+C                   are with  IEPOX+MAE uptake and their oligomers.
 C                   Both pathways occur with sarpc07tic_ae6i. To turn AISO1+AISO2
 C                   oligomers off, set "Decay" in vaporspc to 0.0 for SV_ISO1/2.
 C 27 Sep 14 H. Pye: Added alkane and PAH SOA (Pye and Pouliot 2012 ES&T)
@@ -117,7 +117,7 @@ C                  -------    -------  --------  -------  ------    --   ----   
      & vapor_type('VSVOO2 ',  0.0000,    1.e+1,  74.0E3, 'ASVOO2 ', 'A',  0.0, ''       ),
      & vapor_type('VSVOO3 ',  0.0000,    1.e+2,  63.0E3, 'ASVOO3 ', 'A',  0.0, ''       )/)
                                                                  
-C Required species                                               
+C Required species
       Character( 16 ), Private, Parameter :: req_sviso1  = 'SV_ISO1'
       Character( 16 ), Private, Parameter :: req_sviso2  = 'SV_ISO2'
       Character( 16 ), Private, Parameter :: req_mtno3   = 'MTNO3'
@@ -166,20 +166,20 @@ C   extract_soa for the SAPRC99 and SAPRC07T mechanisms
 C
       Type( orgprod_type ), Save      :: orgprod( n_orgprod ) = (/
 C                      Name      Parent     Aerospc  AlphaH
-C                     -------    -------    ------   ------ 
-     & orgprod_type( 'ALKRXN',  'SOAALK ', '      ', 0.000 ),
-     & orgprod_type( 'XYLNRXN', 'XYL    ', '      ', 0.000 ),
-     & orgprod_type( 'XYLHRXN', 'XYL    ', 'AXYL3 ', 0.360 ),
-     & orgprod_type( 'TOLNRXN', 'TOL    ', '      ', 0.000 ),
-     & orgprod_type( 'TOLHRXN', 'TOL    ', 'ATOL3 ', 0.300 ),
-     & orgprod_type( 'BNZNRXN', 'BENZENE', '      ', 0.000 ),
-     & orgprod_type( 'BNZHRXN', 'BENZENE', 'ABNZ3 ', 0.370 ),
-     & orgprod_type( 'PAHNRXN', 'NAPH   ', '      ', 0.000 ),
-     & orgprod_type( 'PAHHRXN', 'NAPH   ', 'APAH3 ', 0.730 ),
-     & orgprod_type( 'TRPRXN ', 'TRPRXN ', '      ', 0.000 ),
-     & orgprod_type( 'ISOPRXN', 'ISOPRXN', '      ', 0.000 ),
-     & orgprod_type( 'SESQRXN', 'SESQRXN', '      ', 0.000 ),
-     & orgprod_type( 'PCSOARXN','PCVOC  ', '      ', 0.000 ) /)
+C                     -------    -------    ------   ------
+     & orgprod_type( 'ALKRXN  ', 'SOAALK ', '      ', 0.000 ),
+     & orgprod_type( 'XYLNRXN ', 'XYL    ', '      ', 0.000 ),
+     & orgprod_type( 'XYLHRXN ', 'XYL    ', 'AXYL3J', 0.360 ),
+     & orgprod_type( 'TOLNRXN ', 'TOL    ', '      ', 0.000 ),
+     & orgprod_type( 'TOLHRXN ', 'TOL    ', 'ATOL3J', 0.300 ),
+     & orgprod_type( 'BNZNRXN ', 'BENZENE', '      ', 0.000 ),
+     & orgprod_type( 'BNZHRXN ', 'BENZENE', 'ABNZ3J', 0.370 ),
+     & orgprod_type( 'PAHNRXN ', 'NAPH   ', '      ', 0.000 ),
+     & orgprod_type( 'PAHHRXN ', 'NAPH   ', 'APAH3J', 0.730 ),
+     & orgprod_type( 'TRPRXN  ', 'TRPRXN ', '      ', 0.000 ),
+     & orgprod_type( 'ISOPRXN ', 'ISOPRXN', '      ', 0.000 ),
+     & orgprod_type( 'SESQRXN ', 'SESQRXN', '      ', 0.000 ),
+     & orgprod_type( 'PCSOARXN', 'PCVOC  ', '      ', 0.000 ) /)
 
 
       Real    :: orgprod_mw     ( n_orgprod )  ! Mol weight of reactive organic gases
@@ -334,14 +334,14 @@ C gas-phase IEPOX uptake occurs for the mechanism.
                orgprod( 8 )%parent     = 'NAPHTHAL'
                orgprod( 9 )%parent     = 'NAPHTHAL'
                IEPOX_SOA_mechanism = .True.
-            Else If( INDEX(MECHNAME, 'RACM2') .GT. 0) then 
+            Else If( INDEX(MECHNAME, 'RACM2') .GT. 0) then
 ! Changed by Golam Sarwar, 07/15/2015 for CMAQv51
                orgprod( 2 )%parent     = 'XYM'
                orgprod( 3 )%parent     = 'XYM'
                orgprod( 4 )%parent     = 'TOL'
-               orgprod( 5 )%parent     = 'TOL'               
-               IEPOX_SOA_mechanism = .True.               
-            Else If( INDEX(MECHNAME, 'CB05E51') .GT. 0) then 
+               orgprod( 5 )%parent     = 'TOL'
+               IEPOX_SOA_mechanism = .True.
+            Else If( INDEX(MECHNAME, 'CB05E51') .GT. 0) then
                orgprod( 2 )%parent = 'XYLMN'
                orgprod( 3 )%parent = 'XYLMN'
                IEPOX_SOA_mechanism = .True.
@@ -358,7 +358,6 @@ C gas-phase IEPOX uptake occurs for the mechanism.
      &              // ' is not supported in this version of the model'
                Call m3exit( pname, 0, 0, xmsg, xstat3 )
             End If
-
 
 C Build mapping to CGRID for each ORGPROD species and find MW of parent.
 C This map is from the SOA production counters to the Parent Vapor
@@ -1044,7 +1043,7 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
 C Initialize drog from ORGPROD and change units to [ ug / m**3 ]
       drog( : ) = orgprod_conc( : ) * drog_ppm2ug( : ) * convfac
 
-C Assignment of drog to totrog. This moving mass from the reactive 
+C Assignment of drog to totrog. This moving mass from the reactive
 C gas tracer species to the array that will be multiplied by alpha
 C to give newly formed semivolatile vapors.
       totrog( : ) = 0.0
@@ -1144,7 +1143,7 @@ C    caer = ctotf / ( 1 + c0/MW / totorg )
                        !saturation concentration to determine whether
 		       !or not OA partitioning is even likely
       upb = 0.0 ! upper bound for bisection method
-      
+
       Do i = 1, n_vapor
          tempcorr   = tt1 * Exp( vaporspc( i )%enth * rgas1 * tt2 )
          c0( i )    = vaporspc( i )%cstar * tempcorr        !Satn Conc.
@@ -1185,7 +1184,7 @@ C Try again with initial guess of 50/50 gas/aerosol split.
          End If
 
 C METHOD2
-C      Calculate new SOA by partitioning. 
+C      Calculate new SOA by partitioning.
 C      Method uses bisection method to solve for total number of moles
 C      of orgaic aerosol. Caer is then calculated based on that number.
         Else

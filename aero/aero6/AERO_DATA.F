@@ -25,14 +25,14 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 C  Defines aerosol species arrays and the parameters required in aerosol
 C  processing.
- 
+
 C  Contains:
 C     Subroutine map_aero
 C     Subroutine map_pmemis
 C     Subroutine extract_aero
 C     Subroutine update_aero
 C     Function findAero
- 
+
 C  Revision History:
 C     First version was coded in April 2010 by Steve Howard with
 C     Prakash Bhave, Jeff Young, and Sergey Napelenok.
@@ -62,7 +62,7 @@ C              geometric standard deviation of emitted particles according to
 C              Elleman and Covert (2010)
 C HOTP 09/27/14 Added alkane and PAH SOA species. PAH SOA densities follow Chan et al.
 C JY  08/24/15 Changed visual index factors
-C HOTP 2/17/2016 Updated SOA densities. BTX follows Ng et al. 2007. 
+C HOTP 2/17/2016 Updated SOA densities. BTX follows Ng et al. 2007.
 C                1.4 g/cm3 used by default.
 C JY  02/17/16 Created named constants for speciation and other factors for AERO_EMIS,
 C              DUST_EMIS, aero_subs:VOLINORG, and aqchem
@@ -103,7 +103,7 @@ C and Malm, et al., JGR, 99(D1)(1994), pp 1347-1370
 
 C PL 05/15/16 Update visual_idx, and add visual_idx_large in spcs_type, due to ammonium sulfate, nitrate and OM
 C             are splitted into small and large modes.
-C             visual_idx for ammominm is zero, because it will be treated together with sulfate and nitrate 
+C             visual_idx for ammominm is zero, because it will be treated together with sulfate and nitrate
 C             see Pitchford et al., Journal of the Air & Waste Management Association (57)(2007), pp 1326
 C PL 05/15/16 Add "om" in spcs_type, to flag organic aerosols, which
 C             will be used to calculate total mass of organic aerosls for estimating
@@ -123,7 +123,6 @@ C Number of aerosol species and modes
       Integer, Parameter :: ia_crs = 4          ! 4 = Coarse Mode
 
       Character( 1 ), Parameter :: size_subscript ( n_mode ) = C(/'H','I','J','K'/)
-
 
       Integer, Save :: n_aerospc ! number of aero species
 
@@ -172,7 +171,7 @@ C-------------------------------------------------------------------------------
          Logical         :: nonVol_soa           ! non-volatile SOA flag
          Logical         :: tracer               ! tracer flag; does have not mass
          Integer         :: charge               ! electroneutrality charge
-         Real            :: visual_idx           ! visual index factor [ m^2/g ] 
+         Real            :: visual_idx           ! visual index factor [ m^2/g ]
          Real            :: visual_idx_large     ! visual index factor [m^2/g ] for large mode, if not applicable, same value as visual_idx
          Logical         :: om                   ! flag for organic aerosols
          Character( 16 ) :: optic_surr           ! optical surrogate name
@@ -180,10 +179,10 @@ C-------------------------------------------------------------------------------
          Real            :: emis_split( n_mode ) ! minimum concentration values for each mode
       End Type spcs_type
 
-      !Create Array of Aerosol Species to Be Filled with User Preferences
+      ! Create Array of Aerosol Species to Be Filled with User Preferences
       Type( spcs_type ), Allocatable, Save :: aerospc ( : )
 
-      !Master List of Aerosol Species and Properties
+      ! Master List of Aerosol Species and Properties
       Type( spcs_type ), Parameter :: aerolist( n_aerolist ) = (/
 C                                                                  nonVolSOA         Visidx_Large
 C                                                                      |    Charge      |            
@@ -298,18 +297,22 @@ C Primary Organic Aerosol Volatility Distributions
        Integer, Parameter :: N_VBS_BIN = 5
        Character(10)   :: POA_NAME( N_VBS_BIN ) =   (/'LVPO1','SVPO1','SVPO2','SVPO3','IVPO1'/)
        Real, Parameter :: POA_OP_VF( N_VBS_BIN )= (/0.09,  0.09,   0.14,   0.18,   0.5/)  !Aggregated
-       !Real, Parameter :: POA_GV_VF(N_VBS_BIN) = (/0.27,  0.15,   0.26,   0.15,   0.17/) !Gasoline
-       !Real, Parameter :: POA_DV_VF(N_VBS_BIN) = (/0.03,  0.25,   0.37,   0.24,   0.11/) !Diesel
-       !Real, Parameter :: POA_BB_VF(N_VBS_BIN) = (/0.2,   0.1,    0.1,    0.2,    0.4/)  !Biomass Burning
-       !Real, Parameter :: POA_NV_VF(N_VBS_BIN) = (/1.0,   0.0,    0.0,    0.0,    0.0/)  !Nonvolatile
-       !Real, Parameter :: POA_MC_VF(N_VBS_BIN) = (/0.35,  0.35,   0.1,    0.1,    0.1/)  !Meat Cooking
 
-       !POA_AMF is the fraction of total emissions in the particle phase. 
-       !This parameter is for distributing the total emissions between
-       !gas and particle BEFORE the aerosol size distribution is applied. 
-       !This helps prevent numerical issues with shrinking the particles
-       !instantaneously.
-       Real, Parameter :: POA_AMF(N_VBS_BIN)   = (/1.0, 0.5, 0.0, 0.0, 0.0/)  
+       ! The Following Volatility Distributions are alternative options
+       ! but at this point can only be implemented indivdually for the
+       ! entire POA suite of compounds.
+       ! Real, Parameter :: POA_GV_VF(N_VBS_BIN) = (/0.27,  0.15,   0.26,   0.15,   0.17/) !Gasoline
+       ! Real, Parameter :: POA_DV_VF(N_VBS_BIN) = (/0.03,  0.25,   0.37,   0.24,   0.11/) !Diesel
+       ! Real, Parameter :: POA_BB_VF(N_VBS_BIN) = (/0.2,   0.1,    0.1,    0.2,    0.4/)  !Biomass Burning
+       ! Real, Parameter :: POA_NV_VF(N_VBS_BIN) = (/1.0,   0.0,    0.0,    0.0,    0.0/)  !Nonvolatile
+       ! Real, Parameter :: POA_MC_VF(N_VBS_BIN) = (/0.35,  0.35,   0.1,    0.1,    0.1/)  !Meat Cooking
+
+       ! POA_AMF is the fraction of total emissions in the particle phase.
+       ! This parameter is for distributing the total emissions between
+       ! gas and particle BEFORE the aerosol size distribution is applied.
+       ! This helps prevent numerical issues with shrinking the particles
+       ! instantaneously.
+       Real, Parameter :: POA_AMF(N_VBS_BIN)   = (/1.0, 0.5, 0.0, 0.0, 0.0/)
  
 
 C number of lognormal modes in windblown dust aerosol = n_mode
@@ -409,19 +412,19 @@ C sources (G. Pouliot - private communication):
      &                                     - acorsem_ah2o_fac
 
 C Required species
-      Character( 16 ), Private, Parameter :: req_so4    = 'ASO4'  
-      Character( 16 ), Private, Parameter :: req_no3    = 'ANO3'  
-      Character( 16 ), Private, Parameter :: req_cl     = 'ACL'   
-      Character( 16 ), Private, Parameter :: req_nh4    = 'ANH4'  
-      Character( 16 ), Private, Parameter :: req_na     = 'ANA'   
+      Character( 16 ), Private, Parameter :: req_so4    = 'ASO4'
+      Character( 16 ), Private, Parameter :: req_no3    = 'ANO3'
+      Character( 16 ), Private, Parameter :: req_cl     = 'ACL'
+      Character( 16 ), Private, Parameter :: req_nh4    = 'ANH4'
+      Character( 16 ), Private, Parameter :: req_na     = 'ANA'
       Character( 16 ), Private, Parameter :: req_poc    = 'APOC'
-      Character( 16 ), Private, Parameter :: req_mg     = 'AMG'           
-      Character( 16 ), Private, Parameter :: req_k      = 'AK' 
-      Character( 16 ), Private, Parameter :: req_ca     = 'ACA' 
+      Character( 16 ), Private, Parameter :: req_mg     = 'AMG'
+      Character( 16 ), Private, Parameter :: req_k      = 'AK'
+      Character( 16 ), Private, Parameter :: req_ca     = 'ACA'
       Character( 16 ), Private, Parameter :: req_fe     = 'AFE'
       Character( 16 ), Private, Parameter :: req_mn     = 'AMN'
-      Character( 16 ), Private, Parameter :: req_h2o    = 'AH2O'  
-      Character( 16 ), Private, Parameter :: req_h3op   = 'AH3OP'  
+      Character( 16 ), Private, Parameter :: req_h2o    = 'AH2O'
+      Character( 16 ), Private, Parameter :: req_h3op   = 'AH3OP'
       Character( 16 ), Private, Parameter :: req_soil   = 'ASOIL'
       Character( 16 ), Private, Parameter :: req_cors   = 'ACORS'
       Character( 16 ), Private, Parameter :: req_ncom   = 'APNCOM'
@@ -435,7 +438,7 @@ C Optional Species
       Character( 16 ), Private, Parameter :: req_imos   = 'AIMOS'
 C Optional Species
       Character( 16 ), Private, Parameter :: req_phgj   = 'APHGJ'
-    
+
 C Indices of required species
       Integer :: aso4_idx
       Integer :: ano3_idx
@@ -446,11 +449,11 @@ C Indices of required species
       Integer :: ak_idx
       Integer :: aca_idx
       Integer :: afe_idx
-      Integer :: amn_idx                                   
+      Integer :: amn_idx
       Integer :: apoc_idx
       Integer :: apncom_idx
-      Integer :: ah2o_idx 
-      Integer :: ah3op_idx 
+      Integer :: ah2o_idx
+      Integer :: ah3op_idx
       Integer :: asoil_idx
       Integer :: acors_idx
       Integer :: aseacat_idx
@@ -567,7 +570,7 @@ C Local Variables:
       Integer l, m, n, spc, isea
       Real  so4fac
       Real  anthfac
-                
+
       Real    :: mole_weight( n_aerolist )
       Integer :: aerolist_map  ( n_aerolist,n_mode )
       Integer :: aerospc_tolist( n_aerolist )
@@ -592,7 +595,7 @@ C Build mapping to CGRID for each species in the master AeroList
                !This place on the AeroList has a potential species in
                !it. Check to see if it is in the namelist
                n = index1( aerolist( spc )%name( m ), n_ae_spc, ae_spc )
-               
+
                If ( n .NE. 0 ) Then
                   !Species is in the Master List and on the NameList
                   If ( .NOT. (Any( aerolist_map( spc,: ) .NE. 0 ) ) ) Then
@@ -613,11 +616,11 @@ C Build mapping to CGRID for each species in the master AeroList
                      Write( xmsg,* ) 'New Value(', n, ') = ', ae_molwt( n ),
      &                               'Expected value(', spc, ')= ', mole_weight( spc )
                      Call m3warn( pname, 0, 0, xmsg )
-                     error_flag = .true. 
+                     error_flag = .true.
                   End If
-                  !Add the map from CGRID to AeroList 
+                  !Add the map from CGRID to AeroList
                   aerolist_map( spc,m ) = ae_strt - 1 + n
-                  
+
                End If
             End If
          End Do
@@ -641,7 +644,7 @@ C Build mapping to CGRID for each species in the master AeroList
          l = aerospc_tolist( spc )
          aerospc( spc ) = aerolist( l )   !Map AeroList to AeroSpc
          aerospc_mw( spc ) = mole_weight( l )
-         
+
          Write( xmsg2,* ) (' ', TRIM( aerolist( spc )%name( m ) ), ' ', m = 1, n_mode )
          Do n = 1,n_mode
             !Map the Modal-Dependent CGRID Pointers from AeroSpc to AeroList
@@ -659,12 +662,12 @@ C Build mapping to CGRID for each species in the master AeroList
             !If a user invokes a chemical species, they should have the
             !same modes present as is indicated in the table above.
             !Check that this is true.
-            If ( aerospc( spc )%name( n )(1:) .NE. ' ' .AND. 
+            If ( aerospc( spc )%name( n )(1:) .NE. ' ' .AND.
      &           aerolist_map( aerospc_tolist( spc ),n ) .EQ. 0 ) Then
                error_flag = .true.
                Write( xmsg,* ) 'FATAL ERROR: Linked set of tracers, ',
      &                    TRIM( xmsg2 ),', is missing species, ',
-     &                    TRIM( aerolist( spc )%name( n ) ) 
+     &                    TRIM( aerolist( spc )%name( n ) )
                call  m3warn( pname,0,0,xmsg  )
             End If
 
@@ -744,7 +747,7 @@ C Find indices of required species
 
 #ifdef verbose_aero
       !Mandatory Species
-      Write( logdev,'( /5x, a )' ) 'map_aero required species' 
+      Write( logdev,'( /5x, a )' ) 'map_aero required species'
       Write( logdev,'( 5x, a, i4 )' ) 'aso4_idx:   ', aso4_idx
       Write( logdev,'( 5x, a, i4 )' ) 'ano3_idx:   ', ano3_idx
       Write( logdev,'( 5x, a, i4 )' ) 'acl_idx:    ', acl_idx
@@ -796,7 +799,7 @@ C compute aeromode_minNum and aeromode_minM2
  
       mapped = .True.
 
-      Write( logdev,'( 5x, a )' ) ' --- Aero Species Mapped ---' 
+      Write( logdev,'( 5x, a )' ) ' --- Aero Species Mapped ---'
 
       Return
       End Subroutine map_aero
@@ -875,9 +878,9 @@ C are the same and set pmem_units
             pmem_map( n_emis_pm ) = v
             pmem_map_name (n_emis_pm ) = aerospc( v )%emis
 
-            !Add Non-Carbon Primary Organic Emissions Surrogate and Map
-	        !it to the Carbon Primary Organic Emissions Surrogate
-            If ( INDEX( MECHNAME,"NVPOA") .EQ. 0 .AND. aerospc( v )%emis == 'POC' ) Then
+            ! Add Non-Carbon Primary Organic Emissions Surrogate and Map
+	        ! it to the Carbon Primary Organic Emissions Surrogate
+            If ( INDEX( MECHNAME,"NVPOA") .EQ. 0 .AND. aerospc( v )%emis .EQ. 'POC' ) Then
               indx = index1( 'PNCOM', nvars3d, vname3d )
               If ( indx .Le. 0 ) Then
                  xmsg1 = Trim( xmsg1 ) // crlf() // blank10
@@ -888,7 +891,7 @@ C are the same and set pmem_units
               n_emis_pm = n_emis_pm + 1
               pmem_map( n_emis_pm ) = v
               pmem_map_name (n_emis_pm ) = 'PNCOM'
-            END IF  
+            End If  
 
 C Change UNITS to upper case
             units = units3d( indx )
@@ -916,7 +919,7 @@ C Check that all emissions units match
       End If
 
 #ifdef verbose_aero
-      Write( logdev,'( /5x, a )' ) 'pmem_map to aerospc' 
+      Write( logdev,'( /5x, a )' ) 'pmem_map to aerospc'
          Do v = 1, n_emis_pm
          Write( logdev,'( 5x, a, 2i4, 2x, a )' ) 'pmem_map:', v, pmem_map( v ), pmem_map_name( v )
       End Do
@@ -924,7 +927,7 @@ C Check that all emissions units match
 
       pm_mapped = .True.
 
-      Write( logdev,'( 5x, a )' ) ' --- PM Emis Species Mapped ---' 
+      Write( logdev,'( 5x, a )' ) ' --- PM Emis Species Mapped ---'
 
       Return
 
@@ -936,7 +939,7 @@ C-----------------------------------------------------------------------
 C  Extracts aerosol data into the AERO_DATA:aerospc_conc array
 C  The original idea is that the data for conc comes from CGRID
 C  Also transfers dry surface area to wet 2nd moment.
- 
+
 C  Revision History:
 C     First version was coded in April 2010 by Steve Howard with
 C     Prakash Bhave, Jeff Young, and Sergey Napelenok.
@@ -944,7 +947,7 @@ C     4/2016: Updated for 2nd moment by H. Pye and B. Murphy
 C-----------------------------------------------------------------------
 
       Use aeromet_data, only : pi, f6pi  ! fundamental constants, data type definitions, etc.
-      
+
       Implicit None
 
 C Arguments:
@@ -952,7 +955,7 @@ C Arguments:
       Logical, Intent( In ) :: minchk
 
 C Local Variables:
-      Integer m, n, spc 
+      Integer m, n, spc
 
       If ( .Not. mapped ) Then
          Call map_aero()
@@ -982,11 +985,11 @@ C Copy grid cell concentrations of aero species to aerospc_conc
 
       !Calculate Dry Third Moment [ m3 / m3 ]
       Do m = 1, n_mode
-         moment3_conc( m ) = sum( aerospc_conc(:,m) / aerospc(:)%density, 
+         moment3_conc( m ) = sum( aerospc_conc(:,m) / aerospc(:)%density,
 !    &      MASK= (aerospc%no_M2wet==.false. .AND. aerospc%Tracer==.false.) )
-     &      MASK= ( ( .NOT. aerospc%no_M2wet ) .AND. 
+     &      MASK= ( ( .NOT. aerospc%no_M2wet ) .AND.
      &              ( .NOT. aerospc%Tracer ) ) )
-         moment3_conc( m ) = max( moment3_conc( m ) * 1.0E-9 * f6pi, 
+         moment3_conc( m ) = max( moment3_conc( m ) * 1.0E-9 * f6pi,
      &                            aeromode( m )%min_m3conc )
       End Do
 
@@ -1001,7 +1004,7 @@ C Convert surface area to M2 and set wet_moments_flag
             n = aeronum_map( m )
             moment0_conc( m ) = Max( conc( n ), aeromode( m )%min_numconc )
             n = aerosrf_map( m )
-            moment2_conc( m ) = Max( conc( n ) / pi, aeromode( m )%min_m2conc ) 
+            moment2_conc( m ) = Max( conc( n ) / pi, aeromode( m )%min_m2conc )
          End Do
       Else
          Do m = 1, n_mode
@@ -1027,7 +1030,7 @@ C  Updates conc from the AERO_DATA:aerospc_conc array.
 C  The original idea is that the data in conc updates CGRID
 C  Update_aero now also saves the updated surface area back to CGRID as
 C  well. Moment2 will be dried if necessary and flag reset.
- 
+
 C  Revision History:
 C     First version was coded in April 2010 by Steve Howard with
 C     Prakash Bhave, Jeff Young, and Sergey Napelenok.
@@ -1045,7 +1048,7 @@ C Arguments:
 
 C Local variables:
       Character( 80 ) :: xmsg
-      Integer m, n, spc 
+      Integer m, n, spc
 
       If ( .Not. mapped ) Then
          xmsg = 'CGRID Species has not been mapped'
@@ -1063,7 +1066,7 @@ C Copy aerospc_conc back to grid cell concentrations
                End If
             End Do
          End Do
-      Else 
+      Else
          Do m = 1, n_mode
             Do spc = 1, n_aerospc
                n = aerospc_map( spc,m )
@@ -1095,17 +1098,17 @@ C Save dry second moment to surface area (with pi conversion)
 
       Do m = 1, n_mode
          n = aerosrf_map( m )
-         conc( n ) = Real( pi, 4 ) * moment2_conc( m ) 
+         conc( n ) = Real( pi, 4 ) * moment2_conc( m )
       End Do
 
       Return
-      End Subroutine update_aero   
+      End Subroutine update_aero
 
 C-----------------------------------------------------------------------
       Function findAero( vname, required ) Result ( idx )
 
 C  Finds the index of 'required' aerosol species in the aerospc list
- 
+
 C  Revision History:
 C     First version was coded in April 2010 by Steve Howard with
 C     Prakash Bhave, Jeff Young, and Sergey Napelenok.
@@ -1153,7 +1156,7 @@ C-----------------------------------------------------------------------
 
 C Subroutine calculates wet (addwet=T) or dry (addwet=F) aerosol third
 C and second moment and stores them in moment_conc arrays and
-C updates wet_moments_flag. 
+C updates wet_moments_flag.
 C Note that third moment information will be overwritten no matter what
 C the wet_moments_flag indicates. M2 will depend on the history
 C of the moment (wet_moments_flag). This routine will not update
@@ -1186,7 +1189,7 @@ C Local variables:
       Real( 8 ) :: wetsumM3  ! wet M3 [ m**3 / m**3 ]
       Real( 8 ) :: factor
       Real( 4 ) :: initialM3 ! initial M3 from moment3_conc [ m**3 /m**3 ]
-      Real( 4 ) :: initialM2 ! initial M2 from moment2_conc [ m**2 /m**3 ] 
+      Real( 4 ) :: initialM2 ! initial M2 from moment2_conc [ m**2 /m**3 ]
 
       Character( 16 )  :: pname_loc = 'CalcMoments'
       Character( 100 ) :: xmsg
@@ -1199,14 +1202,14 @@ C     moment [ m**2/m**3 ]
          Do n = 1, n_mode
             initialM2 = moment2_conc( n )
             If (initialM2 .eq. 0.0) then
-                write( xmsg,'(A32,I1,A42)') "Warning: Second Moment for Mode ", 
+                write( xmsg,'(A32,I1,A42)') "Warning: Second Moment for Mode ",
      &                 n," is 0.0. This will cause numerical issues."
                 call m3warn( pname_loc, 0, 0, xmsg )
             End If
 
             initialM3 = moment3_conc( n )
             If (initialM3 .eq. 0.0) then
-                write( xmsg,'(A31,I1,A42)') "Warning: Third Moment for Mode ", 
+                write( xmsg,'(A31,I1,A42)') "Warning: Third Moment for Mode ",
      &                 n," is 0.0. This will cause numerical issues."
                 call m3warn( pname_loc, 0, 0, xmsg )
             End If
@@ -1235,14 +1238,14 @@ C     moment [ m**2/m**3 ]
          Do n = 1, n_mode
             initialM2 = moment2_conc( n )
             If (initialM2 .eq. 0.0) then
-                write( xmsg,'(A32,I1,A42)') "Warning: Second Moment for Mode ", 
+                write( xmsg,'(A32,I1,A42)') "Warning: Second Moment for Mode ",
      &                 n," is 0.0. This will cause numerical issues."
                 call m3warn( pname_loc, 0, 0, xmsg )
             End If
 
             initialM3 = moment3_conc( n )
             If (initialM3 .eq. 0.0) then
-                write( xmsg,'(A31,I1,A42)') "Warning: Third Moment for Mode ", 
+                write( xmsg,'(A31,I1,A42)') "Warning: Third Moment for Mode ",
      &                 n," is 0.0. This will cause numerical issues."
                 call m3warn( pname_loc, 0, 0, xmsg )
             End If
