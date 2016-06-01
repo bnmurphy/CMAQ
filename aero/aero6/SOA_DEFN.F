@@ -307,9 +307,9 @@ C Add option to have species in GC.nml (for real semivolatiles)
 
 #endif
 
-C define orgprod parent names based on mechanism dependence
-C if they differ from above declarations and
-C determine if gas-phase IEPOX uptake occurs for the mechanism
+C Define orgprod parent names based on mechanism dependence
+C if they differ from above declarations, and determine if 
+C gas-phase IEPOX uptake occurs for the mechanism.
             If ( INDEX( MECHNAME, 'SAPRC07TIC_AE6I' ) .GT. 0 ) then
                orgprod( 2 )%parent = 'MXYL'
                orgprod( 3 )%parent = 'MXYL'
@@ -359,16 +359,10 @@ C determine if gas-phase IEPOX uptake occurs for the mechanism
                Call m3exit( pname, 0, 0, xmsg, xstat3 )
             End If
 
-!SOA_DEFN NO LONGER HAS VERSION CONSTRAINTS ON SPECIES
-! This SOA_DEFN works for AE6 and AE6i versions of aero
-!            If( INDEX( MECHNAME, '_AE6_' ) .EQ. 0 ) then
-!                  xmsg =  'Using AERO6 option and the Mechanism, '  
-!     &                // Trim( MECHNAME ) // ', is not based on AERO6 '
-!                 Call m3exit( pname, 0, 0, xmsg, xstat3 )
-!            End If
 
-
-C Build mapping to CGRID for each ORGPROD species and find MW of parent
+C Build mapping to CGRID for each ORGPROD species and find MW of parent.
+C This map is from the SOA production counters to the Parent Vapor
+C Species located in CGRID.
 
          orgprod_map = 0
          Do spc = 1, n_orgprod
@@ -387,7 +381,8 @@ C Build mapping to CGRID for each ORGPROD species and find MW of parent
             End If
          End Do
 
-C Find indices of required species
+C Find indices of species that are useful to reference by name. Note 
+C that each required organic must be defined for at least one mode. 
          iso1_idx   = findVapor( req_sviso1 )
          iso2_idx   = findVapor( req_sviso2 )
          aiso1_idx  = findAero( req_aeiso1, .True. )
@@ -408,33 +403,48 @@ C Find indices of required species
 
 
 C Build mapping array of Semivolatile Vapors (vaporspc) to the Aerosol
-C Species they correspond to (aerospc is used inside findAero)
+C species they correspond to (aerospc is used inside findAero). The code
+C will proceed as long as each organic is present in at least one of the
+C aerosol modes.
          soa_aeroMap = 0
          Do spc = 1, n_vapor
            If ( vaporspc( spc )%soa_name .Ne. ' ' ) Then
              Do imode = ia_nuc, ia_crs
                tmpName = trim(vaporspc( spc )%soa_name) // size_subscript( imode )
-               soa_aeroMap( spc,imode ) = findAero( tmpName, .False. )
+               soa_aeroMap( spc ) = findAero( tmpName, .False. )
              End Do
-             If ( .NOT. any( soa_aeroMap( spc,: ) ) ) Then
+             If ( .NOT. soa_aeroMap( spc ) ) Then
                 !Exit since this species from the master namelist is not
                 !in the aero_data table
+                Write( xmsg,'( A19,I3,A42 )' ) ' *** Organic Vapor ', spc,
+     &             ' does not have an aerosol counterpart. ***'
+                Call m3exit( pname, 0, 0, xmsg, xstat3 )
              End If
            End If
          End Do
 
 C Build Mapping array of Reactive variables that track production rates
 C of condensable gases (orgprod) to any nonvolatile species they yield
-C (aerospc is used inside findAero)
+C (aerospc is used inside findAero).
          orgprod_aeroMap = 0
          Do spc = 1, n_orgprod
-            If ( orgprod( spc )%aerospc .Ne. ' ' ) Then
-               orgprod_aeroMap( spc ) = findAero( orgprod( spc )%aerospc, .True. )
-            End If
+           If ( orgprod( spc )%aerospc .Ne. ' ' ) Then
+             Do imode = ia_nuc, ia_crs
+               tmpName = trim( orgprod( spc )%aerospc ) // size_subscript( imode )
+               orgprod_aeroMap( spc ) = findAero( tmpName, .False. )
+             End Do
+             If ( .NOT. orgprod_aeroMap( spc ) ) Then
+               !Exit since this species from the master namelist is not
+               !in the aero_data table
+               Write( xmsg,'( A33,I3,A42 )' ) ' *** Nonvolatile Organic Product ', spc,
+     &           ' does not have an aerosol counterpart. ***'
+               Call m3exit( pname, 0, 0, xmsg, xstat3 )
+             End If 
+           End If
          End Do
 
 C Build mapping array of sources of Semivolatile Vapors (vaporspc) to the 
-C Reactive variables that store their production rates (orgprod)
+C Reactive variables that store their production rates (orgprod).
          drog_map = 0
          Do spc = 1, n_vapor
             If ( vaporspc( spc )%drog_name .Ne. ' ' ) Then
@@ -451,7 +461,6 @@ C Compute gas conversion constant
 
 C Copy grid cell concentrations of vapor species
       vapor_conc = 0.0
-
       Do spc = 1, n_vapor
          n = vapor_map( spc )
          If ( n .Ne. 0 ) Then
@@ -903,7 +912,7 @@ C Local variables:
       Logical, Save :: first_time = .True.
       Integer, Save :: logdev
       Character( 80 ) :: xmsg
-      Integer       :: i, imode, im
+      Integer       :: i, im, indx
 
       Real, Save :: mwpoa                     ! Molecular weight of POA [ g/mol ]
 
@@ -923,7 +932,7 @@ C Parameters & variables for adjusting cstar to ambient conditions
       Real, Parameter :: threshmin = 1.0E-19     ! small positive number
       Real, Parameter :: ctolmin = 1.0E-06
       Real, Parameter :: convfac_298 = 101325.0 * rgas1 * trefm1  ! P/RT at 1 atm and 298 K [ mole/m**3 ]
-      Real, Parameter :: difforg = 9.36e-6  ! P/RT at 1 atm and 298 K [ mole/m**3 ]
+      Real, Parameter :: difforg = 9.36e-6  ! Diffusivity of organics [m2 s-1]
       Real, Parameter :: alphorg = 1.0      ! accomodation coefficient
 
       Real convfac
@@ -945,7 +954,7 @@ C Variables used in acid-enhanced isoprene SOA calculations
 C Variables used in equilibrium partitioning calculations
       Real drog( n_orgprod ) ! change in precursor conc [ ug/m3 ]
       Real totrog( n_vapor ) ! drog conc mapped to each SVOC [ ug/m3 ]
-      Real GRtmp( n_mode )   ! Dummy variable for accurate treatment of growth to specific moment
+      Real(8) GRtmp( n_mode )   ! Dummy variable for accurate treatment of growth to specific moment
       Real GR3( n_vapor,n_mode ) ! 3rd Moment Growth for each mode and compound
       Real GR3FRAC( n_vapor,n_mode ) ! Fraction of each mode growing/shrinking
       Real c0    ( n_vapor ) ! cstar at AIRTEMP [ ug/m3 ]
@@ -965,8 +974,9 @@ C Variables used in equilibrium partitioning calculations
                              ! converged to a spurious root
 
 C Variables for updating 2nd and 3rd moments
-      Real m0_init( 2 )  ! initial 0 moment, wet [ mom/m3 ]
-      Real m1wet_init( 2 )  ! initial 1st moment, wet [ mom/m3 ]
+      Real(8) m0_init( 2 )  ! initial 0 moment, wet [ mom/m3 ]
+      Real(8) m1wet_init( 2 )  ! initial 1st moment, wet [ mom/m3 ]
+      Real(8) m2wet_initD( 2 )  ! initial 2nd moment, wet [ mom/m3 ]
       Real m3wet_init( 2 )  ! initial 3rd moment, wet [ mom/m3 ]
       Real m2wet_init( 2 )  ! initial 2nd moment, wet [ mom/m3 ]
       Real m3wet_final( 2 )  ! final 3rd moment with updated SOA [ mom/m3 ]
@@ -1004,20 +1014,22 @@ C resentative compound.
  
 C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
       Call calcmoments ( .true. )
-      m0_init( : )    = moment0_conc( 1:2 )
       m3wet_init( : ) = moment3_conc( 1:2 )
       m2wet_init( : ) = moment2_conc( 1:2 )
         
       GR3( :,: ) = 0.0
-      Do imode = 1,2
-        m1wet_init( imode ) = m0_init( imode ) * aeromode_diam( imode ) * 
-     &                         exp( 0.5 * aeromode_lnsg( imode ) ** 2 )
+      m0_init( : )    = moment0_conc( 1:2 )
+      m2wet_initD( : ) = DBLE( m2wet_init( 1:2 ) )
+
+      Do im = 1,2
+        m1wet_init( im ) = m0_init( im ) * aeromode_diam( im ) * 
+     &                         exp( 0.5 * aeromode_lnsg( im ) ** 2 )
 
         Do i = 1, n_vapor
-          If ( aero_missing( soa_aeroMap( i ),imode ) .EQ. .FALSE. ) Then
-            Call HCOND3( m0_init( imode ), m1wet_init( imode ),
-     &                   m2wet_init( imode ), Dv_org, alphorg, cbar_org, GRtmp )
-            GR3( i,imode ) = GRtmp( 2 )
+          If ( aero_missing( soa_aeroMap( i ),im ) .EQ. .FALSE. ) Then
+            Call HCOND3( m0_init( im ), m1wet_init( im ),
+     &                   m2wet_initD( im ), Dv_org, alphorg, cbar_org(i), GRtmp )
+            GR3( i,im ) = GRtmp( 2 )
           End If
         End Do
       End Do
@@ -1115,7 +1127,7 @@ C Note: all of these CBLK species are in [ug/m**3]
          If( soa_aeroMap( i ) .lt. 1 )Cycle
          ctoti( i ) = vapor_conc( i ) + aerospc_conc( soa_aeroMap( i ),2 )  
      &                + aerospc_conc( soa_aeroMap( i ),1 )
-         caer0( i ) = vapor_conc( i ) + aerospc_conc( soa_aeroMap( i ),2 )  
+         caer0( i ) = aerospc_conc( soa_aeroMap( i ),2 )  
      &                + aerospc_conc( soa_aeroMap( i ),1 )
       End Do
 
@@ -1227,12 +1239,30 @@ C Transfer particle-phase SOA and vapor-phase SVOCs back to CBLK
       vapor_conc( : ) = ctotf( : ) - caer( : )
 
       Do i = 1, n_vapor
-        Do im = 1, n_mode
-          If ( soa_aeroMap( i ) .ge. 1 ) Then
-             aerospc_conc( soa_aeroMap( i ),im ) = 
-     &             aerospc_conc( soa_aeroMap( i ),im ) + dcaer( i ) * GR3FRAC( i,im )
-          End If
-        End Do
+        If ( soa_aeroMap( i ) .ge. 1 ) Then
+           indx = soa_aeroMap( i )
+           Do im = 1, n_mode
+             aerospc_conc( indx,im ) = 
+     &             aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
+           End Do
+        
+           !Check to make sure none of the modes went negative
+           If ( aerospc_conc( indx,1 ) .lt. conmin ) Then
+              aerospc_conc( indx,2 ) = 
+     &         aerospc_conc( indx,2 ) + aerospc_conc( indx,1 ) - conmin
+              aerospc_conc( indx,1 ) = conmin
+           End If
+           If ( aerospc_conc( indx,2 ) .lt. conmin ) Then
+              aerospc_conc( indx,1 ) = 
+     &         aerospc_conc( indx,1 ) + aerospc_conc( indx,2 ) - conmin
+              aerospc_conc( indx,2 ) = conmin
+           End If
+           If ( aerospc_conc( indx,1 ) .lt. conmin .OR.
+     &        aerospc_conc( indx,2 ) .lt. conmin      ) Then
+              Write( xmsg,'( A )' ) ' *** Too Much Evaporation from Existing Organic Aerosol'
+              Call m3exit( pname, 0, 0, xmsg, xstat3 )
+           End If  
+        End If
       End Do
 
 C Acid-induced Isoprene SOA if IEPOX uptake is not considered mechanism reactions
