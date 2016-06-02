@@ -86,36 +86,36 @@ C
 C                   Name       Alpha    CStar     Enth     SOA           Decay  Drog
 C                                                          Name   Origin        Name
 C                  -------    -------  --------  -------  ------    --   ----   -------
-     & vapor_type('SV_ALK1',  0.0334,   0.1472,  53.0E3, 'AALK1  ', 'A', 12.0, 'ALKRXN' ),
-     & vapor_type('SV_ALK2',  0.2164,  51.8775,  53.0E3, 'AALK2  ', 'A', 12.0, 'ALKRXN' ),
-     & vapor_type('SV_XYL1',  0.0310,   1.3140,  32.0E3, 'AXYL1  ', 'A',  8.0, 'XYLNRXN'),
-     & vapor_type('SV_XYL2',  0.0900,  34.4830,  32.0E3, 'AXYL2  ', 'A',  8.0, 'XYLNRXN'),
-     & vapor_type('SV_TOL1',  0.0580,   2.3260,  18.0E3, 'ATOL1  ', 'A',  7.0, 'TOLNRXN'),
-     & vapor_type('SV_TOL2',  0.1130,  21.2770,  18.0E3, 'ATOL2  ', 'A',  7.0, 'TOLNRXN'),
-     & vapor_type('SV_BNZ1',  0.0720,   0.3020,  18.0E3, 'ABNZ1  ', 'A',  6.0, 'BNZNRXN'),
-     & vapor_type('SV_BNZ2',  0.8880, 111.1100,  18.0E3, 'ABNZ2  ', 'A',  6.0, 'BNZNRXN'),
-     & vapor_type('SV_PAH1',  0.2100,   1.6598,  18.0E3, 'APAH1  ', 'A', 10.0, 'PAHNRXN'),
-     & vapor_type('SV_PAH2',  1.0700, 264.6675,  18.0E3, 'APAH2  ', 'A', 10.0, 'PAHNRXN'),
-     & vapor_type('SV_TRP1',  0.1393,  14.7920,  40.0E3, 'ATRP1  ', 'B', 10.0, 'TRPRXN '),
-     & vapor_type('SV_TRP2',  0.4542, 133.7297,  40.0E3, 'ATRP2  ', 'B', 10.0, 'TRPRXN '), 
-     & vapor_type('MTNO3'  ,     0.0,     12.0,  40.0E3, 'AMTNO3 ', 'B', 10.0, ''       ),
-     & vapor_type('ISOPNN' ,     0.0,     8.9,   40.0E3, 'AISOPNN','B', 5.0,  ''       ),
-     & vapor_type('SV_ISO1',  0.2320, 116.0100,  40.0E3, 'AISO1  ', 'B',  5.0, 'ISOPRXN'),
-     & vapor_type('SV_ISO2',  0.0288,   0.6170,  40.0E3, 'AISO2  ', 'B',  5.0, 'ISOPRXN'),
-     & vapor_type('SV_SQT ',  1.5370,  24.9840,  40.0E3, 'ASQT   ', 'B', 15.0, 'SESQRXN'),
+     & vapor_type('SV_ALK1 ', 0.0334,   0.1472,  53.0E3, 'AALK1  ', 'A', 12.0, 'ALKRXN  '),
+     & vapor_type('SV_ALK2 ', 0.2164,  51.8775,  53.0E3, 'AALK2  ', 'A', 12.0, 'ALKRXN  '),
+     & vapor_type('SV_XYL1 ', 0.0310,   1.3140,  32.0E3, 'AXYL1  ', 'A',  8.0, 'XYLNRXN '),
+     & vapor_type('SV_XYL2 ', 0.0900,  34.4830,  32.0E3, 'AXYL2  ', 'A',  8.0, 'XYLNRXN '),
+     & vapor_type('SV_TOL1 ', 0.0580,   2.3260,  18.0E3, 'ATOL1  ', 'A',  7.0, 'TOLNRXN '),
+     & vapor_type('SV_TOL2 ', 0.1130,  21.2770,  18.0E3, 'ATOL2  ', 'A',  7.0, 'TOLNRXN '),
+     & vapor_type('SV_BNZ1 ', 0.0720,   0.3020,  18.0E3, 'ABNZ1  ', 'A',  6.0, 'BNZNRXN '),
+     & vapor_type('SV_BNZ2 ', 0.8880, 111.1100,  18.0E3, 'ABNZ2  ', 'A',  6.0, 'BNZNRXN '),
+     & vapor_type('SV_PAH1 ', 0.2100,   1.6598,  18.0E3, 'APAH1  ', 'A', 10.0, 'PAHNRXN '),
+     & vapor_type('SV_PAH2 ', 1.0700, 264.6675,  18.0E3, 'APAH2  ', 'A', 10.0, 'PAHNRXN '),
+     & vapor_type('SV_TRP1 ', 0.1393,  14.7920,  40.0E3, 'ATRP1  ', 'B', 10.0, 'TRPRXN  '),
+     & vapor_type('SV_TRP2 ', 0.4542, 133.7297,  40.0E3, 'ATRP2  ', 'B', 10.0, 'TRPRXN  '), 
+     & vapor_type('MTNO3   ',    0.0,     12.0,  40.0E3, 'AMTNO3 ', 'B', 10.0, '        '),
+     & vapor_type('ISOPNN  ',    0.0,     8.9,   40.0E3, 'AISOPNN', 'B', 5.0,  '        '),
+     & vapor_type('SV_ISO1 ', 0.2320, 116.0100,  40.0E3, 'AISO1  ', 'B',  5.0, 'ISOPRXN '),
+     & vapor_type('SV_ISO2 ', 0.0288,   0.6170,  40.0E3, 'AISO2  ', 'B',  5.0, 'ISOPRXN '),
+     & vapor_type('SV_SQT  ', 1.5370,  24.9840,  40.0E3, 'ASQT   ', 'B', 15.0, 'SESQRXN '),
      & vapor_type('LV_PCSOG', 1.0   ,   1.0e-5,  40.0E3, 'APCSO  ', 'A', 10.0, 'PCSOARXN'),
-     & vapor_type('MBTCA'  ,  0.0000,   1.0E-2, 126.5E3, 'AMBTCA ', 'B', 10.0, ''       ),
-     & vapor_type('ELVOC'  ,  0.0000,   1.6E-1, 110.0E3, 'AELVO1 ', 'B', 10.0, ''       ),
-     & vapor_type('VLVPO1 ',  0.0000,    1.e-1,  96.0E3, 'ALVPO1 ', 'A',  0.0, ''       ),
-     & vapor_type('VSVPO1 ',  0.0000,    1.e+0,  85.0E3, 'ASVPO1 ', 'A',  0.0, ''       ),
-     & vapor_type('VSVPO2 ',  0.0000,    1.e+1,  74.0E3, 'ASVPO2 ', 'A',  0.0, ''       ),
-     & vapor_type('VSVPO3 ',  0.0000,    1.e+2,  63.0E3, 'ASVPO3 ', 'A',  0.0, ''       ),
-     & vapor_type('VIVPO1 ',  0.0000,    1.e+3,  52.0E3, 'AIVPO1 ', 'A',  0.0, ''       ),
-     & vapor_type('VLVOO1 ',  0.0000,    1.e-2, 107.0E3, 'ALVOO1 ', 'A',  0.0, ''       ),
-     & vapor_type('VLVOO2 ',  0.0000,    1.e-1,  96.0E3, 'ALVOO2 ', 'A',  0.0, ''       ),
-     & vapor_type('VSVOO1 ',  0.0000,    1.e+0,  85.0E3, 'ASVOO1 ', 'A',  0.0, ''       ),
-     & vapor_type('VSVOO2 ',  0.0000,    1.e+1,  74.0E3, 'ASVOO2 ', 'A',  0.0, ''       ),
-     & vapor_type('VSVOO3 ',  0.0000,    1.e+2,  63.0E3, 'ASVOO3 ', 'A',  0.0, ''       )/)
+     & vapor_type('MBTCA   ', 0.0000,   1.0E-2, 126.5E3, 'AMBTCA ', 'B', 10.0, '        '),
+     & vapor_type('ELVOC   ', 0.0000,   1.6E-1, 110.0E3, 'AELVO1 ', 'B', 10.0, '        '),
+     & vapor_type('VLVPO1  ', 0.0000,    1.e-1,  96.0E3, 'ALVPO1 ', 'A',  0.0, '        '),
+     & vapor_type('VSVPO1  ', 0.0000,    1.e+0,  85.0E3, 'ASVPO1 ', 'A',  0.0, '        '),
+     & vapor_type('VSVPO2  ', 0.0000,    1.e+1,  74.0E3, 'ASVPO2 ', 'A',  0.0, '        '),
+     & vapor_type('VSVPO3  ', 0.0000,    1.e+2,  63.0E3, 'ASVPO3 ', 'A',  0.0, '        '),
+     & vapor_type('VIVPO1  ', 0.0000,    1.e+3,  52.0E3, 'AIVPO1 ', 'A',  0.0, '        '),
+     & vapor_type('VLVOO1  ', 0.0000,    1.e-2, 107.0E3, 'ALVOO1 ', 'A',  0.0, '        '),
+     & vapor_type('VLVOO2  ', 0.0000,    1.e-1,  96.0E3, 'ALVOO2 ', 'A',  0.0, '        '),
+     & vapor_type('VSVOO1  ', 0.0000,    1.e+0,  85.0E3, 'ASVOO1 ', 'A',  0.0, '        '),
+     & vapor_type('VSVOO2  ', 0.0000,    1.e+1,  74.0E3, 'ASVOO2 ', 'A',  0.0, '        '),
+     & vapor_type('VSVOO3  ', 0.0000,    1.e+2,  63.0E3, 'ASVOO3 ', 'A',  0.0, '        ')/)
                                                                  
 C Required species
       Character( 16 ), Private, Parameter :: req_sviso1  = 'SV_ISO1'
@@ -953,9 +953,9 @@ C Variables used in acid-enhanced isoprene SOA calculations
 C Variables used in equilibrium partitioning calculations
       Real drog( n_orgprod ) ! change in precursor conc [ ug/m3 ]
       Real totrog( n_vapor ) ! drog conc mapped to each SVOC [ ug/m3 ]
-      Real(8) GRtmp( n_mode )   ! Dummy variable for accurate treatment of growth to specific moment
-      Real GR3( n_vapor,n_mode ) ! 3rd Moment Growth for each mode and compound
-      Real GR3FRAC( n_vapor,n_mode ) ! Fraction of each mode growing/shrinking
+      Real(8) GRtmp( n_mode-1 )   ! Dummy variable for accurate treatment of growth to specific moment
+      Real GR3( n_vapor,n_mode-1 ) ! 3rd Moment Growth for each mode and compound
+      Real GR3FRAC( n_vapor,n_mode-1 ) ! Fraction of each mode growing/shrinking
       Real c0    ( n_vapor ) ! cstar at AIRTEMP [ ug/m3 ]
       Real caer0 ( n_vapor ) ! SVOC conc before current time step [ ug/m3 ]
       Real ctoti ( n_vapor ) ! SVOC conc before current time step [ ug/m3 ]
@@ -973,13 +973,13 @@ C Variables used in equilibrium partitioning calculations
                              ! converged to a spurious root
 
 C Variables for updating 2nd and 3rd moments
-      Real(8) m0_init( 2 )  ! initial 0 moment, wet [ mom/m3 ]
-      Real(8) m1wet_init( 2 )  ! initial 1st moment, wet [ mom/m3 ]
-      Real(8) m2wet_initD( 2 )  ! initial 2nd moment, wet [ mom/m3 ]
-      Real m3wet_init( 2 )  ! initial 3rd moment, wet [ mom/m3 ]
-      Real m2wet_init( 2 )  ! initial 2nd moment, wet [ mom/m3 ]
-      Real m3wet_final( 2 )  ! final 3rd moment with updated SOA [ mom/m3 ]
-      Real m2wet_final( 2 )  ! final 2nd moment with updated SOA [ mom/m3 ]
+      Real(8) m0_init     ( n_mode-1 )  ! initial 0 moment, wet [ mom/m3 ]
+      Real(8) m1wet_init  ( n_mode-1 )  ! initial 1st moment, wet [ mom/m3 ]
+      Real(8) m2wet_initD ( n_mode-1 )  ! initial 2nd moment, wet [ mom/m3 ]
+      Real    m3wet_init  ( n_mode-1 )  ! initial 3rd moment, wet [ mom/m3 ]
+      Real    m2wet_init  ( n_mode-1 )  ! initial 2nd moment, wet [ mom/m3 ]
+      Real    m3wet_final ( n_mode-1 )  ! final 3rd moment with updated SOA [ mom/m3 ]
+      Real    m2wet_final ( n_mode-1 )  ! final 2nd moment with updated SOA [ mom/m3 ]
 
 C Added for new SOA bisection (hotp 7/6/11)
       Real               :: lowb, upb, orgmoles      ! lower bound, upper bound, total aerosol moles
@@ -1020,7 +1020,7 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
       m0_init( : )    = moment0_conc( 1:2 )
       m2wet_initD( : ) = DBLE( m2wet_init( 1:2 ) )
 
-      Do im = 1,2
+      Do im = ia_nuc,ia_acc
         m1wet_init( im ) = m0_init( im ) * aeromode_diam( im ) * 
      &                         exp( 0.5 * aeromode_lnsg( im ) ** 2 )
 
@@ -1035,10 +1035,10 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
       
       !Calculate fraction of mass transfer to/from each mode
       GR3FRAC( :,: ) = 0.0
-      Where ( GR3( :,1 ) .gt. 0. ) 
-     &    GR3FRAC( :,1 ) = GR3( :,1 ) / ( GR3(:,1) + GR3(:,2) ) !Aitken Growth
-      Where ( GR3( :,2 ) .gt. 0. )
-     &     GR3FRAC( :,2 ) = GR3( :,2 ) / ( GR3(:,1) + GR3(:,2) ) !Accumulation Growth
+      Do im = ia_nuc,iacc
+        Where ( GR3( :,im ) .gt. 0. ) 
+     &      GR3FRAC( :,im ) = GR3( :,im ) / Sum( GR3(:,:),DIM=2 ) !NPF Growth
+      End Do
 
 C Initialize drog from ORGPROD and change units to [ ug / m**3 ]
       drog( : ) = orgprod_conc( : ) * drog_ppm2ug( : ) * convfac
@@ -1053,13 +1053,18 @@ C to give newly formed semivolatile vapors.
          End If
       End Do
 
-C Transfer non-volatile products directly to aerospc_conc array (2nd mode)
-      Do i = 1, n_orgprod
-         If ( orgprod_aeroMap( i ) .Gt. 0 ) Then
-            aerospc_conc( orgprod_aeroMap( i ),2 ) =
-     &      aerospc_conc( orgprod_aeroMap( i ),2 )
-     &      + orgprod( i )%alphaH * drog( i )
-         End If
+C Transfer non-volatile products directly to aerospc_conc array (All modes).
+C Use the Size distribution splitting factor associated with ELVOCs
+C rather than recalculating the condensation sink for every condesnign
+C species.
+      Do im = ia_nuc, ia_acc
+        Do i = 1, n_orgprod
+           If ( orgprod_aeroMap( i ) .Gt. 0 ) Then
+              aerospc_conc( orgprod_aeroMap( i ),im ) =
+     &        aerospc_conc( orgprod_aeroMap( i ),im )
+     &          + orgprod( i )%alphaH * drog( i ) * GR3FRAC( idx_ELVOC,im )
+           End If
+        End Do
       End Do
 
 #ifdef Oligo_aero
@@ -1068,31 +1073,36 @@ C Oligomerization
 C Convert semi-volatile SOA to non-volatile oligomers by an exponential decay
 C process that conserves carbon mass.
 
-      nsvpa = 0.0
-      nsvpb = 0.0
-
-      Do i = 1, n_vapor
-         If( soa_aeroMap( i ) .lt. 1 )Cycle
-         If ( vaporspc( i )%soa_origin .Eq. 'A' )
-     &      nsvpa = nsvpa + aerospc_conc( soa_aeroMap( i ),2 )
-     &            * mw_vap_m1( i ) * vaporspc( i )%soa_decay
-         If ( vaporspc( i )%soa_origin .Eq. 'B' )
-     &      nsvpb = nsvpb + aerospc_conc( soa_aeroMap( i ),2 )
-     &            * mw_vap_m1( i ) * vaporspc( i )%soa_decay
-      End Do
-
       expdt = exp( - kolig * dt )
 
-      Do i = 1, n_vapor
-         If( soa_aeroMap( i ) .lt. 1 )Cycle
-         aerospc_conc( soa_aeroMap( i ),2 ) =
-     &   aerospc_conc( soa_aeroMap( i ),2 ) * expdt
-      End Do
+      Do im = ia_nuc, ia_acc
+        nsvpa = 0.0
+        nsvpb = 0.0
+     
+        Do i = 1, n_vapor
+          If( soa_aeroMap( i ) .lt. 1 ) Cycle
 
-      aerospc_conc( aolga_idx,2 ) = aerospc_conc( aolga_idx,2 )
+          ! Sum Up Anthropogenic Reactant Species
+          If ( vaporspc( i )%soa_origin .Eq. 'A' )
+     &       nsvpa = nsvpa + aerospc_conc( soa_aeroMap( i ),im )
+     &            * mw_vap_m1( i ) * vaporspc( i )%soa_decay
+
+          ! Sum up Biogenic Reactant Species
+          If ( vaporspc( i )%soa_origin .Eq. 'B' )
+     &       nsvpb = nsvpb + aerospc_conc( soa_aeroMap( i ),im )
+     &            * mw_vap_m1( i ) * vaporspc( i )%soa_decay
+
+          ! Account for Loss of Oligomerized Species
+          aerospc_conc( soa_aeroMap( i ),im ) =
+     &      aerospc_conc( soa_aeroMap( i ),im ) * expdt
+
+        End Do
+
+        aerospc_conc( aolga_idx,im ) = aerospc_conc( aolga_idx,im )
      &                            + 12.0 * nsvpa * ( 1.0 - expdt ) * olgrat
-      aerospc_conc( aolgb_idx,2 ) = aerospc_conc( aolgb_idx,2 )
+        aerospc_conc( aolgb_idx,im ) = aerospc_conc( aolgb_idx,im )
      &                            + 12.0 * nsvpb * ( 1.0 - expdt ) * olgrat
+      End Do
 
 #endif
 C Compute molar concentrations of non-volatile organic material and total
