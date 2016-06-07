@@ -1021,12 +1021,12 @@ C resentative compound.
  
 C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
       Call calcmoments ( .true. )
-      m3wet_init( : ) = moment3_conc( 1:2 )
-      m2wet_init( : ) = moment2_conc( 1:2 )
+      m3wet_init( : ) = moment3_conc( ia_nuc:ia_acc )
+      m2wet_init( : ) = moment2_conc( ia_nuc:ia_acc )
         
       GR3( :,: ) = 0.0
-      m0_init( : )    = moment0_conc( 1:2 )
-      m2wet_initD( : ) = DBLE( m2wet_init( 1:2 ) )
+      m0_init( : )    = moment0_conc( ia_nuc:ia_acc )
+      m2wet_initD( : ) = DBLE( m2wet_init( ia_nuc:ia_acc ) )
 
       Do im = ia_nuc,ia_acc
         m1wet_init( im ) = m0_init( im ) * aeromode_diam( im ) * 
@@ -1122,16 +1122,16 @@ C hard-coded values.
 
       ! First Sum Up POA Species if this the NON-Volatile POA Mechanism
       If ( INDEX( MECHNAME, 'NVPOA' ) .NE. 0 ) Then
-         totorgsw = ( aerospc_conc(   apoc_idx,1 ) + aerospc_conc(   apoc_idx,2 )) / aerospc_mw( apoc_idx )
-     &             +( aerospc_conc( apncom_idx,1 ) + aerospc_conc( apncom_idx,2 )) / aerospc_mw( apncom_idx )
+         totorgsw = sum( aerospc_conc(   apoc_idx,ia_ait:ia_acc )) / aerospc_mw( apoc_idx )
+     &             +sum( aerospc_conc( apncom_idx,ia_ait:ia_acc )) / aerospc_mw( apncom_idx )
       End If
 
       ! Sum Up Nonvolatile OA. This is just a couple of SOA products.
       ! They are in the orgprd table.
       Do i = 1, n_aerospc
-         If(  aerospc( i )%tracer )cycle
+         If ( aerospc( i )%tracer ) Cycle
          If ( aerospc( i )%nonVol_soa ) Then
-            totorgsw = totorgsw + aerospc_conc( i,2 ) / aerospc_mw( i )
+            totorgsw = totorgsw + sum( aerospc_conc( i,ia_nuc:ia_acc ) ) / aerospc_mw( i )
          End If
       End Do
 
@@ -1140,18 +1140,16 @@ C hard-coded values.
       totorg = totorgsw
       Do i = 1, n_vapor
          If( soa_aeroMap( i ) .lt. 1 )Cycle
-         totorg = totorg + ( aerospc_conc( soa_aeroMap( i ),2 ) + 
-     &              aerospc_conc( soa_aeroMap( i ),1 ) ) * mw_vap_m1( i )
+         totorg = totorg + sum ( aerospc_conc( soa_aeroMap( i ),ia_nuc:ia_acc )
+     &                      * mw_vap_m1( i )
       End Do
 
 C Initialize ctoti as sum of vapor-phase and particle-phase SVOCs
 C Note: all of these CBLK species are in [ug/m**3]
       Do i = 1, n_vapor
          If( soa_aeroMap( i ) .lt. 1 )Cycle
-         ctoti( i ) = vapor_conc( i ) + aerospc_conc( soa_aeroMap( i ),2 )  
-     &                + aerospc_conc( soa_aeroMap( i ),1 )
-         caer0( i ) = aerospc_conc( soa_aeroMap( i ),2 )  
-     &                + aerospc_conc( soa_aeroMap( i ),1 )
+         ctoti( i ) = vapor_conc( i ) + sum( aerospc_conc( soa_aeroMap( i ),ia_nuc:ia_acc) )  
+         caer0( i ) = sum( aerospc_conc( soa_aeroMap( i ),ia_nuc:ia_acc ) )
       End Do
 
 C Equilibrium Partitioning Calculations
@@ -1252,7 +1250,7 @@ C Constrain caer to values between conmin and ctotf
 
       Else   ! threshold not exceeded; no material transferred to aerosol phase
 
-         caer = 2. * conmin   ! array assignment
+         caer = real( nmode-1,4 ) * conmin   ! array assignment
 
       End If    ! check on equilibrium threshold
 
@@ -1265,32 +1263,45 @@ C Transfer particle-phase SOA and vapor-phase SVOCs back to CBLK
            indx = soa_aeroMap( i )
 
            ! Transfer the semivolatile mass
-           Do im = 1,2
+           Do im = ia_nuc,ia_acc
              aerospc_conc( indx,im ) = 
      &             aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
            End Do
         
            ! Check to make sure none of the modes went negative
-           If ( aerospc_conc( indx,1 ) .lt. conmin ) Then
-              aerospc_conc( indx,2 ) = aerospc_conc( indx,2 ) 
-     &               + aerospc_conc( indx,1 ) - conmin
-              aerospc_conc( indx,1 ) = conmin
+           If ( aerospc_conc( indx,ia_nuc ) .lt. conmin ) Then
+              aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
+     &               + aerospc_conc( indx,ia_nuc ) - conmin
+              aerospc_conc( indx,ia_nuc ) = conmin
            End If
-           If ( aerospc_conc( indx,2 ) .lt. conmin ) Then
-              aerospc_conc( indx,1 ) = aerospc_conc( indx,1 ) 
-     &               + aerospc_conc( indx,2 ) - conmin
-              aerospc_conc( indx,2 ) = conmin
-              If ( aerospc_conc( indx,1 ) .lt. conmin ) Then
-                If ( abs(aerospc_conc( indx,1 ) - conmin) .lt. 1.0e-15 ) Then
-                  aerospc_conc( indx,1 ) = conmin
-                Else
+           If ( aerospc_conc( indx,ia_ait ) .lt. conmin ) Then
+              aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
+     &               + aerospc_conc( indx,ia_ait ) - conmin
+              aerospc_conc( indx,ia_ait ) = conmin
+           End If
+           If ( aerospc_conc( indx,ia_acc ) .lt. conmin ) Then
+              aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
+     &               + aerospc_conc( indx,ia_acc ) - conmin
+              aerospc_conc( indx,ia_acc ) = conmin
+
+              If ( aerospc_conc( indx,ia_nuc ) .lt. conmin .and.
+     &             aerospc_conc( indx,ia_nuc ) .gt. conmin - 1.0e-15 ) Then
+                  aerospc_conc( indx,ia_nuc ) = conmin
+              End If
+              If ( aerospc_conc( indx,ia_ait ) .lt. conmin .and.
+     &             aerospc_conc( indx,ia_ait ) .gt. conmin - 1.0e-15 ) Then
+                  aerospc_conc( indx,ia_ait ) = conmin
+              End If
+
+              If ( aerospc_conc( indx,ia_nuc ) .lt. conmin .or.
+     &             aerospc_conc( indx,ia_ait ) .lt. conmin     ) Then
                   Write( xmsg,'( A56,/,A11,I2,A9,E12.5,A9,E12.5 )' ) 
      &                 ' *** Too Much Evaporation from Existing Organic Aerosol:',
-     &                 ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,1 ),
-     &                 ' Mode 2: ',aerospc_conc( indx,2 )
+     &                 ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
+     &                 ' Mode 2: ',aerospc_conc( indx,ia_ait )
+     &                 ' Mode 3: ',aerospc_conc( indx,ia_acc )
                   Call m3exit( pname, 0, 0, xmsg, xstat3 )
-                End If
-              End If   
+              End If
            End If
           
         End If
@@ -1309,7 +1320,7 @@ C be inherited from include or namelist files to avoid hard-coded values.
       hplus = 0.0
       Do i = 1, n_aerospc
          if(  aerospc( i )%tracer )cycle
-         hplus = hplus - 1000.0 * aerospc( i )%charge * aerospc_conc( i,2 )
+         hplus = hplus - 1000.0 * aerospc( i )%charge * aerospc_conc( i,ia_acc )
      &         / aerospc_mw( i )
       End Do
       hplus = Min( 530.0, Max ( 0.0, hplus ) ) ! restrict extrapolation
@@ -1317,8 +1328,8 @@ C be inherited from include or namelist files to avoid hard-coded values.
 C Compute amount of acid-enhanced isoprene SOA that is produced during the current
 C time step (xiso3) using the normalized expression derived from Surratt et al. (2007)
 
-      aiso12 = aerospc_conc( aiso1_idx, 2 ) + aerospc_conc( aiso2_idx, 2 )
-      xiso3  = kacid * hplus * aiso12 - aerospc_conc( aiso3_idx,2 )
+      aiso12 = aerospc_conc( aiso1_idx, ia_acc ) + aerospc_conc( aiso2_idx, ia_acc )
+      xiso3  = kacid * hplus * aiso12 - aerospc_conc( aiso3_idx,ia_acc )
 
 C Update CBLK(VISO3J) while conserving the total concentration of low-volatility
 C isoprene-derived products.  Since the acid-enhanced product is assumed to be
@@ -1332,7 +1343,7 @@ C of SO2, based on the lab experiments of Kleindienst et al. (2007)
       If ( xiso3 .Gt. 0.0 ) Then
          vviso = vapor_conc( iso1_idx ) + vapor_conc( iso2_idx )
          xiso3  = Min( xiso3, vviso )
-         aerospc_conc( aiso3_idx,2 ) = aerospc_conc( aiso3_idx,2 ) + xiso3 * ( 2.7 / 1.6 )
+         aerospc_conc( aiso3_idx,ia_acc ) = aerospc_conc( aiso3_idx,ia_acc ) + xiso3 * ( 2.7 / 1.6 )
          isofrac = vapor_conc( iso1_idx ) / vviso
          vapor_conc( iso1_idx ) = vapor_conc( iso1_idx ) - isofrac * xiso3
          vapor_conc( iso2_idx ) = vapor_conc( iso2_idx ) - ( 1.0 - isofrac ) * xiso3
@@ -1347,10 +1358,11 @@ C condensation/evaporation does not affect the geometric standard deviation.
       ! directly from the calcmoments diagnostic. Instead, update it
       ! manually to account for condensation in ORGAER.
       Call calcmoments( .true. )
-      m3wet_final( : ) = moment3_conc( 1:2 )
-      m2wet_final( 1 ) = m2wet_init( 1 ) * ( m3wet_final( 1 ) / m3wet_init( 1 ) ) ** ( 2.0 / 3.0 )
-      m2wet_final( 2 ) = m2wet_init( 2 ) * ( m3wet_final( 2 ) / m3wet_init( 2 ) ) ** ( 2.0 / 3.0 )
-      moment2_conc( 1:2 )  = m2wet_final( : )
+      m3wet_final( : ) = moment3_conc( ia_nuc:ia_acc )
+      m2wet_final( ia_nuc ) = m2wet_init( ia_nuc ) * ( m3wet_final( ia_nuc ) / m3wet_init( ia_nuc ) ) ** ( 2.0 / 3.0 )
+      m2wet_final( ia_ait ) = m2wet_init( ia_ait ) * ( m3wet_final( ia_ait ) / m3wet_init( ia_ait ) ) ** ( 2.0 / 3.0 )
+      m2wet_final( ia_acc ) = m2wet_init( ia_acc ) * ( m3wet_final( ia_acc ) / m3wet_init( ia_acc ) ) ** ( 2.0 / 3.0 )
+      moment2_conc( ia_nuc:ia_ait )  = m2wet_final( : )
 
       Return
       End Subroutine orgaer
