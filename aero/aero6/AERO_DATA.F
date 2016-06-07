@@ -320,7 +320,7 @@ C profiles 3399, 3404, 3409, and 3414 for coarse PM. (G. Pouliot - private commu
 C See Ref. (4), above and https://cfpub.epa.gov/si/speciate/
 
 C number of chemical species in windblown dust aerosol
-      integer, parameter :: ndust_spc = 19
+      integer, parameter :: ndust_spc = 20
 
       Type( emis_table ), Parameter :: dust_spc( ndust_spc ) = (/
 C                        -------- name --------         -------- spcfac --------
@@ -335,6 +335,7 @@ C                      Aitken    accum     coarse        Aitken  accum   coarse
      &   emis_table( (/'       ','AKJ    ','       '/), (/ 0.0, 0.03770, 0.0    /) ),   ! Potassium
      &   emis_table( (/'       ','APOCJ  ','       '/), (/ 0.0, 0.01075, 0.0    /) ),   ! Organic Carbon
      &   emis_table( (/'       ','APNCOMJ','       '/), (/ 0.0, 0.00430, 0.0    /) ),   ! Non-Carbon Organic Matter
+     &   emis_table( (/'       ','ALVPO1J','       '/), (/ 0.0, 0.01505, 0.0    /) ),   ! Total Organic Matter
      &   emis_table( (/'       ','AECJ   ','       '/), (/ 0.0, 0.0,     0.0    /) ),   ! Elemental Carbon
      &   emis_table( (/'       ','AFEJ   ','       '/), (/ 0.0, 0.03355, 0.0    /) ),   ! Iron
      &   emis_table( (/'       ','AALJ   ','       '/), (/ 0.0, 0.05695, 0.0    /) ),   ! Aluminum

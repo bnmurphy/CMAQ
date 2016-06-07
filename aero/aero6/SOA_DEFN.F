@@ -321,6 +321,13 @@ C determine if gas-phase IEPOX uptake occurs for the mechanism
                orgprod( 8 )%parent     = 'NAPHTHAL'
                orgprod( 9 )%parent     = 'NAPHTHAL'
                IEPOX_SOA_mechanism = .True.
+            Else If ( INDEX( MECHNAME, 'CRIe' ) .GT. 0 ) then
+               orgprod( 2 )%parent     = 'MXYL'
+               orgprod( 3 )%parent     = 'MXYL'
+               orgprod( 4 )%parent     = 'TOLUENE'
+               orgprod( 5 )%parent     = 'TOLUENE'
+               orgprod( 8 )%parent     = 'NAPHTHAL'
+               orgprod( 9 )%parent     = 'NAPHTHAL'
             Else If ( INDEX( MECHNAME, 'SAPRC07TC' ) .GT. 0 ) then
                orgprod( 2 )%parent     = 'MXYL'
                orgprod( 3 )%parent     = 'MXYL'
@@ -1006,11 +1013,11 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
      &                         exp( 0.5 * aeromode_lnsg( im ) ** 2 )
 
         Do i = 1, n_vapor
-          If ( aero_missing( soa_aeroMap( i ),im ) .EQ. .FALSE. ) Then
-            Call HCOND3( m0_init( im ), m1wet_init( im ),
-     &                   m2wet_initD( im ), Dv_org, alphorg, cbar_org(i), GRtmp )
-            GR3( i,im ) = GRtmp( 2 )
-          End If
+          If ( aero_missing( soa_aeroMap( i ),im ) ) Cycle
+          
+          Call HCOND3( m0_init( im ), m1wet_init( im ),
+     &                 m2wet_initD( im ), Dv_org, alphorg, cbar_org(i), GRtmp )
+          GR3( i,im ) = GRtmp( 2 )
         End Do
       End Do
       
@@ -1019,7 +1026,7 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
       Where ( GR3( :,1 ) .gt. 0. ) 
      &    GR3FRAC( :,1 ) = GR3( :,1 ) / ( GR3(:,1) + GR3(:,2) ) !Aitken Growth
       Where ( GR3( :,2 ) .gt. 0. )
-     &     GR3FRAC( :,2 ) = GR3( :,2 ) / ( GR3(:,1) + GR3(:,2) ) !Accumulation Growth
+     &    GR3FRAC( :,2 ) = GR3( :,2 ) / ( GR3(:,1) + GR3(:,2) ) !Accumulation Growth
 
 C Initialize drog from ORGPROD and change units to [ ug / m**3 ]
       drog( : ) = orgprod_conc( : ) * drog_ppm2ug( : ) * convfac
@@ -1179,6 +1186,7 @@ C      of orgaic aerosol. Caer is then calculated based on that number.
 C        Solve for total number of organic moles in aerosol (hotp 7/5/11)
          lowb      = totorgsw   ! lower: moles of nonvolatile
          upb       = lowb + upb ! upper: all moles (semi and nonvolatile)
+         upb       = upb * 1.0000001 ! prevent numerical issues
          If ( abs( upb - lowb ) .lt. threshmin ) then
             ! no SOA to partition
             orgmoles = ( lowb + upb ) / 2.0D0
@@ -1214,7 +1222,7 @@ C Constrain caer to values between conmin and ctotf
 
       Else   ! threshold not exceeded; no material transferred to aerosol phase
 
-         caer = conmin   ! array assignment
+         caer = 2. * conmin   ! array assignment
 
       End If    ! check on equilibrium threshold
 
@@ -1225,24 +1233,26 @@ C Transfer particle-phase SOA and vapor-phase SVOCs back to CBLK
       Do i = 1, n_vapor
         If ( soa_aeroMap( i ) .ge. 1 ) Then
            indx = soa_aeroMap( i )
-           Do im = 1, n_mode
+
+           ! Transfer the semivolatile mass
+           Do im = 1,2
              aerospc_conc( indx,im ) = 
      &             aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
            End Do
         
-           !Check to make sure none of the modes went negative
+           ! Check to make sure none of the modes went negative
            If ( aerospc_conc( indx,1 ) .lt. conmin ) Then
               aerospc_conc( indx,2 ) = aerospc_conc( indx,2 ) 
-     &               + aerospc_conc( indx,1 )
-              aerospc_conc( indx,1 ) = 0.0
+     &               + aerospc_conc( indx,1 ) - conmin
+              aerospc_conc( indx,1 ) = conmin
            End If
            If ( aerospc_conc( indx,2 ) .lt. conmin ) Then
               aerospc_conc( indx,1 ) = aerospc_conc( indx,1 ) 
-     &               + aerospc_conc( indx,2 )
-              aerospc_conc( indx,2 ) = 0.0
-              If ( aerospc_conc( indx,1 ) .lt. 0.0 ) Then
-                If ( abs(aerospc_conc( indx,1 )) .lt. 1.0e-15 ) Then
-                  aerospc_conc( indx,1 ) = 0.0
+     &               + aerospc_conc( indx,2 ) - conmin
+              aerospc_conc( indx,2 ) = conmin
+              If ( aerospc_conc( indx,1 ) .lt. conmin ) Then
+                If ( abs(aerospc_conc( indx,1 ) - conmin) .lt. 1.0e-15 ) Then
+                  aerospc_conc( indx,1 ) = conmin
                 Else
                   Write( xmsg,'( A56,/,A11,I2,A9,E12.5,A9,E12.5 )' ) 
      &                 ' *** Too Much Evaporation from Existing Organic Aerosol:',
