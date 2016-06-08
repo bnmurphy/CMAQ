@@ -50,7 +50,7 @@ C...Local variables:
 
         CHARACTER( 32 ) :: AVG_PMDIAG_SPCS   = 'AVG_PMDIAG_SPCS'
         CHARACTER( 32 ) :: APMDIAG_BLEV_ELEV = 'APMDIAG_BLEV_ELEV'
-        CHARACTER( 16 ) :: V_LIST( 41 )
+        CHARACTER( 16 ) :: V_LIST( 57 )
         CHARACTER( 80 ) :: VARDESC = ' '
         CHARACTER( 16 ) :: AVG_FILE_ENDTIME = 'AVG_FILE_ENDTIME'
         INTEGER :: BEG_LVL, END_LVL, N, V

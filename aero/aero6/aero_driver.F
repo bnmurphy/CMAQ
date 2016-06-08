@@ -630,43 +630,52 @@ C     diagnostic array (lowest vertical layer only)
                END IF
 
                IF ( PMDIAG .OR. APMDIAG ) THEN
-                  TEMP_DATA(  7 ) = AEROMODE_DIAM( 1 ) * 1.0E6  ! wet i-mode diam.
-                  TEMP_DATA(  8 ) = AEROMODE_DIAM( 2 ) * 1.0E6  ! wet j-mode diam.
-                  TEMP_DATA(  9 ) = AEROMODE_DIAM( 3 ) * 1.0E6  ! wet k-mode diam.
-                  TEMP_DATA( 10 ) = MOMENT2_CONC( 1 )     ! wet i-mode 2nd moment
-                  TEMP_DATA( 11 ) = MOMENT2_CONC( 2 )     ! wet j-mode 2nd moment
-                  TEMP_DATA( 12 ) = MOMENT2_CONC( 3 )     ! wet k-mode 2nd moment
-                  TEMP_DATA( 16 ) = MOMENT3_CONC( 1 )     ! wet i-mode 3rd moment
-                  TEMP_DATA( 17 ) = MOMENT3_CONC( 2 )     ! wet j-mode 3rd moment
-                  TEMP_DATA( 18 ) = MOMENT3_CONC( 3 )     ! wet k-mode 3rd moment
-                  TEMP_DATA( 20 ) = fPM1( 1 )             ! i-mode PM1 fraction
-                  TEMP_DATA( 21 ) = fPM1( 2 )             ! j-mode PM1 fraction
-                  TEMP_DATA( 22 ) = fPM1( 3 )             ! k-mode PM1 fraction
-                  TEMP_DATA( 23 ) = fPM25( 1 )            ! i-mode fine fraction
-                  TEMP_DATA( 24 ) = fPM25( 2 )            ! j-mode fine fraction
-                  TEMP_DATA( 25 ) = fPM25( 3 )            ! k-mode fine fraction
-                  TEMP_DATA( 26 ) = fPM10( 1 )            ! i-mode PM10 fraction
-                  TEMP_DATA( 27 ) = fPM10( 2 )            ! j-mode PM10 fraction
-                  TEMP_DATA( 28 ) = fPM10( 3 )            ! k-mode PM10 fraction
-                  TEMP_DATA( 29 ) = fAMS( 1 )             ! i-mode fraction transmitted through AMS
-                  TEMP_DATA( 30 ) = fAMS( 2 )             ! j-mode fraction transmitted through AMS
-                  TEMP_DATA( 31 ) = fAMS( 3 )             ! k-mode fraction transmitted through AMS
+                  TEMP_DATA(  9 ) = AEROMODE_DIAM( 1 ) * 1.0E6  ! wet h-mode diam.
+                  TEMP_DATA( 10 ) = AEROMODE_DIAM( 2 ) * 1.0E6  ! wet i-mode diam.
+                  TEMP_DATA( 11 ) = AEROMODE_DIAM( 3 ) * 1.0E6  ! wet j-mode diam.
+                  TEMP_DATA( 12 ) = AEROMODE_DIAM( 4 ) * 1.0E6  ! wet k-mode diam.
+                  TEMP_DATA( 13 ) = MOMENT2_CONC( 1 )     ! wet h-mode 2nd moment
+                  TEMP_DATA( 14 ) = MOMENT2_CONC( 2 )     ! wet i-mode 2nd moment
+                  TEMP_DATA( 15 ) = MOMENT2_CONC( 3 )     ! wet j-mode 2nd moment
+                  TEMP_DATA( 16 ) = MOMENT2_CONC( 4 )     ! wet k-mode 2nd moment
+                  TEMP_DATA( 21 ) = MOMENT3_CONC( 1 )     ! wet h-mode 3rd moment
+                  TEMP_DATA( 22 ) = MOMENT3_CONC( 2 )     ! wet i-mode 3rd moment
+                  TEMP_DATA( 23 ) = MOMENT3_CONC( 3 )     ! wet j-mode 3rd moment
+                  TEMP_DATA( 24 ) = MOMENT3_CONC( 4 )     ! wet k-mode 3rd moment
+                  TEMP_DATA( 26 ) = fPM1( 1 )             ! h-mode PM1 fraction
+                  TEMP_DATA( 27 ) = fPM1( 2 )             ! i-mode PM1 fraction
+                  TEMP_DATA( 28 ) = fPM1( 3 )             ! j-mode PM1 fraction
+                  TEMP_DATA( 29 ) = fPM1( 4 )             ! k-mode PM1 fraction
+                  TEMP_DATA( 30 ) = fPM25( 1 )            ! h-mode fine fraction
+                  TEMP_DATA( 31 ) = fPM25( 2 )            ! i-mode fine fraction
+                  TEMP_DATA( 32 ) = fPM25( 3 )            ! j-mode fine fraction
+                  TEMP_DATA( 33 ) = fPM25( 4 )            ! k-mode fine fraction
+                  TEMP_DATA( 34 ) = fPM10( 1 )            ! h-mode PM10 fraction
+                  TEMP_DATA( 35 ) = fPM10( 2 )            ! i-mode PM10 fraction
+                  TEMP_DATA( 36 ) = fPM10( 3 )            ! j-mode PM10 fraction
+                  TEMP_DATA( 37 ) = fPM10( 4 )            ! k-mode PM10 fraction
+                  TEMP_DATA( 38 ) = fAMS( 1 )             ! h-mode fraction transmitted through AMS
+                  TEMP_DATA( 39 ) = fAMS( 2 )             ! i-mode fraction transmitted through AMS
+                  TEMP_DATA( 40 ) = fAMS( 3 )             ! j-mode fraction transmitted through AMS
+                  TEMP_DATA( 41 ) = fAMS( 4 )             ! k-mode fraction transmitted through AMS
 
                   IF ( AERO_CHEM_SET ) THEN
-                     TEMP_DATA( 32 ) = GAMMA_N2O5IJ( C,R,L ) ! fine N2O5 heterorxn probability
-                     TEMP_DATA( 33 ) = GAMMA_N2O5K( C,R,L )  ! coarse N2O5 heterorxn probability
-                     TEMP_DATA( 34 ) = YCLNO2IJ( C,R,L )     ! fine CLNO2 heterorxn yield
-                     TEMP_DATA( 35 ) = YCLNO2K( C,R,L )      ! coarse CLNO2 heterorxn yield
-                     TEMP_DATA( 36 ) = GAMMA_IEPOX( C,R,L )  ! IEPOX heterorxn uptake coeff
+                     TEMP_DATA( 42 ) = GAMMA_N2O5IJ( C,R,L ) ! fine N2O5 heterorxn probability
+                     TEMP_DATA( 43 ) = GAMMA_N2O5K( C,R,L )  ! coarse N2O5 heterorxn probability
+                     TEMP_DATA( 44 ) = YCLNO2IJ( C,R,L )     ! fine CLNO2 heterorxn yield
+                     TEMP_DATA( 45 ) = YCLNO2K( C,R,L )      ! coarse CLNO2 heterorxn yield
+                     TEMP_DATA( 46 ) = GAMMA_IEPOX( C,R,L )  ! IEPOX heterorxn uptake coeff
                   ELSE
-                     TEMP_DATA( 32:36 ) = 0.0
+                     TEMP_DATA( 42:46 ) = 0.0
                   END IF
-                  TEMP_DATA( 37 ) = AEROMODE_DENS( 1 )    ! Aitken Mode Density [kg m-3]
-                  TEMP_DATA( 38 ) = AEROMODE_DENS( 2 )    ! Accumulation Mode Density [kg m-3]
-                  TEMP_DATA( 39 ) = AEROMODE_DENS( 3 )    ! Coarse Mode Density [kg m3-]
-                  IF ( NUM_PMDIAG_SPC .GT. 39 ) THEN ! AERO6i
-                     TEMP_DATA( 40 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
-                     TEMP_DATA( 41 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
+
+                  TEMP_DATA( 52 ) = AEROMODE_DENS( 1 )    ! Nucleation Mode Density [kg m-3]
+                  TEMP_DATA( 53 ) = AEROMODE_DENS( 2 )    ! Aitken Mode Density [kg m-3]
+                  TEMP_DATA( 54 ) = AEROMODE_DENS( 3 )    ! Accumulation Mode Density [kg m-3]
+                  TEMP_DATA( 55 ) = AEROMODE_DENS( 4 )    ! Coarse Mode Density [kg m3-]
+                  IF ( NUM_PMDIAG_SPC .GT. 55 ) THEN ! AERO6i
+                     TEMP_DATA( 56 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
+                     TEMP_DATA( 57 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
                   END IF
                END IF
 
@@ -680,13 +689,16 @@ C     EXCEPT!  nonvolatile SOA is part of dry aerosol (Oct 2007 --PVB)
                   TEMP_DATA(  1 ) = EXP( AEROMODE_LNSG( 1 ) )
                   TEMP_DATA(  2 ) = EXP( AEROMODE_LNSG( 2 ) )
                   TEMP_DATA(  3 ) = EXP( AEROMODE_LNSG( 3 ) )
-                  TEMP_DATA(  4 ) = AEROMODE_DIAM( 1 ) * 1.0E6  ! dry i-mode diam.
-                  TEMP_DATA(  5 ) = AEROMODE_DIAM( 2 ) * 1.0E6  ! dry j-mode diam.
-                  TEMP_DATA(  6 ) = AEROMODE_DIAM( 3 ) * 1.0e6  ! dry k-mode diam.
-                  TEMP_DATA( 13 ) = MOMENT3_CONC( 1 )    ! dry i-mode 3rd moment
-                  TEMP_DATA( 14 ) = MOMENT3_CONC( 2 )    ! dry j-mode 3rd moment
-                  TEMP_DATA( 15 ) = MOMENT3_CONC( 3 )    ! dry k-mode 3rd moment
-                  TEMP_DATA( 19 ) = AIRRH                ! relative humidity
+                  TEMP_DATA(  4 ) = EXP( AEROMODE_LNSG( 4 ) )
+                  TEMP_DATA(  5 ) = AEROMODE_DIAM( 1 ) * 1.0E6  ! dry h-mode diam.
+                  TEMP_DATA(  6 ) = AEROMODE_DIAM( 2 ) * 1.0E6  ! dry i-mode diam.
+                  TEMP_DATA(  7 ) = AEROMODE_DIAM( 3 ) * 1.0E6  ! dry j-mode diam.
+                  TEMP_DATA(  8 ) = AEROMODE_DIAM( 4 ) * 1.0e6  ! dry k-mode diam.
+                  TEMP_DATA( 17 ) = MOMENT3_CONC( 1 )    ! dry h-mode 3rd moment
+                  TEMP_DATA( 18 ) = MOMENT3_CONC( 2 )    ! dry i-mode 3rd moment
+                  TEMP_DATA( 19 ) = MOMENT3_CONC( 3 )    ! dry j-mode 3rd moment
+                  TEMP_DATA( 20 ) = MOMENT3_CONC( 4 )    ! dry k-mode 3rd moment
+                  TEMP_DATA( 25 ) = AIRRH                ! relative humidity
                END IF
 
 C *** Accumulate wet diameters, 2nd, and 3rd moments to average aerosol diagnostic array

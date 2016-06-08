@@ -236,26 +236,38 @@ C *** local variables
       REAL         M2_OLD     ! second moment concentration excluding H2O
       REAL         M3_OLD     ! third moment concentration excluding H2O
 
-      REAL( 8 ) :: CGR( N_MODE-1 ) ! Aitken & Accum. modes
+      REAL( 8 ) :: CGR( N_MODE-1 ) ! NPF, Aitken & Accum. modes
 
       REAL( 8 ) :: LAMDA      ! mean free path [ m ]
       REAL( 8 ) :: KNC        ! KNC = TWO3 * BOLTZMANN *  AIRTEMP / AMU
 
 C *** Free Molecular regime (depends upon modal density)
+      REAL( 8 ) :: KFMNU      ! = SQRT( 3.0*BOLTZMANN * AIRTEMP / PDENSNU )
       REAL( 8 ) :: KFMAT      ! = SQRT( 3.0*BOLTZMANN * AIRTEMP / PDENSAT )
       REAL( 8 ) :: KFMAC      ! = SQRT( 3.0*BOLTZMANN * AIRTEMP / PDENSAC )
+      REAL( 8 ) :: KFMNUAT    ! = SQRT( 6.0*BOLTZMANN * AIRTEMP / ( PDENSNU + PDENSAT ) )
+      REAL( 8 ) :: KFMNUAC    ! = SQRT( 6.0*BOLTZMANN * AIRTEMP / ( PDENSNU + PDENSAC ) )
       REAL( 8 ) :: KFMATAC    ! = SQRT( 6.0*BOLTZMANN * AIRTEMP / ( PDENSAT + PDENSAC ) )
 
 C *** Intermodal coagulation rates [ m**3/s ] ( 0th & 2nd moments )
+      REAL( 8 ) :: BNUAT( 2 ) ! NPF to Aitken
+      REAL( 8 ) :: BATNU( 2 ) ! Aitken from NPF
+      REAL( 8 ) :: BNUAC( 2 ) ! NPF to accumulation
+      REAL( 8 ) :: BACNU( 2 ) ! accumulation from NPF
       REAL( 8 ) :: BATAC( 2 ) ! Aitken to accumulation
       REAL( 8 ) :: BACAT( 2 ) ! accumulation from Aitken
 
 C *** Intramodal coagulation rates [ m**3/s ] ( 0th & 2nd moments )
+      REAL( 8 ) :: BNUNU( 2 ) ! NPF mode
       REAL( 8 ) :: BATAT( 2 ) ! Aitken mode
       REAL( 8 ) :: BACAC( 2 ) ! accumulation mode
 
 C *** Intermodal coagulation rate [ m**3/s ] ( 3rd moment )
+      REAL( 8 ) :: C3HI       ! NPF to Aitken
+      REAL( 8 ) :: C3HJ       ! NPF to accumulation
       REAL( 8 ) :: C3IJ       ! Aitken to accumulation
+      REAL( 8 ) :: C30NUAT    ! NPF to Aitken
+      REAL( 8 ) :: C30NUAC    ! NPF to accumulation
       REAL( 8 ) :: C30ATAC    ! Aitken to accumulation
       REAL( 8 ) :: DG_D ( N_MODE )
       REAL( 8 ) :: SG_D ( N_MODE )
@@ -265,6 +277,9 @@ C *** variables for advancing concentrations one time step
       REAL( 8 ) :: A, B
       REAL( 8 ) :: Y0, Y
       REAL( 8 ) :: EXPDT
+      REAL( 8 ) :: EXPDTNUAT
+      REAL( 8 ) :: EXPDTNUAC
+      REAL( 8 ) :: EXPDTATAC
       REAL( 8 ) :: LOSS, PROD, POL
       REAL         TMASS
       REAL         FACTRANS ! special factor to compute mass transfer
@@ -351,12 +366,19 @@ C *** calculate term used in Equation A6 of Binkowski & Shankar (1995)
       KNC      = TWOTHIRDS * BOLTZMANN *  AIRTEMP / AMU
 
 C *** calculate terms used in Equation A5 of Binkowski & Shankar (1995)
-      KFMAT    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( 1 ) )
-      KFMAC    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( 2 ) )
+      KFMNU    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( ia_nuc ) )
+      KFMAT    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( ia_ait ) )
+      KFMAC    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( ia_acc ) )
+      KFMNUAT  = SQRT( 6.0 * BOLTZMANN * AIRTEMP
+     &         / ( AEROMODE_DENS( ia_nuc ) + AEROMODE_DENS( ia_ait ) ) )
+      KFMNUAC  = SQRT( 6.0 * BOLTZMANN * AIRTEMP
+     &         / ( AEROMODE_DENS( ia_nuc ) + AEROMODE_DENS( ia_acc ) ) )
       KFMATAC  = SQRT( 6.0 * BOLTZMANN * AIRTEMP
-     &         / ( AEROMODE_DENS( 1 ) + AEROMODE_DENS( 2 ) ) )
+     &         / ( AEROMODE_DENS( ia_ait ) + AEROMODE_DENS( ia_acc ) ) )
 
 C *** transfer of number to accumulation mode from Aitken mode is zero
+      BATNU( 1 ) = 0.0
+      BACNU( 1 ) = 0.0
       BACAT( 1 ) = 0.0
 
       IF ( FASTCOAG_FLAG ) THEN ! Solve coagulation analytically
@@ -372,35 +394,68 @@ C     ln(GSD) in double precision
 C *** calculate intermodal and intramodal coagulation coefficients
 C     for zeroth and second moments, and intermodal coagulation
 C     coefficient for third moment
+         CALL GETCOAGS( LAMDA, KFMNUAT, KFMNU, KFMAT, KNC,
+     &                  DG_D(IA_NUC), DG_D(IA_AIT), SG_D(IA_NUC), SG_D(IA_AIT),
+     &                  XXL_D(IA_NUC),XXL_D(IA_AIT),
+     &                  BNUNU( 2 ), BNUNU( 1 ), BATAT( 2 ), BATAT( 1 ),
+     &                  BNUAT( 2 ), BATNU( 2 ), BNUAT( 1 ), C3HI )
+
+         CALL GETCOAGS( LAMDA, KFMNUAC, KFMNU, KFMAC, KNC,
+     &                  DG_D(IA_NUC), DG_D(IA_ACC), SG_D(IA_NUC), SG_D(IA_ACC),
+     &                  XXL_D(IA_NUC),XXL_D(IA_ACC),
+     &                  BNUNU( 2 ), BNUNU( 1 ), BACAC( 2 ), BACAC( 1 ),
+     &                  BNUAC( 2 ), BACNU( 2 ), BNUAC( 1 ), C3HJ )
+
          CALL GETCOAGS( LAMDA, KFMATAC, KFMAT, KFMAC, KNC,
-     &                  DG_D(1), DG_D(2), SG_D(1), SG_D(2),
-     &                  XXL_D(1),XXL_D(2),
+     &                  DG_D(IA_AIT), DG_D(IA_ACC), SG_D(IA_AIT), SG_D(IA_ACC),
+     &                  XXL_D(IA_AIT),XXL_D(IA_ACC),
      &                  BATAT( 2 ), BATAT( 1 ), BACAC( 2 ), BACAC( 1 ),
      &                  BATAC( 2 ), BACAT( 2 ), BATAC( 1 ), C3IJ )
 
       ELSE                 ! Use Gauss-Hermite numerical quadrature
 
+C *** calculate NPF-mode intramodal coagulation coefficients
+C     for zeroth and second moments
+         CALL INTRACOAG_GH( LAMDA, KFMNU, KNC, AEROMODE_DIAM( IA_NUC ),
+     &                      AEROMODE_LNSG( IA_NUC ), BNUNU( 2 ), BNUNU( 1 ) )
+
 C *** calculate Aitken-mode intramodal coagulation coefficients
 C     for zeroth and second moments
-         CALL INTRACOAG_GH( LAMDA, KFMAT, KNC, AEROMODE_DIAM( 1 ),
-     &                      AEROMODE_LNSG( 1 ), BATAT( 2 ), BATAT( 1 ) )
+         CALL INTRACOAG_GH( LAMDA, KFMAT, KNC, AEROMODE_DIAM( IA_AIT ),
+     &                      AEROMODE_LNSG( IA_AIT ), BATAT( 2 ), BATAT( 1 ) )
 
 C *** calculate accumulation-mode intramodal coagulation coefficients
 C     for zeroth and second moments
-         CALL INTRACOAG_GH( LAMDA, KFMAC, KNC, AEROMODE_DIAM( 2 ),
-     &                      AEROMODE_LNSG( 2 ), BACAC( 2 ), BACAC( 1 ) )
+         CALL INTRACOAG_GH( LAMDA, KFMAC, KNC, AEROMODE_DIAM( IA_ACC ),
+     &                      AEROMODE_LNSG( IA_ACC ), BACAC( 2 ), BACAC( 1 ) )
+
+C *** calculate intermodal coagulation coefficients for zeroth, second,
+C     and third moments
+         CALL INTERCOAG_GH( LAMDA, KFMNUAT, KNC,
+     &                      AEROMODE_DIAM( IA_NUC ), AEROMODE_DIAM( IA_AIT ),
+     &                      AEROMODE_LNSG( IA_NUC ), AEROMODE_LNSG( IA_AIT ),
+     &                      BNUAT( 2 ), BATNU( 2 ), BNUAT( 1 ), C3HI )
+
+C *** calculate intermodal coagulation coefficients for zeroth, second,
+C     and third moments
+         CALL INTERCOAG_GH( LAMDA, KFMNUAC, KNC,
+     &                      AEROMODE_DIAM( IA_NUC ), AEROMODE_DIAM( IA_ACC ),
+     &                      AEROMODE_LNSG( IA_NUC ), AEROMODE_LNSG( IA_ACC ),
+     &                      BNUAC( 2 ), BACNU( 2 ), BNUAC( 1 ), C3HJ )
 
 C *** calculate intermodal coagulation coefficients for zeroth, second,
 C     and third moments
          CALL INTERCOAG_GH( LAMDA, KFMATAC, KNC,
-     &                      AEROMODE_DIAM( 1 ), AEROMODE_DIAM( 2 ),
-     &                      AEROMODE_LNSG( 1 ), AEROMODE_LNSG( 2 ),
+     &                      AEROMODE_DIAM( IA_AIT ), AEROMODE_DIAM( IA_ACC ),
+     &                      AEROMODE_LNSG( IA_AIT ), AEROMODE_LNSG( IA_ACC ),
      &                      BATAC( 2 ), BACAT( 2 ), BATAC( 1 ), C3IJ )
 
       END IF   ! FASTCOAG_FLAG
 
 C *** calculate 3rd moment intermodal transfer rate by coagulation
-      C30ATAC = C3IJ * MOMENT0_CONC( 1 ) * MOMENT0_CONC( 2 )
+      C30NUAT = C3HI * MOMENT0_CONC( IA_NUC ) * MOMENT0_CONC( IA_AIT )
+      C30NUAC = C3HJ * MOMENT0_CONC( IA_NUC ) * MOMENT0_CONC( IA_ACC )
+      C30ATAC = C3IJ * MOMENT0_CONC( IA_AIT ) * MOMENT0_CONC( IA_ACC )
 
 C *** TAKE ONE FORWARD TIME STEP - Solve Modal Dynamics Equations
 C     This code implements Section 1.4 of Binkowski and Roselle (2003)
@@ -428,16 +483,17 @@ C        dM2/dt = P2           ! if L2 = 0
 C     with solution
 C        M2(t) = M2(t0) + P2*dt
 
-C *** Aitken mode: initial value of M2
-      M20 = MOMENT2_CONC( 1 )
+C *** Nucleation mode: initial value of M2
+      M20 = MOMENT2_CONC( IA_NUC )
 
 C *** Loss of 2nd moment from Aitken mode is due to intermodal
 C     coagulation with accumulation mode and intramodal coagulation.
 C     Production term is removed, because new particle formation
 C     and condensational growth are accounted for in VOLINORG.
       LOSS = (
-     &        ( BATAT( 2 ) * MOMENT0_CONC( 1 )
-     &        + BATAC( 2 ) * MOMENT0_CONC( 2 ) ) * MOMENT0_CONC( 1 )
+     &        ( BNUNU( 2 ) * MOMENT0_CONC( IA_NUC )
+     &        ( BNUAT( 2 ) * MOMENT0_CONC( IA_AIT )
+     &        + BNUAC( 2 ) * MOMENT0_CONC( IA_ACC ) ) * MOMENT0_CONC( IA_NUC )
      &       ) / M20
 
 C *** Solve for M2_Aitken based on LOSS during this time step
@@ -448,19 +504,46 @@ C     Note: LOSS is assumed to be non-negative.
          Y = M20
       END IF ! test on loss
 
+C     Transfer new value of M2_Aitken to the array
+      MOMENT2_CONC( IA_NUC ) = MAX( REAL( AEROMODE_MINM2( IA_NUC ) ), REAL( Y ) )
+ 
+C *** Aitken mode: initial value of M2
+      M20 = MOMENT2_CONC( IA_AIT )
+
+C     Production of Second Moment in Aitken mode is due to intermodal
+C     coagulation from Nucleation mode
+      PROD = BATNU( 2 ) * MOMENT0_CONC( IA_NUC ) * MOMENT0_CONC( IA_AIT )
+
+C     Loss of 2nd moment from Aitken mode is due to intermodal
+C     coagulation with accumulation mode and intramodal coagulation.
+      LOSS = (
+     &        ( BATAT( 2 ) * MOMENT0_CONC( IA_AIT )
+     &        + BATAC( 2 ) * MOMENT0_CONC( IA_ACC ) ) * MOMENT0_CONC( IA_AIT )
+     &       ) / M20
+
+C     Solve for M2_Aitken based on LOSS during this time step
+C     Note: LOSS is assumed to be non-negative.
+      IF ( LOSS .GT. 0.0 ) THEN
+         POL = PROD / LOSS
+         Y = POL + (M20 - POL ) * EXP( -LOSS * DT )
+      ELSE
+         Y = M20 + PROD * DT
+      END IF ! test on loss
+
 C *** Transfer new value of M2_Aitken to the array
-      MOMENT2_CONC( 1 ) = MAX( REAL( AEROMODE_MINM2( 1 ) ), REAL( Y ) )
+      MOMENT2_CONC( IA_AIT ) = MAX( REAL( AEROMODE_MINM2( IA_AIT ) ), REAL( Y ) )
 
 C *** Accumulation mode: initial value of M2
-      M20 = MOMENT2_CONC( 2 )
+      M20 = MOMENT2_CONC( IA_ACC )
 
-C *** Production of 2nd moment in accumulation mode is due to
-C     intermodal coagulation Aitken mode
-      PROD = BACAT( 2 ) * MOMENT0_CONC( 1 ) * MOMENT0_CONC( 2 )
+C     Production of 2nd moment in accumulation mode is due to
+C     intermodal coagulation with Nucleation and Aitken modes
+      PROD = BACNU( 2 ) * MOMENT0_CONC( IA_NUC ) * MOMENT0_CONC( IA_ACC ) +
+     &       BACAT( 2 ) * MOMENT0_CONC( IA_AIT ) * MOMENT0_CONC( IA_ACC )
 
-C *** Loss of 2nd moment from accumulation mode is due only to
+C     Loss of 2nd moment from accumulation mode is due only to
 C     intramodal coagulation
-      LOSS = ( BACAC( 2 ) * MOMENT0_CONC( 2 ) * MOMENT0_CONC( 2 ) ) / M20
+      LOSS = ( BACAC( 2 ) * MOMENT0_CONC( IA_ACC ) * MOMENT0_CONC( IA_ACC ) ) / M20
 
 C *** Solve for M2_accum based on PROD and LOSS during this time step
 C     Note: LOSS is assumed to be non-negative.
@@ -471,8 +554,8 @@ C     Note: LOSS is assumed to be non-negative.
          Y = M20 + PROD * DT
       END IF ! test on loss
 
-C *** Transfer new value of M2_accum to moment array
-      MOMENT2_CONC( 2 ) = MAX( REAL( AEROMODE_MINM2( 2 ) ), REAL( Y ) )
+C     Transfer new value of M2_accum to moment array
+      MOMENT2_CONC( IA_ACC ) = MAX( REAL( AEROMODE_MINM2( IA_ACC ) ), REAL( Y ) )
 
 C *** Coarse mode: no change because coagulation of coarse particles
 C     is neglected in current model version.
@@ -481,15 +564,16 @@ C *** end of update for second moment
 
 C *** Update Zeroth Moment (i.e. number concentration)
 
-C *** Aitken mode: initial value of M0
+C *** Initial values of M0 for Nucleation Mode
+      Y0 = MOMENT0_CONC( IA_NUC )
 
-      Y0 = MOMENT0_CONC( 1 )
+C     The rate of change for M0_Nucleation is described analogously
+C     in Equation 8a of Binkowski & Roselle (2003), with the c_i 
+C     term equal to 0.
 
-C *** The rate of change for M0_Aitken is described in Equation 8a of
-C     Binkowski & Roselle (2003), with the c_i term equal to 0.
-
-      A = BATAT( 1 )                      ! intramodal coagulation
-      B = BATAC( 1 ) * moment0_conc( 2 )  ! intermodal coagulation
+      A = BNUNU( 1 )                             ! intramodal coagulation
+      B = BNUAT( 1 ) * moment0_conc( IA_AIT ) +  ! intermodal coagulation
+     &    BNUAC( 1 ) * moment0_conc( IA_ACC )
 
       EXPDT = EXP( - B * DT )
       IF ( EXPDT .LT. 1.0D0 ) THEN
@@ -498,23 +582,42 @@ C     Binkowski & Roselle (2003), with the c_i term equal to 0.
          Y = Y0                 ! solution in the limit that B approaches zero
       END IF
 
-C *** Transfer new value of M0_Aitken to the moment array
-      MOMENT0_CONC( 1 ) = MAX( AEROMODE_MINNUM( 1 ), REAL( Y ) )
+C     Transfer new value of M0_Aitken to the moment array
+      MOMENT0_CONC( IA_NUC ) = MAX( AEROMODE_MINNUM( IA_NUC ), REAL( Y ) )
+ 
+C *** Initial values of M0 for Aitken Mode
+      Y0 = MOMENT0_CONC( IA_AIT )
+
+C *** The rate of change for M0_Aitken is described in Equation 8a of
+C     Binkowski & Roselle (2003), with the c_i term equal to 0.
+
+      A = BATAT( 1 )                      ! intramodal coagulation
+      B = BATAC( 1 ) * moment0_conc( IA_ACC )  ! intermodal coagulation
+
+      EXPDT = EXP( - B * DT )
+      IF ( EXPDT .LT. 1.0D0 ) THEN
+         Y = B * Y0 * EXPDT / ( B + A * Y0 * ( 1.0D0 - EXPDT ) )
+      ELSE
+         Y = Y0                 ! solution in the limit that B approaches zero
+      END IF
+
+C     Transfer new value of M0_Aitken to the moment array
+      MOMENT0_CONC( IA_AIT ) = MAX( AEROMODE_MINNUM( IA_AIT ), REAL( Y ) )
 
 C *** Accumulation mode: initial value of M0
-      Y0 = MOMENT0_CONC( 2 )
+      Y0 = MOMENT0_CONC( IA_ACC )
 
-C *** The rate of change for M0_accum is described in Equation 8b of
+C     The rate of change for M0_accum is described in Equation 8b of
 C     Binkowski & Roselle (2003), except the coefficient C is zero
 C     because emissions are treated outside the CMAQ aerosol module.
 C     The equation reduces to the form: dY/dt = -A * Y**2 , where
       A = BACAC( 1 )                 ! intramodal coagulation
 
-C *** Solve for M0_accum using Smoluchowski`s solution
+C     Solve for M0_accum using Smoluchowski`s solution
       Y = Y0 / ( 1.0D0 + A * Y0 * DT )
 
-C *** Transfer new value of M0_accum to the moment array
-      MOMENT0_CONC( 2 ) = MAX( AEROMODE_MINNUM( 2 ), REAL( Y ) )
+C     Transfer new value of M0_accum to the moment array
+      MOMENT0_CONC( IA_ACC ) = MAX( AEROMODE_MINNUM( IA_ACC ), REAL( Y ) )
 
 C *** end of update for zeroth moment - note that the coarse mode number does
 C     not change because coarse-mode coagulation is neglected in the model
@@ -541,29 +644,54 @@ C     species n per unit of particle volume, C30ATAC is the 3rd moment
 C     loss rate due to intermodal coagulation, MASSn is the mass
 C     concentration of species n, and M3 is the 3rd moment
 C     concentration.
-
-      LOSS = C30ATAC / MOMENT3_CONC( 1 )
+ 
+C *** Transfer Nucleation Mode Mass to Aitken Mode
+      LOSS = C30NUAT / MOMENT3_CONC( IA_NUC )
 
 C *** Set up extra variables to solve for Aitken mode mass concentrations
       FACTRANS = LOSS * DT
-      EXPDT = EXP( -FACTRANS )
+      EXPDTNUAT = EXP( -FACTRANS )
+ 
+C *** Transfer Nucleation Mode Mass to Accumulation Mode
+      LOSS = C30NUAC / MOMENT3_CONC( IA_NUC )
+
+C *** Set up extra variables to solve for Aitken mode mass concentrations
+      FACTRANS = LOSS * DT
+      EXPDTNUAC = EXP( -FACTRANS )
+ 
+C *** Transfer Aitken Mode Mass to Accumulation Mode
+      LOSS = C30ATAC / MOMENT3_CONC( IA_AIT )
+
+C *** Set up extra variables to solve for Aitken mode mass concentrations
+      FACTRANS = LOSS * DT
+      EXPDTATAC = EXP( -FACTRANS )
 
 C *** Transfer mass from Aitken to accumulation mode, resulting from 
 C     intermodal coagulation.
 
       DO SPC = 1, N_AEROSPC
-         IF ( AERO_MISSING(SPC,1) ) CYCLE
+         IF ( AERO_MISSING( SPC, IA_NUC ) ) CYCLE
  
-         TMASS = AEROSPC_CONC( SPC,1 ) + AEROSPC_CONC( SPC,2 )
-         IF( SPC .EQ. APHGJ_IDX  )THEN 
-! assumes all production adsorb onto accumulation mode
-             TMASS = TMASS + PHG_RATE * DT
-         END IF
+         TMASS = AEROSPC_CONC( SPC,IA_NUC ) + AEROSPC_CONC( SPC,IA_AIT )
+         AEROSPC_CONC( SPC,ia_nuc ) = MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
+     &                                REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAT ) )
+         AEROSPC_CONC( SPC,ia_ait ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_AIT ),
+     &                                TMASS - AEROSPC_CONC( SPC,IA_NUC ) )
+         
+         TMASS = AEROSPC_CONC( SPC,IA_NUC ) + AEROSPC_CONC( SPC,IA_ACC )
+         AEROSPC_CONC( SPC,IA_NUC ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_NUC ),
+     &                                REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAC ) )
+         AEROSPC_CONC( SPC,IA_ACC ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_ACC ),
+     &                                TMASS - AEROSPC_CONC( SPC,IA_NUC ) )
+      END DO
 
-         AEROSPC_CONC( SPC,1 ) = MAX( AEROSPC( SPC )%MIN_CONC( 1 ),
-     &                                REAL( AEROSPC_CONC( SPC,1 ) * EXPDT ) )
-         AEROSPC_CONC( SPC,2 ) = MAX( AEROSPC( SPC )%MIN_CONC( 2 ),
-     &                                TMASS - AEROSPC_CONC( SPC,1 ) )
+      DO SPC = 1,N_AEROSPC
+         IF ( AERO_MISSING( SPC, IA_AIT ) ) CYCLE
+         TMASS = AEROSPC_CONC( SPC,IA_AIT ) + AEROSPC_CONC( SPC,IA_ACC )
+         AEROSPC_CONC( SPC,IA_AIT ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_AIT ),
+     &                                REAL( AEROSPC_CONC( SPC,IA_AIT ) * EXPDTATAC ) )
+         AEROSPC_CONC( SPC,IA_ACC ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_ACC ),
+     &                                TMASS - AEROSPC_CONC( SPC,IA_AIT ) )
       END DO
 
 C *** end of update for species mass concentrations
@@ -574,12 +702,15 @@ C     If the Aitken mode mass is growing faster than accumulation mode
 C     mass and the Aitken mode number concentration exceeds the
 C     accumulation mode number concentration, then modes are merged by
 C     renaming.
+C
 
+C *** Merging Nucleation and Aitken Modes
+C
 #ifdef nomm
       if ( .false. ) then
 #else
-      IF ( CGR( 1 ) .GT. CGR( 2 ) .AND.
-     &     MOMENT0_CONC( 1 ) .GT. MOMENT0_CONC( 2 ) ) THEN
+      IF ( CGR( IA_NUC ) .GT. CGR( IA_AIT ) .AND.
+     &     MOMENT0_CONC( IA_NUC ) .GT. MOMENT0_CONC( IA_AIT ) ) THEN
 #endif
 
 C *** Before mode merging, update the third moments, geometric mean
@@ -594,16 +725,16 @@ C     is the diameter at which the Aitken-mode and accumulation-mode
 C     number distributions intersect (i.e., overlap).  AAA is equivalent
 C     to the "Xnum" term described below Equation 10a by Binkowski and
 C     Roselle (2003).
-         AAA = GETAF( MOMENT0_CONC( 1 ), MOMENT0_CONC( 2 ),
-     &                AEROMODE_DIAM( 1 ), AEROMODE_DIAM( 2 ), 
-     &                AEROMODE_LNSG( 1 ), AEROMODE_LNSG( 2 ),
+         AAA = GETAF( MOMENT0_CONC( IA_NUC ), MOMENT0_CONC( IA_AIT ),
+     &                AEROMODE_DIAM( IA_NUC ), AEROMODE_DIAM( IA_AIT ), 
+     &                AEROMODE_LNSG( IA_NUC ), AEROMODE_LNSG( IA_AIT ),
      &                SQRT2 ) 
 
 C *** Ensure that Xnum is large enough so that no more than half of
 C     the Aitken mode mass is merged into the accumulation mode during
 C     any given time step.  This criterion is described in Paragraph 26
 C     of Binkowski and Roselle (2003).
-         XXM3 = 3.0 * AEROMODE_LNSG( 1 ) / SQRT2
+         XXM3 = 3.0 * AEROMODE_LNSG( IA_NUC ) / SQRT2
          XNUM = MAX( AAA, XXM3 )
 
 C *** Factors used in error function calls for M2 and M3 mode merging
@@ -625,24 +756,98 @@ C     distributions with diameters less than the intersection diameter.
 
 C *** Update accumulation-mode moment concentrations using
 C     Equations 11a - 11c of Binkowski and Roselle (2003).
-         MOMENT0_CONC( 2 ) = MOMENT0_CONC( 2 ) + MOMENT0_CONC( 1 ) * FNUM
-         MOMENT2_CONC( 2 ) = MOMENT2_CONC( 2 ) + MOMENT2_CONC( 1 ) * FM2
-         MOMENT3_CONC( 2 ) = MOMENT3_CONC( 2 ) + MOMENT3_CONC( 1 ) * FM3
+         MOMENT0_CONC( IA_AIT ) = MOMENT0_CONC( IA_AIT ) + MOMENT0_CONC( IA_NUC ) * FNUM
+         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) + MOMENT2_CONC( IA_NUC ) * FM2
+         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) + MOMENT3_CONC( IA_NUC ) * FM3
 
 C *** Update Aitken-mode moment concentrations using
 C     Equations 11d - 11f of Binkowski and Roselle (2003).
-         MOMENT0_CONC( 1 ) = MOMENT0_CONC( 1 ) * PHNUM
-         MOMENT2_CONC( 1 ) = MOMENT2_CONC( 1 ) * PHM2
-         MOMENT3_CONC( 1 ) = MOMENT3_CONC( 1 ) * PHM3
+         MOMENT0_CONC( IA_NUC ) = MOMENT0_CONC( IA_NUC ) * PHNUM
+         MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHM2
+         MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHM3
  
 C *** Rename masses of each species from Aitken mode to acumulation mode
 C     using Equation 11b of Binkowski and Roselle (2003). Do this for
 C     all species, even the aerosol water.
          DO SPC = 1, N_AEROSPC
-            IF ( AERO_MISSING(SPC,1) ) CYCLE
+            IF ( AERO_MISSING( SPC,IA_NUC ) ) CYCLE
 
-            AEROSPC_CONC( SPC,2 ) = AEROSPC_CONC( SPC,2 ) + AEROSPC_CONC( SPC,1 ) * FM3
-            AEROSPC_CONC( SPC,1 ) = AEROSPC_CONC( SPC,1 ) * PHM3
+            AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) + AEROSPC_CONC( SPC,IA_NUC ) * FM3
+            AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) * PHM3
+         END DO
+
+      END IF ! end check on necessity for merging
+ 
+C *** Merging Aitken and Accumulation Modes
+C
+#ifdef nomm
+      if ( .false. ) then
+#else
+      IF ( CGR( IA_AIT ) .GT. CGR( IA_ACC ) .AND.
+     &     MOMENT0_CONC( IA_AIT ) .GT. MOMENT0_CONC( IA_ACC ) ) THEN
+#endif
+
+C *** Before mode merging, update the third moments, geometric mean
+C     diameters, geometric standard deviations, modal mass totals, and
+C     particle densities, based on the new concentrations of M2, M0, and
+C     speciated masses calculated above. This is still the wet
+C     distribution.
+         CALL GETPAR( LIMIT_Sg )
+
+C *** Calculate AAA = ln( Dij / DGATK ) / ( SQRT2 * XXLSGAT ), where Dij
+C     is the diameter at which the Aitken-mode and accumulation-mode
+C     number distributions intersect (i.e., overlap).  AAA is equivalent
+C     to the "Xnum" term described below Equation 10a by Binkowski and
+C     Roselle (2003).
+         AAA = GETAF( MOMENT0_CONC( IA_AIT ), MOMENT0_CONC( IA_ACC ),
+     &                AEROMODE_DIAM( IA_AIT ), AEROMODE_DIAM( IA_ACC ), 
+     &                AEROMODE_LNSG( IA_AIT ), AEROMODE_LNSG( IA_ACC ),
+     &                SQRT2 ) 
+
+C *** Ensure that Xnum is large enough so that no more than half of
+C     the Aitken mode mass is merged into the accumulation mode during
+C     any given time step.  This criterion is described in Paragraph 26
+C     of Binkowski and Roselle (2003).
+         XXM3 = 3.0 * AEROMODE_LNSG( IA_AIT ) / SQRT2
+         XNUM = MAX( AAA, XXM3 )
+
+C *** Factors used in error function calls for M2 and M3 mode merging
+         XXM2 = TWOTHIRDS * XXM3
+         XM2  = XNUM - XXM2 ! set up for 2nd moment transfer
+         XM3  = XNUM - XXM3 ! set up for 3rd moment and mass transfers
+
+C *** Calculate the fractions of the number, 2nd, and 3rd moment
+C     distributions with diameter greater than the intersection diameter
+         FNUM  = 0.5 * ERFC( XNUM )            ! Eq 10a of B&R 2003
+         FM2   = 0.5 * ERFC( XM2 )             ! Eq 10b of B&R 2003
+         FM3   = 0.5 * ERFC( XM3 )             ! Eq 10b of B&R 2003
+
+C *** Calculate the fractions of the number, 2nd, and 3rd moment
+C     distributions with diameters less than the intersection diameter.
+         PHNUM = 0.5 * ( 1.0 + ERF( XNUM ) )  ! Eq 10c of B&R 2003
+         PHM2  = 0.5 * ( 1.0 + ERF( XM2 ) )   ! Eq 10d of B&R 2003
+         PHM3  = 0.5 * ( 1.0 + ERF( XM3 ) )   ! Eq 10d of B&R 2003
+
+C *** Update accumulation-mode moment concentrations using
+C     Equations 11a - 11c of Binkowski and Roselle (2003).
+         MOMENT0_CONC( IA_ACC ) = MOMENT0_CONC( IA_ACC ) + MOMENT0_CONC( IA_AIT ) * FNUM
+         MOMENT2_CONC( IA_ACC ) = MOMENT2_CONC( IA_ACC ) + MOMENT2_CONC( IA_AIT ) * FM2
+         MOMENT3_CONC( IA_ACC ) = MOMENT3_CONC( IA_ACC ) + MOMENT3_CONC( IA_AIT ) * FM3
+
+C *** Update Aitken-mode moment concentrations using
+C     Equations 11d - 11f of Binkowski and Roselle (2003).
+         MOMENT0_CONC( IA_AIT ) = MOMENT0_CONC( IA_AIT ) * PHNUM
+         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) * PHM2
+         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) * PHM3
+ 
+C *** Rename masses of each species from Aitken mode to acumulation mode
+C     using Equation 11b of Binkowski and Roselle (2003). Do this for
+C     all species, even the aerosol water.
+         DO SPC = 1, N_AEROSPC
+            IF ( AERO_MISSING( SPC,IA_AIT ) ) CYCLE
+
+            AEROSPC_CONC( SPC,IA_ACC ) = AEROSPC_CONC( SPC,IA_ACC ) + AEROSPC_CONC( SPC,IA_AIT ) * FM3
+            AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) * PHM3
          END DO
 
       END IF ! end check on necessity for merging
@@ -1076,14 +1281,14 @@ C *** Growth values for mode merge condition
       CGR( 1 ) = SO4FAC * SCONDRATE * OMEGA_AT_SO4
       CGR( 2 ) = SO4FAC * SCONDRATE * OMEGA_AC_SO4
 
-      CONDSO4( 1 ) = OMEGA_AT_SO4 * SCONDRATE      
+      CONDSO4( IA_AIT ) = OMEGA_AT_SO4 * SCONDRATE      
       
       IF ( HYBRID ) THEN 
-         CONDSO4( 2 ) = OMEGA_AC_SO4 * SCONDRATE      
-         CONDSO4( 3 ) = SCONDRATE - ( CONDSO4( 1 ) + CONDSO4( 2 ) ) 
+         CONDSO4( IA_ACC ) = OMEGA_AC_SO4 * SCONDRATE      
+         CONDSO4( IA_CRS ) = SCONDRATE - ( CONDSO4( IA_AIT ) + CONDSO4( IA_ACC ) ) 
       ELSE                                  ! fine equilibrium
-         CONDSO4( 2 ) = SCONDRATE - CONDSO4( 1 )
-         CONDSO4( 3 ) = 0.0D0               ! no coarse mode chemistry
+         CONDSO4( IA_ACC ) = SCONDRATE - CONDSO4( IA_AIT )
+         CONDSO4( IA_CRS ) = 0.0D0               ! no coarse mode chemistry
       END IF
 
 C *** For Hybrid approach, calculate dynamic mass trasfer for
@@ -1097,7 +1302,7 @@ C     semi-volatile components of coarse mode (NO3, CL, NH4)
          INT_TIME = 0.0D0
          TSTEP    = 90.0D0
          ISTEP    = 1
-         IMODE    = 3
+         IMODE    = IA_CRS
          TrustIso = .TRUE.
  
          DO WHILE ( INT_TIME .LT. DELT ) 
@@ -1361,20 +1566,20 @@ C *** Fine Aerosol Modes: Call ISORROPIA in forward mode to calculate gas-partic
 
 C *** Diagnose all total gas+particle concentrations to passed to
 C     ISORROPIA. Convert everything to [mol m-3].
-      WI( 1 ) = SUM( AEROSPC_CONC( ANA_IDX,1:2 ))   * CFAC_ANA
+      WI( 1 ) = SUM( AEROSPC_CONC( ANA_IDX,IA_NUC:IA_ACC ))   * CFAC_ANA
       !Compute sulfate from total sulfate production rate [ug/m3-s] for fine 
       !modes; add in H2SO4 nucleated in model timestep
-      WI( 2 ) = ( SUM( AEROSPC_CONC( ASO4_IDX,1:2 ) ) 
-     &           +( DMDT_SO4 + SUM( CONDSO4( 1:2 ) ) ) * DELT * H2SO4RATM1 ) * CFAC_ASO4
+      WI( 2 ) = ( SUM( AEROSPC_CONC( ASO4_IDX,IA_NUC:IA_ACC ) ) 
+     &           +( DMDT_SO4 + SUM( CONDSO4( IA_NUC:IA_ACC ) ) ) * DELT * H2SO4RATM1 ) * CFAC_ASO4
       WI( 3 ) = PRECURSOR_CONC( NH3_IDX )  * CFAC_GNH3
-     &         +SUM( AEROSPC_CONC( ANH4_IDX,1:2 ) ) * CFAC_ANH4 
+     &         +SUM( AEROSPC_CONC( ANH4_IDX,IA_NUC:IA_ACC ) ) * CFAC_ANH4 
       WI( 4 ) = PRECURSOR_CONC( HNO3_IDX ) * CFAC_GHNO3
-     &         +SUM( AEROSPC_CONC( ANO3_IDX,1:2 ) ) * CFAC_ANO3 
+     &         +SUM( AEROSPC_CONC( ANO3_IDX,IA_NUC:IA_ACC ) ) * CFAC_ANO3 
       WI( 5 ) = PRECURSOR_CONC( HCL_IDX )  * CFAC_GHCL 
-     &         +SUM( AEROSPC_CONC( ACL_IDX,1:2 ) )  * CFAC_ACL 
-      WI( 6 ) = SUM( AEROSPC_CONC( ACA_IDX,1:2 ) )  * CFAC_ACA 
-      WI( 7 ) = SUM( AEROSPC_CONC( AK_IDX,1:2 ) )   * CFAC_AK 
-      WI( 8 ) = SUM( AEROSPC_CONC( AMG_IDX,1:2 ) )  * CFAC_AMG 
+     &         +SUM( AEROSPC_CONC( ACL_IDX,IA_NUC:IA_ACC ) )  * CFAC_ACL 
+      WI( 6 ) = SUM( AEROSPC_CONC( ACA_IDX,IA_NUC:IA_ACC ) )  * CFAC_ACA 
+      WI( 7 ) = SUM( AEROSPC_CONC( AK_IDX,IA_NUC:IA_ACC ) )   * CFAC_AK 
+      WI( 8 ) = SUM( AEROSPC_CONC( AMG_IDX,IA_NUC:IA_ACC ) )  * CFAC_AMG 
 
       CNTRL( 1 ) = 0.0D0   ! Forward Problem
       CNTRL( 2 ) = 1.0D0   ! Aerosol in Metastable State
@@ -1397,7 +1602,7 @@ C *** Save H+ concentration information in microgram/m3 for consistency
       gas( 2 ) = real( precursor_conc( hno3_idx ), 8 ) * CFAC_GHNO3
       gas( 3 ) = real( precursor_conc( hcl_idx ),  8 ) * CFAC_GHCL
 
-      EQLBHIJ =  HPLUS( 1 ) + HPLUS( 2 )  ! use charge balance if lacking isoropia info 
+      EQLBHIJ =  SUM( HPLUS( IA_NUC:IA_ACC ) )  ! use charge balance if lacking isoropia info 
 
 #endif
 
@@ -1410,29 +1615,30 @@ C     condensation and negative for evaporation.
       DVOLINORG( KCL )  = GCLR8  * CFAC_GHCL  - GAS( 3 )   !mol m-3
 
       IF ( DVOLINORG( KNH4 ) .LT. 0.0D0 ) THEN
-         DVOLMAX = -SUM(REAL( AEROSPC_CONC( ANH4_IDX,1:2 ), 8 ) ) * CFAC_ANH4 + EVAPMIN
+         DVOLMAX = -SUM(REAL( AEROSPC_CONC( ANH4_IDX,IA_NUC:IA_ACC ), 8 ) ) * CFAC_ANH4 + EVAPMIN
          DVOLINORG( KNH4 ) = MAX( DVOLINORG( KNH4 ), DVOLMAX )
       END IF
 
       IF ( DVOLINORG( KNO3 ) .LT. 0.0D0 ) THEN
-         DVOLMAX = -SUM(REAL( AEROSPC_CONC( ANO3_IDX,1:2 ), 8 ) ) * CFAC_ANO3 + EVAPMIN
+         DVOLMAX = -SUM(REAL( AEROSPC_CONC( ANO3_IDX,IA_NUC:IA_ACC ), 8 ) ) * CFAC_ANO3 + EVAPMIN
          DVOLINORG( KNO3 ) = MAX( DVOLINORG( KNO3 ), DVOLMAX)
       END IF
 
       IF ( .not.TRUSTCL ) THEN  
          DVOLINORG( KCL ) = 0.0D0
       ELSEIF ( DVOLINORG( KCL ) .LT. 0.0D0 ) THEN
-         DVOLMAX = -SUM(REAL( AEROSPC_CONC( ACL_IDX,1:2 ), 8 ) ) * CFAC_ACL + EVAPMIN
+         DVOLMAX = -SUM(REAL( AEROSPC_CONC( ACL_IDX,IA_NUC:IA_ACC ), 8 ) ) * CFAC_ACL + EVAPMIN
          DVOLINORG( KCL ) = MAX( DVOLINORG( KCL ), DVOLMAX )
       END IF
 
 C *** Apply modal partitioning of equilibrium aerosol mass
       !Calculate Distribution of Mass Transfer Among Modes
-      OMEGA( 1 ) = GRFAC2( 1 ) / ( GRFAC2( 1 ) + GRFAC2( 2 ) )
-      OMEGA( 2 ) = 1.0D0 - OMEGA( 1 )
+      OMEGA( IA_NUC ) = GRFAC2( IA_NUC ) / SUM ( GRFAC2( IA_NUC:IA_ACC ) )
+      OMEGA( IA_AIT ) = GRFAC2( IA_AIT ) / SUM ( GRFAC2( IA_NUC:IA_ACC ) )
+      OMEGA( IA_ACC ) = 1.0D0 - OMEGA( IA_NUC ) - OMEGA( IA_AIT )
 
       CFINAL = 0.0
-      DO IMODE = 1, 2  
+      DO IMODE = IA_NUC, IA_ACC
          !Save Initial Concentrations
          CINORG( KSO4,IMODE ) = AEROSPC_CONC( ASO4_IDX, IMODE )
          CINORG( KNH4,IMODE ) = AEROSPC_CONC( ANH4_IDX, IMODE )
@@ -1453,24 +1659,29 @@ C *** Apply modal partitioning of equilibrium aerosol mass
             !individually for negative concentrations
             IF (CFINAL( ISP,IMODE ) .LT. 0.0D0 ) THEN
 
-              IF ( IMODE .EQ. 1 ) THEN
-                CFINAL( ISP,2 ) = CFINAL( ISP,2 ) + CFINAL( ISP,1 )
-                CFINAL( ISP,1 ) = 0.0D0
-              ELSE   ! IMODE = 2
-                CFINAL( ISP,1 ) = CFINAL( ISP,1 ) + CFINAL( ISP,2 )
+              IF ( IMODE .EQ. IA_NUC ) THEN
+                CFINAL( ISP,IA_ACC ) = CFINAL( ISP,IA_ACC ) + CFINAL( ISP,IA_NUC )
+                CFINAL( ISP,IMODE ) = 0.0D0
+              ELSE IF ( IMODE .EQ. IA_AIT ) THEN
+                CFINAL( ISP,IA_ACC ) = CFINAL( ISP,IA_ACC ) + CFINAL( ISP,IA_AIT )
+                CFINAL( ISP,IMODE ) = 0.0D0
+              ELSE   ! IMODE = IA_ACC
+                CFINAL( ISP,IA_AIT ) = CFINAL( ISP,IA_AIT ) + CFINAL( ISP,IA_ACC )
                 CFINAL( ISP,IMODE ) = 0.0D0
 
-                IF ( CFINAL( ISP, 1 ) .LT. 0.0D0 ) THEN
-                  IF ( ABS( CFINAL( ISP,1 ) ) .LT. 1.0D-15 ) THEN
-                     CFINAL( ISP,1 ) = 0.0D0
-                  ELSE
+                IF ( CFINAL( ISP, IA_AIT ) .LT. -1.0D-15 ) THEN
+                    CFINAL( ISP,ia_nuc ) = CFINAL( ISP,ia_nuc ) + ( CCFINAL( ISP,ia_ait ) - conmin )
+                    CFINAL( ISP,ia_ait ) = conmin
+
+                    IF ( CFINAL( ISP,IA_NUC ) .LT. -1.0D-15 ) THEN
+                    ELSE
                      !Note: this should NEVER happen because there
                      !should not be more evaporated mass than there is
                      !existing particle mass
                      XMSG = 'VOLINORG: Too much evaporation'
                      CFINAL( ISP,1 ) = 0.0D0
                      CALL M3EXIT( 'VOLINORG', 0, 0, XMSG, XSTAT1 ) 
-                  END IF
+                    END IF
                 END IF
               END IF
             END IF  ! IMODE = 1
@@ -1490,9 +1701,9 @@ C *** Apply Final Concentrations to Moment Variables in Aerosol Scheme
       M3DRY_INIT( : ) = MOMENT3_CONC( : )
       M2DRY_INIT( : ) = MOMENT2_CONC( : )
 
-      DO IMODE = 1, 2  ! modal partitioning of equilibrium aerosol mass
+      DO IMODE = IA_NUC, IA_ACC  ! modal partitioning of equilibrium aerosol mass
 
-         IF ( IMODE .EQ. 1 ) THEN
+         IF ( IMODE .EQ. IA_NUC ) THEN
             !Update Number Concentration with NPF
             MOMENT0_CONC( IMODE ) = AM0(IMODE) + DNDT * DELT
             !Add NPF to total condensation rate
@@ -1557,18 +1768,18 @@ C *** Assign H+ Concentration to each Mode
       HPLUS = 0.0
       DO I = 1, N_AEROSPC
          IF(  AEROSPC( I )%tracer )CYCLE
-         HPLUS( 1:2 ) = HPLUS( 1:2 )
-     &                  - AEROSPC( I )%CHARGE * AEROSPC_CONC( I,1:2 ) / AEROSPC_MW( I )
+         HPLUS( IA_NUC:IA_ACC ) = HPLUS( IA_NUC:IA_ACC )
+     &                  - AEROSPC( I )%CHARGE * AEROSPC_CONC( I,IA_NUC:IA_ACC ) / AEROSPC_MW( I )
       END DO
 
-      H2O = AEROSPC_CONC( AH2O_IDX, 1 ) + AEROSPC_CONC( AH2O_IDX, 2 )
+      H2O = SUM( AEROSPC_CONC( AH2O_IDX, IA_NUC:IA_ACC ) )
       IF(  H2O .GT. CONMIN )THEN
           H2O = 1.0 / H2O
-          AEROSPC_CONC( AH3OP_IDX, 1:2 ) = EQLBHIJ * AEROSPC_CONC( AH2O_IDX, 1:2 ) * H2O
+          AEROSPC_CONC( AH3OP_IDX, IA_NUC:IA_ACC ) = EQLBHIJ * AEROSPC_CONC( AH2O_IDX, IA_NUC:IA_ACC ) * H2O
       ELSE
-          AEROSPC_CONC( AH3OP_IDX, 1:2 ) = CONMIN
+          AEROSPC_CONC( AH3OP_IDX, IA_NUC:IA_ACC ) = CONMIN
       END IF
-      AEROSPC_CONC( AH3OP_IDX, 3 ) = 1.0D+6 * HPLUS( 3 )  !Coarse mode H+ concentration
+      AEROSPC_CONC( AH3OP_IDX, IA_CRS ) = 1.0D+6 * HPLUS( IA_CRS )  !Coarse mode H+ concentration
 
 C *** Update the third moments, geometric mean diameters, geometric 
 C     standard deviations, modal mass totals, and modal particle 
@@ -1579,12 +1790,12 @@ C     aerospc_conc variables. This should be for the wet distribution.
       CALL GETPAR( LIMIT_Sg )
 
 C *** Update gas-phase concentrations from Aitken and Accumulation Mode Partitioning
-      PRECURSOR_CONC( NH3_IDX )  = GNH3R8 + sum( CINORG( KNH4,1:2 )
-     &                            -CFINAL( KNH4,1:2 ) ) * NH3RAT 
-      PRECURSOR_CONC( HNO3_IDX ) = GNO3R8 + sum( CINORG( KNO3,1:2 )
-     &                            -CFINAL( KNO3,1:2) ) * HNO3RAT  
-      PRECURSOR_CONC( HCL_IDX )  = GCLR8 + sum( CINORG( KCL,1:2 )
-     &                            -CFINAL( KCL,1:2) ) * HCLRAT 
+      PRECURSOR_CONC( NH3_IDX )  = GNH3R8 + sum( CINORG( KNH4,IA_NUC:IA_ACC )
+     &                            -CFINAL( KNH4,IA_NUC:IA_ACC ) ) * NH3RAT 
+      PRECURSOR_CONC( HNO3_IDX ) = GNO3R8 + sum( CINORG( KNO3,IA_NUC:IA_ACC )
+     &                            -CFINAL( KNO3,IA_NUC:IA_ACC ) ) * HNO3RAT  
+      PRECURSOR_CONC( HCL_IDX )  = GCLR8 + sum( CINORG( KCL,IA_NUC:IA_ACC )
+     &                            -CFINAL( KCL,IA_NUC:IA_ACC ) ) * HCLRAT 
          
 2023  FORMAT( 1X, 'VOLINORG returning negative gas concentrations from ISOROPIA:'
      &       /10X, 'GAS(1) = NH3, GAS(2) = HNO3, GAS(3) = HCl' )
@@ -1593,265 +1804,6 @@ C *** Update gas-phase concentrations from Aitken and Accumulation Mode Partitio
 
       RETURN
       END SUBROUTINE VOLINORG
-
-C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      SUBROUTINE HCOND3( AM0, AM1, AM2, DV, ALPHA, CBAR, F )
-
-C  calculates the size-dependent term in the condensational-growth rate
-C  expression for the 2nd and 3rd moments of a lognormal aerosol mode
-C  using the harmonic mean method.  This code follows Section A2 of
-C  Binkowski & Shankar (1995).
- 
-C  Key Subroutines/Functions called:  none
- 
-C  Revision History:
-C     coded November 7, 2003 by Dr. Francis S. Binkowski
-C     Revised November 20, 2003 by F. Binkowski to have am1 and
-C     am2 as inputs
- 
-C  Reference:
-C   1. Binkowski, F.S. and U. Shankar, The regional particulate matter
-C      model 1. Model description and preliminary results, J. Geophys.
-C      Res., Vol 100, No D12, 26101-26209, 1995.
-
-      IMPLICIT NONE
-
-C *** Includes:
-
-      INCLUDE SUBST_CONST     ! physical and mathematical constants
-
-C *** Arguments:
-
-      REAL( 8 ), INTENT( IN ) :: AM0   ! zeroth moment of mode  [ #/m**3 ]
-      REAL( 8 ), INTENT( IN ) :: AM1   ! first moment of mode   [ m/m**3 ]
-      REAL( 8 ), INTENT( IN ) :: AM2   ! second moment of mode  [ m**2/m**3 ]
-      REAL,      INTENT( IN ) :: Dv    ! molecular diffusivity of the
-                                       ! condensing vapor  [ m**2/s ]
-      REAL,      INTENT( IN ) :: ALPHA ! accommodation coefficient
-      REAL,      INTENT( IN ) :: CBAR  ! kinetic velocity of condensing vapor [ m/s ]
-
-      REAL( 8 ), INTENT( OUT ) :: F( 2 ) ! size-dependent term in condensational-growth
-                                         ! rate: F(1) = 2nd moment [ m**2/m**3 s ]
-                                         !       F(2) = 3rd moment [ m**3/m**3 s ]
-
-C *** Local Variables:
-
-      REAL( 8 ) :: GNC2 ! integrals used to calculate F(1) [m^2 / m^3 s]
-      REAL( 8 ) :: GFM2 !
-
-      REAL( 8 ) :: GNC3 ! integrals used to calculate F(2) [m^3 / m^3 s]
-      REAL( 8 ) :: GFM3 !
-
-      REAL( 8 ), PARAMETER :: TWOPI = 2.0D0 * PI
-      REAL( 8 ), PARAMETER :: PI4 = 0.25D0 * PI
-
-C-----------------------------------------------------------------------
-
-C *** Implement equation A15 of Binkowski & Shankar (1995) for the
-C     2nd and 3rd moments of a lognormal mode of arbitrary size.
-
-      GNC2 = TWOPI * DV * AM0          ! 2nd moment, near-continuum
-      GNC3 = TWOPI * DV * AM1          ! 3rd moment, near-continuum
-      GFM2 = PI4 * ALPHA * CBAR * AM1  ! 2nd moment, free-molecular
-      GFM3 = PI4 * ALPHA * CBAR * AM2  ! 3rd moment, free-molecular
-
-C *** Implement equation A13 of Binkowski & Shankar (1995) for a
-C     lognormal mode of arbitrary size.  These are the size-dependent
-C     terms in the condensational-growth rate expression, given in
-C     equation 7a of B&S (1995).
-
-      F( 1 ) = GNC2 * GFM2 / ( GNC2 + GFM2 )  ! 2nd moment
-      F( 2 ) = GNC3 * GFM3 / ( GNC3 + GFM3 )  ! 3rd moment
-
-      RETURN
-      END SUBROUTINE HCOND3
-
-C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      SUBROUTINE NEWPART3 ( RH, T, XH2SO4, SO4RATE, DNDT, DMDT_so4, DM2DT )
-
-      USE AERO_DATA
-      USE AEROMET_DATA   ! Includes CONST.EXT
-      USE PRECURSOR_DATA, ONLY: PRECURSOR_MW, SULF_IDX, NH3_IDX 
-      USE UTILIO_DEFN
-      
-      IMPLICIT NONE
-
-C   REVISION HISTORY:
-C     Replacement of Kulmala et al., 1998 nucleation scheme with scheme 
-C     of Vehkamaki et al. (2002) by G. Sarwar and K. Fahey - 03/2014
-
-C.. References:
-C     Vehkamaki, H., Kulmala, M, Napari, I., Lehtinen, K.E.J., Timmreck, C.,
-C     Noppel, M., and A. Laaksonen. (2002) An improved parameterization for 
-C     sulfuric acid-water nucleation rates for tropospheric and stratospheric
-C     conditions.  JGR, v107(D22).    
-   
-C..Inputs: 
-      REAL, INTENT(IN ) :: RH              ! fractional relative humidity      
-      REAL, INTENT(IN)  :: T               ! Ambient temperature [ K ]
-      REAL, INTENT(IN)  :: XH2SO4          ! sulfuric acid concentration [ ug/m**3 ]
-      REAL, INTENT(IN)  :: SO4RATE         ! gas-phase H2SO4 production rate [ ug/m**3 s ]
-
-C.. Outputs:
-      REAL( 8 ), INTENT( OUT ) :: DNDT     ! particle number production rate [ m^-3/s ]
-      REAL( 8 ), INTENT( OUT ) :: DMDT_so4 ! SO4 mass production rate [ ug/m**3 s ]
-      REAL( 8 ), INTENT( OUT ) :: DM2DT    ! second moment production rate [ m**2/m**3 s ]
-
-C.. Parameters
-      CHARACTER( 16 ), PARAMETER :: PNAME = 'NEWPART'                 
-
-C.. Particle size parameters:
-      REAL, PARAMETER :: d20 = 2.0E-07                ! diameter of a new particle [cm]
-      REAL, PARAMETER :: d20sq = d20 * d20            ! new-particle diameter squared [cm**2]
-      REAL, PARAMETER :: m2_20 = 1.0E-4 * d20sq       ! new-particle diameter squared [m**2]
-      REAL, PARAMETER :: v20 = PI * d20 * d20sq /6.0  ! volume of a new particle [cm**3]
-      
-      REAL( 8 )       :: sulfmass                     ! mass of a new particle [ug]
-      REAL( 8 )       :: sulfmass1                    ! inverse of sulfmass [ug**-1]
-
-C.. Set constants and local variables for Vehkamaki et al. (2002) scheme
-      REAL, PARAMETER :: C1 = 0.740997
-      REAL, PARAMETER :: C2 = -0.00266379
-      REAL, PARAMETER :: C3 = -0.00349998
-      REAL, PARAMETER :: C4 = 0.0000504022
-      REAL, PARAMETER :: C5 = 0.00201048
-      REAL, PARAMETER :: C6 = -0.000183289
-      REAL, PARAMETER :: C7 = 0.00157407
-      REAL, PARAMETER :: C8 = -0.0000179059
-      REAL, PARAMETER :: C9 = 0.000184403
-      REAL, PARAMETER :: C10 = -1.50345E-6
-
-      REAL :: XSTAR           ! mole fraction of sulfuric acid in the critical cluster
-      REAL :: NA              ! total gas phase concentration of H2SO4  [ #/cm**3 ]
-      REAL :: TEMP            ! ambient temperature
-      REAL :: LNRH, LNNA      ! LN(RH), LN(Na)
-      REAL :: LNRH2, LNNA2    ! LN(RH)**2, LN(Na)**2
-      REAL :: LNRH3, LNNA3    ! LN(RH)**3, LN(Na)**3  
-      REAL :: TEMP2, TEMP3    ! TEMP**2, TEMP**3
-      REAL( 8 ) :: XFAC       ! exponential term for the nucleation rate  
-      REAL( 8 ) :: Jnuc       ! nucleation rate [ #/cm**3 s ]
-      
-      REAL :: A, B, C, D, E, F, G, H, I, J
-
-      REAL :: MW_H2SO4        ! MW of H2SO4 in [ g / mole ]        
-      REAL :: DENSITY_H2SO4   ! DENSITY of H2SO4 in [ kg / m**3 ]
-
-      REAL, PARAMETER :: SCALEFAC = 1.0E-06           ! for [ 1 / m**3 ] ->  [ 1 / cm**3 ]
-      REAL, PARAMETER :: MUG2G = 1.0E-6               ! [ ug  ] -> [ g ]                 
-
-C.. Initialize variables
-      DNDT     = 0.0D0
-      DMDT_so4 = 0.0D0
-      DM2DT    = 0.0D0
-
-C.. Calculate molecular weight of H2SO4 [ g / mole ] 
-      MW_H2SO4 = PRECURSOR_MW( SULF_IDX )  
-         
-C.. Calculate density of sulfuric acid [ kg / m**3 ] 
-      DENSITY_H2SO4 = AEROSPC( ASO4_IDX )%DENSITY           
-
-C.. Calculate mass of a new particle [ug]
-      sulfmass = 1.0D+3 * DENSITY_H2SO4 * v20
-
-C.. Calculate inverse of sulfmass [ug**-1]      
-      sulfmass1 = 1.0D0 / sulfmass   
-     
-C.. Calculate sulfuric acid concentration in molecules/cm3 
-      NA = XH2SO4 * MUG2G * AVO * SCALEFAC / MW_H2SO4     
-
-C.. The parameterization is valid at sulfuric acid concentrations of 1.0E4 - 1.0E11 molecules cm-3
-      NA  = MAX (NA, 1.0E4)
-      NA  = MIN (1.0E11, NA)
-
-C.. The parameterization is valid at temperatures of 190.00-305.15 K
-      TEMP = MAX (T, 190.00)
-      TEMP = MIN (305.15, TEMP)
-
-C.. The parameterization is valid at RH of 0.0001-1.0
-C   aero_driver.f limits RH to 0.005-0.99; thus no additional constraint is needed
-
-C.. Define convenient constants
-      TEMP2 = TEMP * TEMP
-      TEMP3 = TEMP * TEMP2
-      
-      LNRH = LOG( RH )  
-      LNNA = LOG( NA )
-      LNRH2 = LNRH * LNRH
-      LNRH3 = LNRH * LNRH2
-      LNNA2 = LNNA * LNNA
-      LNNA3 = LNNA * LNNA2
-
-C.. Calculate mole fraction of sulfuric acid in the critical cluster
-      XSTAR = C1 + C2 * TEMP + C3 * LNNA + C4 * TEMP * LNNA + 
-     &      C5 * LNRH + C6 * TEMP * LNRH +
-     &      C7 * LNRH2 + C8 * TEMP * LNRH2 + C9 * LNRH3 + 
-     &      C10 * TEMP * LNRH3
-
-C.. Calculate coefficients needed for the nucleation rate [Eq-12 - Vehkamaki et al., 2002]           
-      A = 0.14309 + 2.21956 * TEMP - 0.0273911 * TEMP2 + 
-     &      0.0000722811 * TEMP3 + 5.91822 / XSTAR
-     
-      B = 0.117489 + 0.462532 * TEMP - 0.0118059 * TEMP2 + 
-     &      0.0000404196 * TEMP3 + 15.7963 / XSTAR
-     
-      C = -0.215554 - 0.0810269 * TEMP + 0.00143581 * TEMP2 - 
-     &      4.7758E-6 * TEMP3 - 2.91297 / XSTAR
-     
-      D = -3.58856 + 0.049508 * TEMP - 0.00021382 * TEMP2 + 
-     &      3.10801E-7 * TEMP3 - 0.0293333 / XSTAR
-     
-      E = 1.14598 - 0.600796 * TEMP + 0.00864245 * TEMP2 - 
-     &      0.0000228947 * TEMP3 - 8.44985 / XSTAR
-     
-      F = 2.15855 + 0.0808121 * TEMP - 0.000407382 * TEMP2 - 
-     &      4.01957E-7 * TEMP3 + 0.721326 / XSTAR
-
-      G = 1.6241 - 0.0160106 * TEMP + 0.0000377124 * TEMP2 + 
-     &      3.21794E-8 * TEMP3 - 0.0113255 / XSTAR
-      
-      H = 9.71682 - 0.115048 * TEMP + 0.000157098 * TEMP2 + 
-     &      4.00914E-7 * TEMP3 + 0.71186 / XSTAR
-     
-      I = -1.05611 + 0.00903378 * TEMP - 0.0000198417 * TEMP2 +
-     &      2.46048E-8 * TEMP3 - 0.0579087 / XSTAR
-
-      J = -0.148712 + 0.00283508 * TEMP - 9.24619E-6 * TEMP2 + 
-     &      5.00427E-9 * TEMP3 - 0.0127081 / XSTAR
-
-C.. Calculate the exponential term for the nucleation rate [Eq-12 - Vehkamaki et al., 2002] 
-      XFAC = A + B * LNRH + C * LNRH2 + D * LNRH3 + 
-     &      E * LNNA + F * LNRH * LNNA + G * LNRH2 * LNNA +     
-     &      H * LNNA2 + I * LNRH * LNNA2 + J * LNNA3
-
-C.. Calculate particle nucleation rate: unit [ 1 / cm**3 s] [Eq-12 - Vehkamaki et al., 2002] 
-      Jnuc = EXP(XFAC)  
-      
-C.. The parameterization is valid for nucleation rates of 1.0E-7-1.0E10 [ 1 / cm**3 s]
-      Jnuc = MAX (Jnuc, 1.0D-7)
-      Jnuc = MIN (1.0D10, Jnuc)
-
-C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] by multiplying it by 1.0E6  
-       DNDT = Jnuc * 1.0E06  ! (1/(m**3 s))
-
-C.. Calculate mass production rate [ ug / (m**3 s) ] analogous to
-C   Equation 6a of Binkowski & Roselle (2003). Set the upper limit
-C   of the mass production rate as the gas-phase production rate of
-C   H2SO4, and adjust the number production rate accordingly.
-      DMDT_so4 = sulfmass * DNDT 
-
-      IF ( DMDT_so4 .GT. SO4RATE ) THEN
-         DMDT_so4 = SO4RATE
-         DNDT = DMDT_SO4 * sulfmass1
-      END IF
-
-C.. Calculate the production rate of 2nd moment [ m**2 / (m**3 s) ]
-C   This is similar to Equation 6c of Binkowski & Roselle (2003),
-C   except the factor of PI is removed and the assumed particle
-C   diameter is different.
-      DM2DT = DNDT * m2_20
-
-      RETURN    
-      END SUBROUTINE NEWPART3 
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE Compute_Flux ( nvolinorg, GNH3R8, GNO3R8, GCLR8, KNH4,
