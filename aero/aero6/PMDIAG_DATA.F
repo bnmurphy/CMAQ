@@ -88,9 +88,29 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'DENS_ATKN       ', 5, 'kg m-3          ', 'Bulk Density of Aitken-Mode Particles' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'DENS_ACC        ', 5, 'kg m-3          ', 'Bulk Density of Accumulation-Mode Particles' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'DENS_COR        ', 5, 'kg m-3          ', 'Bulk Density of Coarse-Mode Particles' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_BINARY      ', 5, 'N cm-3 s-1      ', 'NPF Rate from Binary Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_TERNARY     ', 5, 'N cm-3 s-1      ', 'NPF Rate from Ternary Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_SO4_DMA     ', 5, 'N cm-3 s-1      ', 'NPF Rate from DMA-H2SO4 Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_SO4_ORG     ', 5, 'N cm-3 s-1      ', 'NPF Rate from Org-H2SO4 Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_ORG_ORG     ', 5, 'N cm-3 s-1      ', 'NPF Rate from Org-Org Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_RICCO       ', 5, 'N cm-3 s-1      ', 'NPF Rate from H2SO4-Org (Riccobono) Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_BINARY       ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Binary Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_TERNARY      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Ternary Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_SO4_DMA      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from DMA-H2SO4 Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_SO4_ORG      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Org-H2SO4 Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_ORG_ORG      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Org-Org Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_RICCO        ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from H2SO4-Org (Riccobono) Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_Binary   ', 5, 'ug m-3          ', 'Change in H2SO4(g) from Binary NPF' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_Ternary  ', 5, 'ug m-3          ', 'Change in H2SO4(g) from Ternary NPF' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_SO4_DMA  ', 5, 'ug m-3          ', 'Change in H2SO4(g) from DMA NPF' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_SO4_ORG  ', 5, 'ug m-3          ', 'Change in H2SO4(g) from H2SO4-ORG NPF' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'dNH3_Ternary    ', 5, 'ug m-3          ', 'Change in NH3(g) from Ternary NPF' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'dDMA_SO4_DMA    ', 5, 'ug m-3          ', 'Change in DMA(g) from SO4-DMA NPF' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'dORG_ORG_ORG    ', 5, 'ug m-3          ', 'Change in Org(g) from Org-Org NPF NPF' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'dORG_RICCO      ', 5, 'ug m-3          ', 'Change in Org(g) from Riccobono Params' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'k_prtcl_iepox   ', 5, '1/s             ', 'IEPOX pseudo particle phase reaction rate const' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'GAMMA_IMAE      ', 5, 'na              ', 'IMAE heterogeneous uptake coefficient' ) /)
 
-        INTEGER :: A_PMDIAG_SPC_MAP (57), NUM_PMDIAG_SPC
+        INTEGER :: A_PMDIAG_SPC_MAP (75), NUM_PMDIAG_SPC
 
       END MODULE PMDIAG_DATA_MODULE
