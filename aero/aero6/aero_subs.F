@@ -944,9 +944,12 @@ C *** Parameters:
 
       REAL( 8 ), PARAMETER :: D_TWOTHIRDS = 2.0D0 / 3.0D0
 
-      REAL, PARAMETER :: CUTOFF = 0.05  ! [ug/m**3]
-      REAL, PARAMETER :: ALPHSULF = 0.1 ! Accommodation coefficient for sulfuric acid
-                                        ! see Capaldo et al. (2000)
+      REAL, PARAMETER :: CUTOFF = 0.05   ! [ug/m**3]
+      REAL, PARAMETER :: ALPHSULF = 0.1  ! Accommodation coefficient for sulfuric acid
+                                         ! see Capaldo et al. (2000)
+      REAL, PARAMETER :: ALPHDMA = 1.0   ! Accomodation Coefficient for DMA
+      REAL, PARAMETER :: GAMMA_DMA = 0.2 ! Uptake Coefficient for DMA
+
 
 C *** Local Variables:
 
@@ -1226,6 +1229,14 @@ C     is non-zero.  The condensation rate of H2SO4 is calculated as the
 C     gas-phase production rate minus the new particle production rate.
 
 C *** Initialize Variables
+      JSO4RATE   = 0.0D0
+      JRATE      = 0.0D0
+      JM2RATE    = 0.0D0
+      SCONDRATE  = 0.0D0
+      JNH3RATE   = 0.0D0
+      JMBTCARATE = 0.0D0
+      JELVOCRATE = 0.0D0
+
       DMDT_SO4  = 0.0D0
       DNDT      = 0.0D0
       DM2DT     = 0.0D0
@@ -1234,7 +1245,7 @@ C *** Initialize Variables
 C *** Produce new particles only during time steps when the gas-phase 
 C     production rate of H2SO4 is non-zero
 
-      IF ( SO4RATE .NE. 0.0D0 ) THEN
+      !IF ( SO4RATE .NE. 0.0D0 ) THEN
 
 C *** Adjust sulfuric acid vapor concentration to a value in
 C     equilibrium with the production of new particles and the
@@ -1250,15 +1261,55 @@ C     on Equations A21 and A23 of Binkowski & Shankar (1995).
          PRECURSOR_CONC( SULF_IDX ) = REAL( XH2SO4, 8 )
 
 C *** Calculate new particle production rate for 0th, 2nd, & 3rd moments
-         CALL NEWPART3 ( AIRRH, AIRTEMP, XH2SO4, SO4RATE,
-     &                   DNDT, DMDT_SO4, DM2DT )
+C     from several multicomponent pathways including:
+C       H2SO4-H2O
+C       H2SO4-NH3-H2O
+C       H2SO4-DMA
+C       H2SO4-Organic
+C       Organic-Organic
+         XNH3 = PRECURSOR_CONC( NH3_IDX )
+         XDMA = PRECURSOR_CONC( DMA_IDX )
+         XMBTCA = PRECURSOR_CONC( MBTCA_IDX )
+         XELVOC = PRECURSOR_CONC( ELVOC_IDX )
+
+         CALL NPFMULTI ( AIRRH, AIRPRESS, AIRTEMP, XH2SO4, SO4RATE,
+     &                   XNH3, XDMA, XMBTCA, XELVOC, JRATE, JM2RATE,
+     &                   JSO4RATE, JNH3RATE, JDMARATE, JMBTCARATE,
+     &                   JELVOCRATE )
          
 C *** Calculate sulfate condensation rate as the gas-phase production 
 C     rate minus the new particle production rate, following Equation
 C     3.23 of Jiang & Roth (2003).
-         SCONDRATE = MAX( SO4RATE - DMDT_SO4, 0.0D0 )
+         SCONDRATE = MAX( SO4RATE - JSO4RATE, 0.0D0 )
 
-      END IF   ! SO4RATE .NE. 0
+C *** Apply Change in Gas and Aerosol Phase Species Consistent with the
+C     New Particle Formation Rates that took Place
+         PRECURSOR_CONC( NH3_IDX ) = XNH3 - JNH3RATE * DELT
+         PRECURSOR_CONC( DMA_IDX ) = XDMA - JDMARATE * DELT
+         PRECURSOR_CONC( MBTCA_IDX ) = XMBTCA - JMBTCARATE * DELT
+         PRECURSOR_CONC( ELVOC_IDX ) = XELVOC - JELVOCRATE * DELT
+         
+         AM3 = 0.0
+         DO IAER = 1,N_AEROSPC
+           AM3 = AM3 + AEROSPC_CONC( IAER, IA_NUC )
+         ENDDO
+         MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) *
+     &     ((AM3+(JNH3RATE+JDMARATE+JMBTCARATE+JELVOCRATE)*DELT)/ AM3)**(2.0/3.0)
+
+         AEROSPC_CONC( ANH4_IDX,IA_NUC ) = AEROSPC_CONC( ANH4_IDX, IA_NUC ) + JNH3RATE/NH3RAT*DELT
+         AEROSPC_CONC( ADMA_IDX,IA_NUC ) = AEROSPC_CONC( ADMA_IDX, IA_NUC ) + JDMARATE*DELT
+         AEROSPC_CONC( AMBTCA_IDX,IA_NUC ) = AEROSPC_CONC( AMBTCA_IDX, IA_NUC ) + JMBTCARATE*DELT
+         AEROSPC_CONC( AELVO1_IDX,IA_NUC ) = AEROSPC_CONC( AELVO1_IDX, IA_NUC ) + JELVOCRATE*DELT
+
+         !The ELVOC and MBTCA have Already Been COndensed in ORGAER.
+         !Take Their Mass from the Accumulation Mode.
+         AEROSPC_CONC( AMBTCA_IDX,IA_ACC ) = AEROSPC_CONC( AMBTCA_IDX, IA_ACC ) - JMBTCARATE*DELT
+         AEROSPC_CONC( AELVO1_IDX,IA_ACC ) = AEROSPC_CONC( AELVO1_IDX, IA_ACC ) - JELVOCRATE*DELT
+                                  
+         !Update Number of Aerosols with New Particle Formation Tendency
+         MOMENT0_CONC( IA_NUC ) = AM0( IA_NUC ) + JRATE * DELT
+
+       !END IF   ! SO4RATE .NE. 0
 
 C *** Sulfate Condensation (Size-resolved)
 C     Calculate rate at which condensing sulfate should be added to each
@@ -1274,13 +1325,16 @@ C     to avoid mass conservation violations arising from numerical error.
       END DO
 
       FCONCM1_SO4  = 1.0D0 / TMP
-      OMEGA_AT_SO4 = FCONCM1_SO4 * FCONC_SO4( 1,2 )
-      OMEGA_AC_SO4 = FCONCM1_SO4 * FCONC_SO4( 2,2 )
+      OMEGA_NU_SO4 = FCONCM1_SO4 * FCONC_SO4( IA_NUC,2 )
+      OMEGA_AT_SO4 = FCONCM1_SO4 * FCONC_SO4( IA_AIT,2 )
+      OMEGA_AC_SO4 = FCONCM1_SO4 * FCONC_SO4( IA_ACC,2 )
 
 C *** Growth values for mode merge condition
-      CGR( 1 ) = SO4FAC * SCONDRATE * OMEGA_AT_SO4
-      CGR( 2 ) = SO4FAC * SCONDRATE * OMEGA_AC_SO4
+      CGR( IA_NUC ) = SO4FAC * SCONDRATE * OMEGA_NU_SO4
+      CGR( IA_AIT ) = SO4FAC * SCONDRATE * OMEGA_AT_SO4
+      CGR( IA_ACC ) = SO4FAC * SCONDRATE * OMEGA_AC_SO4
 
+      CONDSO4( IA_NUC ) = OMEGA_NU_SO4 * SCONDRATE      
       CONDSO4( IA_AIT ) = OMEGA_AT_SO4 * SCONDRATE      
       
       IF ( HYBRID ) THEN 
@@ -1291,7 +1345,44 @@ C *** Growth values for mode merge condition
          CONDSO4( IA_CRS ) = 0.0D0               ! no coarse mode chemistry
       END IF
 
-C *** For Hybrid approach, calculate dynamic mass trasfer for
+C *** DMA Condensation (Size-Resolved)
+C     Condensation of DMA is assumed to be an irreversible uptake to the
+C     particle surface area modified by an uptake coefficient of 0.02
+C     (Yu and Luo, ACP, 14, pp12455-12464, 2014).
+        CBAR_DMA = COFCBAR_DMA * SQRT( AIRTEMP )
+
+        !Calculate Fluxes to Each Size Mode
+        DO I = 1, N_MODE
+          !AM0, AM1 and AM2 have not changed since SO4 condensation rates
+          !were calculated
+          CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
+     &                 DV_DMA, ALPHDMA, CBAR_DMA, FCONC_OUT )
+          FCONC_DMA( I, : ) = FCONC_OUT( : )
+        ENDDO
+        COND_DMA = SUM( FCONC_DMA( :,2 )) * PRECURSOR_CONC( DMA_IDX ) 
+     &                                    * GAMMA_DMA * DELT
+        COND_DMA = MIN( COND_DMA, PRECURSOR_CONC( DMA_IDX ) )
+        PRECURSOR_CONC( DMA_IDX ) = PRECURSOR_CONC( DMA_IDX ) - COND_DMA
+
+        !Apply Fluxes (corrected in case the flux exceeds the vapor conc)
+        !to Each Size Mode. Also adjust Second Moment for Condensation of
+        !Amines
+        DO IMODE = 1, N_MODE
+          AM3 = 0.0
+          DO IAER = 1,N_AEROSPC
+            AM3 = AM3 + AEROSPC_CONC( IAER, IMODE )
+          ENDDO
+        
+          MOMENT2_CONC( IMODE ) = MOMENT2_CONC( IMODE ) *
+     &      (( AM3 + COND_DMA )/ AM3)**(2.0/3.0)
+
+          AEROSPC_CONC( ADMA_IDX, IMODE ) = AEROSPC_CONC( ADMA_IDX, IMODE ) + 
+     &            COND_DMA * FCONC_DMA( IMODE,2 ) / SUM(FCONC_DMA( :,2 ))
+        ENDDO
+
+
+C *** Semivolatile Species Condensation
+C     For Hybrid approach, calculate dynamic mass trasfer for
 C     semi-volatile components of coarse mode (NO3, CL, NH4)  
 
       IF ( HYBRID ) THEN 
