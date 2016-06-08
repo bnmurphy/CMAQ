@@ -27,7 +27,8 @@ C %W% %P% %G% %U%
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE AQ_MAP ( JDATE, JTIME, WTBAR, WCBAR, TBARC, PBARC,
      &                    CTHK1, AIRM, PRATE1, TAUCLD, POLC, CEND,
-     &                    REMOV, REMOVAC, ALFA0, ALFA2, ALFA3, DARK )
+     &                    REMOV, REMOVAC, ALFA0NUC, ALFA2NUC, ALFA3NUC,
+     &                    ALFA0AKN, ALFA2AKN, ALFA3AKN, DARK )
 
 C-----------------------------------------------------------------------
 C  DESCRIPTION:  This is an interface processor between the cloud dynamics
@@ -72,9 +73,12 @@ C    POLC       real     input  ave vert conc incloud (moles sp/ mole air)
 C    CEND       real    output  ending incloud conc (moles/mole)
 C    REMOV      real    output  moles/m2 or mm*mol/lit scavenged
 C    REMOVAC    real    output  variable storing H+ deposition
-C    ALFA0      real     input  scav coef for aitken aerosol number
-C    ALFA2      real     input  scav coef for aitken aerosol surface area
-C    ALFA3      real     input  scav coef for aitken aerosol mass
+C    ALFA0NUC   real     input  scav coef for nucleation aerosol number
+C    ALFA2NUC   real     input  scav coef for nucleation aerosol surface area
+C    ALFA3NUC   real     input  scav coef for nucleation aerosol mass
+C    ALFA0AKN   real     input  scav coef for aitken aerosol number
+C    ALFA2AKN   real     input  scav coef for aitken aerosol surface area
+C    ALFA3AKN   real     input  scav coef for aitken aerosol mass
 C    DARK       logical  input DARK = TRUE is night,  DARK = FALSE is day
 C-----------------------------------------------------------------------
 
@@ -111,9 +115,12 @@ C Arguments:
       REAL,    INTENT( INOUT ) :: CEND ( : )  ! ending incloud conc (moles/mole)
       REAL,    INTENT( INOUT ) :: REMOV( : )  ! moles/m2 or mm*mol/lit scavenged
       REAL,    INTENT( INOUT ) :: REMOVAC   ! variable storing H+ deposition
-      REAL,    INTENT( IN )    :: ALFA0     ! scav coef for aitken aerosol number
-      REAL,    INTENT( IN )    :: ALFA2     ! scav coef for aitken aerosol sfc area
-      REAL,    INTENT( IN )    :: ALFA3     ! scav coef for aitken aerosol mass
+      REAL,    INTENT( IN )    :: ALFA0NUC  ! scav coef for nucleation aerosol number
+      REAL,    INTENT( IN )    :: ALFA2NUC  ! scav coef for nucleation aerosol sfc area
+      REAL,    INTENT( IN )    :: ALFA3NUC  ! scav coef for nucleation aerosol mass
+      REAL,    INTENT( IN )    :: ALFA0AKN  ! scav coef for aitken aerosol number
+      REAL,    INTENT( IN )    :: ALFA2AKN  ! scav coef for aitken aerosol sfc area
+      REAL,    INTENT( IN )    :: ALFA3AKN  ! scav coef for aitken aerosol mass
       LOGICAL, INTENT( IN )    :: DARK      ! DARK = TRUE is night,  DARK = FALSE is day
 
 C Local Variables (scalars):
@@ -130,7 +137,8 @@ C Local Variables (scalars):
       INTEGER       SPC                 ! liquid species loop counter
 
       REAL( 8 )  :: BETASO4
-      REAL       :: EALFA2T             ! EXP( -ALFA2 * TAUCLD )
+      REAL       :: EALFA2TNUC          ! EXP( -ALFA2 * TAUCLD )
+      REAL       :: EALFA2TAKN          ! EXP( -ALFA2 * TAUCLD )
       REAL( 8 )  :: M3NEW( NMODES )     ! modal mass at time t
       REAL( 8 )  :: M3OLD( NMODES )     ! modal mass at time 0
 
@@ -277,7 +285,7 @@ C     into aerospc_conc in aero_data module
 C *** Calculate pseudo aerosol 3rd moment (ignore factors that cancel in the division)
 
       M3OLD = 0.0
-      DO IMODE = 2, N_MODE
+      DO IMODE = ia_acc, N_MODE
 
         DO SPC = 1, N_AEROSPC
           IF (  AEROSPC( SPC )%TRACER ) CYCLE 
@@ -293,11 +301,13 @@ C *** Calculate pseudo aerosol 3rd moment (ignore factors that cancel in the div
 C...perform aqueous-phase chemistry calculations
 
       CALL AQCHEM ( JDATE, JTIME, TBARC, PBARC, TAUCLD, PRATE1,
-     &              WCBAR, WTBAR, AIRM, ALFA0, ALFA2, ALFA3, GAS,
+     &              WCBAR, WTBAR, AIRM, ALFA0NUC, ALFA2NUC, ALFA3NUC, 
+     &              ALFA0AKN, ALFA2AKN, ALFA3AKN, GAS,
      &              AEROSOL, GASWDEP, AERWDEP, HPWDEP, BETASO4, DARK )
 
-C...  compute the scavenging coefficient
-      EALFA2T = EXP( -ALFA2 * TAUCLD )
+C...  compute the scavenging coefficient for aerosol surface area
+      EALFA2TNUC = EXP( -ALFA2NUC * TAUCLD )
+      EALFA2TAKN = EXP( -ALFA2AKN * TAUCLD )
 
 C...store the amount of hydrogen deposition
 
@@ -333,7 +343,7 @@ C     into aerospc_conc in aero_data module
 C *** Calculate pseudo aerosol 3rd moment (ignore factors that cancel in the division)
 
       M3NEW = 0.0
-      DO IMODE = 2, N_MODE
+      DO IMODE = ia_acc, N_MODE
 
         DO SPC = 1, N_AEROSPC
           IF (  AEROSPC( SPC )%TRACER ) CYCLE 
@@ -348,23 +358,25 @@ C *** Calculate pseudo aerosol 3rd moment (ignore factors that cancel in the div
 
 C...check for minimums
 
-      DO IMODE = 2, N_MODE
-        M3OLD( IMODE ) = MAX( M3OLD( IMODE ), CONMIND )
-        M3NEW( IMODE ) = MAX( M3NEW( IMODE ), CONMIND )
+      DO IMODE = IA_ACC, N_MODE
+        M3OLD( IMODE ) = MAX( M3OLD( IMODE ), CONMIN )
+        M3NEW( IMODE ) = MAX( M3NEW( IMODE ), CONMIN )
       END DO
 
 C...Update surface area
 
-      CEND( AEROSRF_MAP( 1 ) ) = POLC( AEROSRF_MAP( 1 ) ) * EALFA2T
+      CEND( AEROSRF_MAP( IA_NUC ) ) = POLC( AEROSRF_MAP( IA_NUC ) ) * EALFA2TNUC
       
-      CEND( AEROSRF_MAP( 2 ) ) = POLC( AEROSRF_MAP( 2 ) )
+      CEND( AEROSRF_MAP( IA_AIT ) ) = POLC( AEROSRF_MAP( IA_AIT ) ) * EALFA2TAKN
+      
+      CEND( AEROSRF_MAP( IA_ACC ) ) = POLC( AEROSRF_MAP( IA_ACC ) )
      &                         * EXP( -BETASO4 * TAUCLD * ONETHIRD )
-     &                         * ( M3NEW( 2 ) / M3OLD( 2 ) ) ** TWOTHIRDS
+     &                         * ( M3NEW( IA_ACC ) / M3OLD( IA_ACC ) ) ** TWOTHIRDS
 
-      CEND( AEROSRF_MAP( 3 ) ) = POLC( AEROSRF_MAP( 3 ) )
-     &                         * ( CEND( AERONUM_MAP( 3 ) )
-     &                             / POLC( AERONUM_MAP( 3 ) ) ) ** ONETHIRD
-     &                         * ( M3NEW(3) / M3OLD( 3 ) ) ** TWOTHIRDS
+      CEND( AEROSRF_MAP( IA_CRS ) ) = POLC( AEROSRF_MAP( IA_CRS ) )
+     &                         * ( CEND( AERONUM_MAP( IA_CRS ) )
+     &                             / POLC( AERONUM_MAP( IA_CRS ) ) ) ** ONETHIRD
+     &                         * ( M3NEW( IA_CRS ) / M3OLD( IA_CRS ) ) ** TWOTHIRDS
 
       RETURN
       END

@@ -39,7 +39,8 @@ C     Oct 2014: B.Hutzell:forcing to skip mapping if aerosol species
 C     index equals the values for H3OP species as for aerosol water
 C     species 
 C-----------------------------------------------------------------------
-      Use aero_data, Only: n_aerolist, n_aerospc, conmin
+      Use aero_data, Only: n_aerolist, n_aerospc, conmin,
+                           ia_nuc, ia_ait, ia_acc, ia_crs
 
       Implicit None
 
@@ -55,9 +56,10 @@ C-----------------------------------------------------------------------
       Integer, Parameter :: nmodes = 3  ! number of aerosol modes
       Integer, Parameter :: mxsrg = 35  ! maximum number of species for surrogate
 
-      integer, parameter :: akn = 1     ! number for Aitken mode
-      Integer, Parameter :: acc = 2     ! number for Accumulation mode
-      Integer, Parameter :: cor = 3     ! number for Coarse mode
+      integer, parameter :: nuc = ia_nuc     ! number for Nucleation mode
+      integer, parameter :: akn = ia_ait     ! number for Aitken mode
+      Integer, Parameter :: acc = ia_acc     ! number for Accumulation mode
+      Integer, Parameter :: cor = ia_crs     ! number for Coarse mode
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C...Gas surrogates species 
@@ -137,26 +139,27 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 C... Additional Aerosol surrogate species to add to aerosol list
       Type ( sur_aer_type ), private :: addsrgaer( naddaer ) = (/
-C                         Aitken           Accum            Coarse        Background MolWt  Density
-C                      -------------    -------------    -------------    ---------- -----  ------
-!    & sur_aer_type((/'             ', '             ', 'CACO3        '/),   0.0,    100.1, 2200.0),
-!    & sur_aer_type((/'             ', '             ', 'MGCO3        '/),   0.0,     84.3, 2200.0),
-!    & sur_aer_type((/'             ', '             ', 'A3FE         '/),   0.0,     55.8, 2000.0),
-!    & sur_aer_type((/'             ', '             ', 'B2MN         '/),   0.0,     54.9, 2000.0),
-!    & sur_aer_type((/'             ', '             ', 'K            '/),   0.0,     39.1, 2200.0),
-     & sur_aer_type((/'NUM_AITKEN   ', 'NUM_ACCUM    ', 'NUM_COARSE   '/),   0.0,      0.0,    1.0),
-     & sur_aer_type((/'SRF_AITKEN   ', 'SRF_ACCUM    ', 'SRF_COARSE   '/),   0.0,      0.0,    1.0)/)
+C                         Nucltn      Aitken           Accum            Coarse        Background MolWt  Density
+C                      ----------   -------------    -------------    -------------    ---------- -----  ------
+!    & sur_aer_type((/'          ','             ', '             ', 'CACO3        '/),   0.0,    100.1, 2200.0),
+!    & sur_aer_type((/'          ','             ', '             ', 'MGCO3        '/),   0.0,     84.3, 2200.0),
+!    & sur_aer_type((/'          ','             ', '             ', 'A3FE         '/),   0.0,     55.8, 2000.0),
+!    & sur_aer_type((/'          ','             ', '             ', 'B2MN         '/),   0.0,     54.9, 2000.0),
+!    & sur_aer_type((/'          ','             ', '             ', 'K            '/),   0.0,     39.1, 2200.0),
+     & sur_aer_type((/'NUM_NUCLN ','NUM_AITKEN   ', 'NUM_ACCUM    ', 'NUM_COARSE   '/),   0.0,      0.0,    1.0),
+     & sur_aer_type((/'SRF_NUCLN ','SRF_AITKEN   ', 'SRF_ACCUM    ', 'SRF_COARSE   '/),   0.0,      0.0,    1.0)/)
 
 C...TX species added to Aerosol surrogate if not found in AE namelist file      
       Type ( sur_aer_type ), private :: srgaer_addtx( nadd_tx ) = (/
-C                         Aitken           Accum            Coarse        Background MolWt  Density
-C                      -------------    -------------    -------------    ---------- -----  ------
-     & sur_aer_type((/'TRACER_AITKEN', '             ', '             '/),   0.0,    100.0, 2200.0),
-     & sur_aer_type((/'             ', 'TRACER_ACCUM ', '             '/),   0.0,    100.0, 2200.0),
-     & sur_aer_type((/'             ', '             ', 'TRACER_COARSE'/),   0.0,    100.0, 2200.0),
-     & sur_aer_type((/'PHG_AITKEN   ', '             ', '             '/),   0.0,    200.5, 2200.0),
-     & sur_aer_type((/'             ', 'PHG_ACCUM    ', '             '/),   0.0,    200.5, 2200.0),
-     & sur_aer_type((/'             ', '             ', 'PHG_COARSE   '/),   0.0,    200.5, 2200.0)/)
+C                        Nucleation        Aitken           Accum            Coarse        Background MolWt  Density
+C                      -------------    -------------    -------------    -------------    ---------- -----  ------
+     & sur_aer_type((/'TRACER_NUCLN ','             ', '             ', '             '/),   0.0,    100.0, 2200.0),
+     & sur_aer_type((/'             ','TRACER_AITKEN', '             ', '             '/),   0.0,    100.0, 2200.0),
+     & sur_aer_type((/'             ','             ', 'TRACER_ACCUM ', '             '/),   0.0,    100.0, 2200.0),
+     & sur_aer_type((/'             ','             ', '             ', 'TRACER_COARSE'/),   0.0,    100.0, 2200.0),
+     & sur_aer_type((/'             ','PHG_AITKEN   ', '             ', '             '/),   0.0,    200.5, 2200.0),
+     & sur_aer_type((/'             ','             ', 'PHG_ACCUM    ', '             '/),   0.0,    200.5, 2200.0),
+     & sur_aer_type((/'             ','             ', '             ', 'PHG_COARSE   '/),   0.0,    200.5, 2200.0)/)
 
 C...Required aerosol species
       Character( 16 ), Parameter, Private :: req_aso4   = 'SO4_ACCUM'
@@ -187,6 +190,7 @@ C...Required aerosol species
       Character( 16 ), Parameter, Private :: req_anthc  = 'ANTH_COARSE' ! SLN 16March2011
       Character( 16 ), Parameter, Private :: req_seasc  = 'SEAS_COARSE' ! SLN 16March2011
 C...For TX version      
+      Character( 16 ), Parameter, Private :: req_tracerh = 'TRACER_NUCLN'
       Character( 16 ), Parameter, Private :: req_traceri = 'TRACER_AITKEN'
       Character( 16 ), Parameter, Private :: req_tracerj = 'TRACER_ACCUM'
       Character( 16 ), Parameter, Private :: req_tracerk = 'TRACER_COARSE'
@@ -215,6 +219,7 @@ C...Pointers for the AQCHEM array AEROSOL
       Integer :: lnum     !  Number
       Integer :: lsrf     !  Surface area
 C...TXHG aersosols      
+      Integer :: ltracer_nuc  !  Tracer aerosols (Nucleation)
       Integer :: ltracer_akn  !  Tracer aerosols (Aitken)
       Integer :: ltracer_acc  !  Tracer aerosols (Accumulation)
       Integer :: ltracer_cor  !  Tracer aerosols (Coarse)
@@ -304,6 +309,9 @@ C for TX version
 
       Integer, Private, Save :: logdev
       Integer, Private, External :: setup_logdev
+
+C.....Define scavenging coefficients for impaction of particles to hydrometeors
+      !Real       :: ALFA0( nmodes ), ALFA2( nmodes ), ALFA3( nmodes )
 
       Contains
  
@@ -615,6 +623,7 @@ C...Create the pointers for required aerosol surrogate species needed by AQCHEM
       lanthc = findSgrAer( req_anthc )   !  CORS in Coarse mode  (AE6)    SLN 16March2011
       lseasc = findSgrAer( req_seasc )   !  SEAS in Coarse mode  (AE6)    SLN 16March2011
 C...For TXHG version
+      ltracer_nuc    = findSgrAer( req_tracerh  )   !  Tracer nucleation mode 
       ltracer_akn    = findSgrAer( req_traceri  )   !  Tracer aitken mode 
       ltracer_acc    = findSgrAer( req_tracerj  )   !  Tracer accumation mode 
       ltracer_cor    = findSgrAer( req_tracerk  )   !  Tracer coarse mode 
@@ -663,6 +672,7 @@ C...For TXHG version
       Write( logdev,'( 5x, a, i4 )' ) 'lsoilc:   ', lsoilc
       Write( logdev,'( 5x, a, i4 )' ) 'lanthc:   ', lanthc
       Write( logdev,'( 5x, a, i4 )' ) 'lseasc:   ', lseasc
+      Write( logdev,'( 5x, a, i4 )' ) 'ltracer_nuc:  ', ltracer_nuc
       Write( logdev,'( 5x, a, i4 )' ) 'ltracer_akn:  ', ltracer_akn
       Write( logdev,'( 5x, a, i4 )' ) 'ltracer_acc:  ', ltracer_acc
       Write( logdev,'( 5x, a, i4 )' ) 'ltracer_cor:  ', ltracer_cor
