@@ -101,6 +101,10 @@ C Required species
       Character( 16 ), Private, Parameter :: req_NH3    = 'NH3'
       Character( 16 ), Private, Parameter :: req_OH     = 'OH'
       Character( 16 ), Private, Parameter :: req_PHGRXN = 'PHGRXN'
+      Character( 16 ), Private, Parameter :: req_DMA    = 'DMA'
+      Character( 16 ), Private, Parameter :: req_MBTCA  = 'MBTCA'
+      Character( 16 ), Private, Parameter :: req_ELVOC  = 'ELVOC'
+
 
 C Indices of required species
       Integer :: NO2_idx
@@ -113,6 +117,10 @@ C Indices of required species
       Integer :: NH3_idx
       Integer :: OH_idx
       Integer :: PHGRXN_idx
+      Integer :: DMA_idx
+      Integer :: MBTCA_idx
+      Integer :: ELVOC_idx
+
 
       Real( 8 ) :: precursor_mw( n_precursor )   ! mol wt from cgrid_spcs [g/mol]
 
@@ -120,6 +128,7 @@ C Indices of required species
 
       Real    :: so4rate                       ! sulfate gas-phase production rate [ug/m^3*s]
       Real    :: phg_rate                      ! particulate mercury gas-phase production rate [ug/m^3*s]
+      Real    :: elvocrate                     ! ELVOC gas-phase production rate [ug/m^3*s]
 
 C Private variables for loading and unloading to CGRID array
       Integer          :: precursor_map( n_precursor )  ! pointers to CGRID

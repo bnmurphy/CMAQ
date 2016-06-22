@@ -223,6 +223,8 @@ C *** arguments:
 
 C *** Parameters
       REAL, PARAMETER :: DIFFSULF = 9.36E-06  ! molecular diffusiviity for sulfuric acid
+      REAL, PARAMETER :: DIFFDMA  = 9.36E-06  ! molecular diffusiviity for dimethylamine
+      REAL, PARAMETER :: DIFFELVOC= 9.36E-06  ! molecular diffusiviity for ELVOC
       REAL, PARAMETER :: SQRT2 = 1.4142135623731
       REAL, PARAMETER :: T0 = 288.15   ! [ K ]
       REAL, PARAMETER :: TWOTHIRDS = 2.0 / 3.0
@@ -230,6 +232,8 @@ C *** Parameters
 C *** local variables
       REAL         DIFFCORR   ! Correction to DIFFSULF & DIFFORG for pressure
       REAL         DV_SO4     ! molecular diffusivity of H2SO4 vapor after correction for ambient conditions
+      REAL         DV_DMA     ! molecular diffusivity of DMA vapor after correction for ambient conditions
+      REAL         DV_ELVOC   ! molecular diffusivity of ELVOC vapor after correction for ambient conditions
       REAL         SQRT_TEMP  ! square root of ambient temperature
       REAL         XLM        ! atmospheric mean free path [m]
       REAL         AMU        ! atmospheric dynamic viscosity [kg/m s]
@@ -350,7 +354,8 @@ C *** Compute H2SO4 diffusivity, correct for temperature and pressure
 C *** Update size parameters (distribution is wet from ORGAER)
       CALL GETPAR( LIMIT_Sg )
 
-      CALL VOLINORG( DT, COL, ROW, LAYER, DV_SO4, CGR )
+      CALL VOLINORG( DT, COL, ROW, LAYER, 
+     &               DV_SO4, DV_DMA, DV_ELVOC, CGR )
 
 C *** Coagulation
 C     Calculate coagulation coefficients using a method dictated by
@@ -875,7 +880,8 @@ C *** Set minimum value for all concentrations in the CBLK array
 
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      SUBROUTINE VOLINORG( DT, COL, ROW, LAYER, DV_SO4, CGR )
+      SUBROUTINE VOLINORG( DT, COL, ROW, LAYER,
+     &                     DV_SO4, DV_DMA, DV_ELVOC, CGR )
 
 C *** Calculates the partitioning of inorganic components (CL,NO3,NH4,SO4)
 C     between the aerosol and gas phase over the operator synchronization
@@ -931,7 +937,9 @@ C *** Arguments:
       INTEGER ROW             ! grid row index
       INTEGER LAYER           ! model layer index
       REAL    DV_SO4          ! molecular diffusivity of H2SO4 vapor 
+      REAL    DV_DMA          ! molecular diffusivity of DMA vapor 
                               ! after correction for ambient conditions
+      REAL    DV_ELVOC        ! molecular diffusivity of DMA vapor 
       REAL( 8 ) :: CGR( N_MODE-1 ) ! 3rd moment SO4 growth rate [m^3/m^3-s]
 
 C *** Parameters: 
@@ -947,9 +955,9 @@ C *** Parameters:
       REAL, PARAMETER :: CUTOFF = 0.05   ! [ug/m**3]
       REAL, PARAMETER :: ALPHSULF = 0.1  ! Accommodation coefficient for sulfuric acid
                                          ! see Capaldo et al. (2000)
-      REAL, PARAMETER :: ALPHDMA = 1.0   ! Accomodation Coefficient for DMA
-      REAL, PARAMETER :: GAMMA_DMA = 0.2 ! Uptake Coefficient for DMA
-
+      REAL, PARAMETER :: ALPHDMA = 1.0   ! Accommodation coefficient for DMA
+      REAL, PARAMETER :: ALPHELVOC= 1.0   ! Accommodation coefficient for ELVOC
+      REAL, PARAMETER :: GAMMA_DMA = 1.0 ! GAMMA DMA
 
 C *** Local Variables:
 
@@ -959,6 +967,10 @@ C *** Inputs to subroutine HCOND3
                                  ! for caculating molecular vel [m/s]
                                  ! = sqrt((8*Rgas)/(pi*MW)) 
       REAL         CBAR_SO4      ! molecular velocity of H2SO4                      
+      REAL, SAVE :: COFCBAR_DMA  ! Temperature-independent coefficients
+      REAL         CBAR_DMA      ! molecular velocity of DMA
+      REAL, SAVE :: COFCBAR_ELVOC ! Temperature-independent coefficients
+      REAL         CBAR_ELVOC     ! molecular velocity of DMA
 
       REAL( 8 ) :: AM0( N_MODE ) ! zeroth moments
       REAL( 8 ) :: AM1( N_MODE ) ! first moments
@@ -974,21 +986,33 @@ C *** Inputs to subroutine HCOND3
 C *** Outputs from HCOND3: size-dependent term in the condensational-growth 
 C     expressions defined in Equations A13-A14 of [Binkowski & Shankar,1995]
       REAL( 8 ) :: FCONC_SO4( N_MODE,2 )  ! All sizes 2nd and 3rd moments
+      REAL( 8 ) :: FCONC_ELVOC( N_MODE,2 )! All sizes 2nd and 3rd moments
+      REAL( 8 ) :: FCONC_DMA( N_MODE,2 )  ! All sizes 2nd and 3rd moments
       REAL( 8 ) :: FCONC_OUT( 2 )         ! Output for HCOND3, 2nd and 3rd moments
-      REAL( 8 ) :: FCONCM1_SO4       ! reciprocals of total SO4 cond rates
+      REAL( 8 ) :: FCONCM1_SO4            ! reciprocals of total SO4 cond rates
+      REAL( 8 ) :: COND_DMA               ! Total Flux of DMA to All Sizes
 
 C *** Modal partition factors [ dimensionless ]
 C     defined in Equations A17-A18 of [Binkowski & Shankar,1995]
+      REAL( 8 ) :: OMEGA_NU_SO4  ! Aitken mode 2nd and 3rd moments
       REAL( 8 ) :: OMEGA_AT_SO4  ! Aitken mode 2nd and 3rd moments
       REAL( 8 ) :: OMEGA_AC_SO4  ! Accumulation mode 2nd and 3rd moments
-      REAL( 8 ) :: OMEGA( 2 )    ! partitioning coefficient for equilibrium PM mass
+      REAL( 8 ) :: OMEGA( n_mode )    ! partitioning coefficient for equilibrium PM mass
 
 C *** Variables for new particle formation:
-      REAL XH2SO4            ! steady state H2SO4 concentration
-      REAL( 8 ) :: DMDT_SO4  ! particle mass production rate [ ug/m**3 s ]
-      REAL( 8 ) :: DNDT      ! particle number production rate [ # / m**3 s ]
-      REAL( 8 ) :: DM2DT     ! second moment production rate [ m**2 / m**3 s]
-      REAL( 8 ) :: SCONDRATE ! SO4 condensation rate [ ug/m**3 s ]
+      REAL XH2SO4             ! steady state H2SO4 concentration [ ug/m**3 s ]     
+      REAL XNH3               ! NH3 concentration [ ug/m**3 s ]     
+      REAL XDMA               ! DMA concentration [ ug/m**3 s ]     
+      REAL XMBTCA             ! MBTCA concentration [ ug/m**3 s ]     
+      REAL XELVOC             ! ELVOC concentration [ ug/m**3 s ]     
+      REAL( 8 ) :: JSO4RATE   ! particle mass production rate [ ug/m**3 s ]
+      REAL( 8 ) :: JNH3RATE   ! particle mass production rate [ ug/m**3 s ]
+      REAL( 8 ) :: JDMARATE   ! particle mass production rate [ ug/m**3 s ]
+      REAL( 8 ) :: JMBTCARATE ! particle mass production rate [ ug/m**3 s ]
+      REAL( 8 ) :: JELVOCRATE ! particle mass production rate [ ug/m**3 s ]
+      REAL( 8 ) :: JRATE      ! particle number production rate [ # / m**3 s ]
+      REAL( 8 ) :: JM2RATE    ! second moment production rate [ m**2 / m**3 s]
+      REAL( 8 ) :: SCONDRATE  ! SO4 condensation rate [ ug/m**3 s ]
 
 C *** Mode-specific sulfate production rate [ ug/m**3 s ]
       REAL( 8 ) :: CONDSO4( N_MODE )    ! sulfate condensation rate [ ug/m**3 s ]
@@ -1048,6 +1072,7 @@ C     mass partitioning between the modes
       REAL( 8 ) :: M3OTHR, M3SOA          ! vars for 3rd moment calculation [m**3/m**3]
       REAL( 8 ), SAVE :: DF( NVOLINORG )  ! scratch array for mole -> ug conversion
       REAL( 8 ), SAVE :: DFH2OR8          ! mole -> ug conversion for H2O
+      REAL( 8 ) :: FACTOR                 ! conversion factor for Aerosol mass to 3rd moment
       REAL( 8 ) :: J( NVOLINORG )         ! condensation/evaporation flux [mol/m**3-s]
       REAL( 8 ) :: CFINAL( NVOLINORG,N_MODE ) ! conc after mass xfer step [ug/m**3]
       REAL( 8 ) :: H2O                    ! Scratch LWC variable for output
@@ -1167,13 +1192,15 @@ C *** Determine if Hybrid
 #endif
 
       DELT  = REAL( DT, 8 )
+
       TEMPI = AIRTEMP             ! assume const within synch timestep
       RHI   = MIN( 0.95, AIRRH )  ! "        "     "      "     "
 
 C *** Calculate molecular velocities (temperature dependent) and
 C     H+ concentration
 
-      CBAR_SO4 = COFCBAR_SO4 * SQRT( AIRTEMP )
+      CBAR_SO4   = COFCBAR_SO4 * SQRT( AIRTEMP )
+      CBAR_ELVOC = COFCBAR_ELVOC * SQRT( AIRTEMP )
 
       HPLUS = 0.0
       DO I = 1, N_MODE
@@ -1209,6 +1236,12 @@ C     Equations A13-A14 of Binkowski & Shankar (1995).
          CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
      &                DV_SO4, ALPHSULF, CBAR_SO4, FCONC_OUT )
          FCONC_SO4( I, : ) = FCONC_OUT( : )
+         
+	 CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
+     &                DV_ELVOC, ALPHELVOC, CBAR_ELVOC, FCONC_OUT )
+         FCONC_ELVOC( I, : ) = FCONC_OUT( : )
+
+
       END DO 
 
       IF ( .NOT. HYBRID ) THEN
@@ -1222,8 +1255,9 @@ C     Equations A13-A14 of Binkowski & Shankar (1995).
       END DO
 
 C *** New Particle Production
-C     Calculate the new particle production rate due to binary
-C     nucleation of H2O and H2SO4.  These calculations are performed 
+C     Calculate the new particle production rate due to multiple
+C     pathways of new particle formation from H2SO4, amines, and
+C     organics.  These calculations are performed 
 C     only when the gas-phase production rate of H2SO4 (i.e., SO4RATE) 
 C     is non-zero.  The condensation rate of H2SO4 is calculated as the
 C     gas-phase production rate minus the new particle production rate.
@@ -1260,6 +1294,17 @@ C     on Equations A21 and A23 of Binkowski & Shankar (1995).
          XH2SO4 = MAX( XH2SO4, CONMIN )
          PRECURSOR_CONC( SULF_IDX ) = REAL( XH2SO4, 8 )
 
+C *** Adjust ELVOC vapor concentration to an dequilibrium value as well
+         TMP = 0.0
+         DO I = 1,N_MODE
+           TMP = TMP + FCONC_ELVOC( I,2 )
+         END DO
+
+         XELVOC = ELVOCRATE / TMP
+         XELVOC = MEX( XELVOC, CONMIN )
+         !XELVOC = PRECURSOR_CONC( ELVOC_IDX )
+
+
 C *** Calculate new particle production rate for 0th, 2nd, & 3rd moments
 C     from several multicomponent pathways including:
 C       H2SO4-H2O
@@ -1270,7 +1315,6 @@ C       Organic-Organic
          XNH3 = PRECURSOR_CONC( NH3_IDX )
          XDMA = PRECURSOR_CONC( DMA_IDX )
          XMBTCA = PRECURSOR_CONC( MBTCA_IDX )
-         XELVOC = PRECURSOR_CONC( ELVOC_IDX )
 
          CALL NPFMULTI ( AIRRH, AIRPRESS, AIRTEMP, XH2SO4, SO4RATE,
      &                   XNH3, XDMA, XMBTCA, XELVOC, JRATE, JM2RATE,
@@ -1286,23 +1330,28 @@ C *** Apply Change in Gas and Aerosol Phase Species Consistent with the
 C     New Particle Formation Rates that took Place
          PRECURSOR_CONC( NH3_IDX ) = XNH3 - JNH3RATE * DELT
          PRECURSOR_CONC( DMA_IDX ) = XDMA - JDMARATE * DELT
-         PRECURSOR_CONC( MBTCA_IDX ) = XMBTCA - JMBTCARATE * DELT
-         PRECURSOR_CONC( ELVOC_IDX ) = XELVOC - JELVOCRATE * DELT
+         ! Take these species from the aerosol phase instead
+         !PRECURSOR_CONC( MBTCA_IDX ) = XMBTCA - JMBTCARATE * DELT
+         !PRECURSOR_CONC( ELVOC_IDX ) = XELVOC - JELVOCRATE * DELT
          
          AM3 = 0.0
          DO IAER = 1,N_AEROSPC
-           AM3 = AM3 + AEROSPC_CONC( IAER, IA_NUC )
+	       FACTOR = 1.0E-9 * f6pi / AEROSPC( IAER )%density
+           AM3 = AM3 + AEROSPC_CONC( IAER, IA_NUC ) * FACTOR
          ENDDO
+         M3_NPF = (JNH3RATE/NH3RAT + JDMARATE + JMBTCARATE + JELVOCRATE)
+     &             * DELT * 1.0E-9 * f6pi / 1400.0
+
          MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) *
-     &     ((AM3+(JNH3RATE+JDMARATE+JMBTCARATE+JELVOCRATE)*DELT)/ AM3)**(2.0/3.0)
+     &     ((AM3+M3_NPF)/ AM3)**(2.0/3.0)
 
          AEROSPC_CONC( ANH4_IDX,IA_NUC ) = AEROSPC_CONC( ANH4_IDX, IA_NUC ) + JNH3RATE/NH3RAT*DELT
          AEROSPC_CONC( ADMA_IDX,IA_NUC ) = AEROSPC_CONC( ADMA_IDX, IA_NUC ) + JDMARATE*DELT
          AEROSPC_CONC( AMBTCA_IDX,IA_NUC ) = AEROSPC_CONC( AMBTCA_IDX, IA_NUC ) + JMBTCARATE*DELT
          AEROSPC_CONC( AELVO1_IDX,IA_NUC ) = AEROSPC_CONC( AELVO1_IDX, IA_NUC ) + JELVOCRATE*DELT
 
-         !The ELVOC and MBTCA have Already Been COndensed in ORGAER.
-         !Take Their Mass from the Accumulation Mode.
+         ! The ELVOC and MBTCA have Already Been COndensed in ORGAER.
+         ! Take Their Mass from the Accumulation Mode.
          AEROSPC_CONC( AMBTCA_IDX,IA_ACC ) = AEROSPC_CONC( AMBTCA_IDX, IA_ACC ) - JMBTCARATE*DELT
          AEROSPC_CONC( AELVO1_IDX,IA_ACC ) = AEROSPC_CONC( AELVO1_IDX, IA_ACC ) - JELVOCRATE*DELT
                                   
@@ -1370,11 +1419,12 @@ C     (Yu and Luo, ACP, 14, pp12455-12464, 2014).
         DO IMODE = 1, N_MODE
           AM3 = 0.0
           DO IAER = 1,N_AEROSPC
-            AM3 = AM3 + AEROSPC_CONC( IAER, IMODE )
+            FACTOR = 1.0E-9 * f6pi / AEROSPC( IAER )%density
+            AM3 = AM3 + AEROSPC_CONC( IAER, IMODE ) * FACTOR
           ENDDO
         
           MOMENT2_CONC( IMODE ) = MOMENT2_CONC( IMODE ) *
-     &      (( AM3 + COND_DMA )/ AM3)**(2.0/3.0)
+     &      (( AM3 + COND_DMA*1.0E-9*f6pi/AEROSPC(ADMA_IDX)%density )/ AM3)**(2.0/3.0)
 
           AEROSPC_CONC( ADMA_IDX, IMODE ) = AEROSPC_CONC( ADMA_IDX, IMODE ) + 
      &            COND_DMA * FCONC_DMA( IMODE,2 ) / SUM(FCONC_DMA( :,2 ))
