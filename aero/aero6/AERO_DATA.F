@@ -542,6 +542,24 @@ C Emissions mapping
       Character( 16 ), Allocatable :: pmem_map_name( : )! mapping to aerospc array for PM emissions
       Character( 16 ) :: pmem_units             ! units for PM emissions for all species
 
+C Look-Up Tables for New Particle Formation parameterized from the
+C results of the Atmospheric Cluster Dynamics Code
+      Real, Parameter :: AC0 = 4.0  !H2SO4 log10-scale Intercept for Look-up Table
+      Real, Parameter :: DAC = 0.5  !H2SO4 log10-scale Slope for Look-Up Table
+      Real, Parameter :: DM0 = 4.0  !DMA log10-scale Intercept for Look-up Table
+      Real, Parameter :: DDM = 0.5  !DMA log10-scale Slope for Look-Up Table
+      Real, Parameter :: NH0 = 6.0  !NH3 log10-scale Intercept for Look-up Table 
+      Real, Parameter :: DNH = 0.5  !NH3 log10-scale Slope for Look-Up Table     
+      Real, Parameter :: TK0 = 180.0!T(K) linear-scale Intercept for Look-up Table
+      Real, Parameter :: DTK = 10.0 !T(K) linear-scale Slope for Look-Up Table
+      Real, Parameter :: RH0 = 0.0  !RH linear-scale Intercept for Look-up Table
+      Real, Parameter :: SRH = 5.0  !RH linear-scale Slope for Look-Up Table
+      Real, Parameter :: CS0 = -5.0 !Cond Sink log10-scale Intercept for Look-up Table
+      Real, Parameter :: DCS_A = 1.0  !Cond Sink log10-scale Slope for AMINE Look-Up Table
+      Real, Parameter :: DCS_T = 0.5  !Cond Sink log10-scale Slope for TERNARY Look-Up Table
+      Real, Save :: ACDC_DMA( 12, 11, 15, 6 )      !! subscripted ( IAC, IDM, ITK, ICS )
+      Real, Save :: ACDC_TERN( 12, 11, 15, 21, 9 ) !! subscripted ( IAC, IDM, ITK, IRH, ICS )
+ 
 C New Particle Formation Diagnostic Variables
       REAL :: JDIAG     ( 6 ) ! Pathway resolved NPF Rates [N/cm3/s]
       REAL :: JM2DIAG   ( 6 ) ! Pathway resolved 2nd Moment Changes [m2/m3/s]

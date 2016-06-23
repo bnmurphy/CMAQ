@@ -1005,6 +1005,7 @@ C *** Variables for new particle formation:
       REAL XDMA               ! DMA concentration [ ug/m**3 s ]     
       REAL XMBTCA             ! MBTCA concentration [ ug/m**3 s ]     
       REAL XELVOC             ! ELVOC concentration [ ug/m**3 s ]     
+      REAL( 8 ) :: CS         ! Sulfuric Acid Condensation Sink [ s-1 ]
       REAL( 8 ) :: JSO4RATE   ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JNH3RATE   ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JDMARATE   ! particle mass production rate [ ug/m**3 s ]
@@ -1254,7 +1255,10 @@ C     Equations A13-A14 of Binkowski & Shankar (1995).
       DO I = 1, N_MODE
          GRFAC1( I ) = FCONC_SO4( I,1 )
          GRFAC2( I ) = FCONC_SO4( I,2 )
-      END DO
+      END DO         
+
+      ! Calculate Total Sulfuric Acid Condensation Sink
+      CS = SUM( GRFAC2 )
 
 C *** New Particle Production
 C     Calculate the new particle production rate due to multiple
@@ -1313,7 +1317,7 @@ C       Organic-Organic
          XDMA = PRECURSOR_CONC( DMA_IDX )
          XMBTCA = PRECURSOR_CONC( MBTCA_IDX )
 
-         CALL NPFMULTI ( AIRRH, AIRPRES, AIRTEMP, XH2SO4, SO4RATE,
+         CALL NPF_MULTI ( REAL(CS), AIRRH, AIRPRES, AIRTEMP, XH2SO4, SO4RATE,
      &                   XNH3, XDMA, XMBTCA, XELVOC, JRATE, JM2RATE,
      &                   JSO4RATE, JNH3RATE, JDMARATE, JMBTCARATE,
      &                   JELVOCRATE )
