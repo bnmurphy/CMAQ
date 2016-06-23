@@ -62,9 +62,11 @@ C 24 Mar 16 G. Sarwar: updated for CB05EH51
 C    May 16 B. Murphy, H. Pye: updated treatment of aerosol moments
 C
 C-----------------------------------------------------------------------
+      Use AERO_DATA, only : n_mode
+      
       Implicit None
 
-      Integer, Parameter :: n_vapor_list = 28   ! # of potential partitioning SVOCs
+      Integer, Parameter :: n_vapor_list = 30   ! # of potential partitioning SVOCs
       Integer, Parameter :: n_orgprod    = 13   ! # of ROG rxn counter species
       Integer, Save      :: n_vapor             ! # of actual simulated SOA vapors
 
@@ -184,8 +186,8 @@ C                     -------    -------    ------   ------
 
       Real    :: orgprod_mw     ( n_orgprod )  ! Mol weight of reactive organic gases
       Real    :: orgprod_conc   ( n_orgprod )  ! orgprod concentration
-      Integer :: orgprod_aeroMap( n_orgprod,n_mode )  ! orgprod pointers to aerospc
-      Integer, Allocatable :: soa_aeroMap    ( :,n_mode )    ! soa pointers to aerospc
+      Integer :: orgprod_aeroMap( n_orgprod )  ! orgprod pointers to aerospc
+      Integer, Allocatable :: soa_aeroMap    ( : )    ! soa pointers to aerospc
 
 
 C mapping variables used for loading and unloading to CGRID array
@@ -237,7 +239,7 @@ C Local Variables:
       Real            :: gasconv
       Real            :: vtmp
       Integer         :: n, g
-      Integer         :: spc
+      Integer         :: spc, imode
       Integer         :: vapor_to_vaporlist( n_vapor_list )
 
       Real, Save :: alk_factor = 1.00
@@ -919,7 +921,7 @@ C Local variables:
       Logical, Save :: first_time = .True.
       Integer, Save :: logdev
       Character( 80 ) :: xmsg
-      Integer       :: i, im, indx
+      Integer       :: i, im, indx, ielvoc
 
       Real, Save :: mwpoa                     ! Molecular weight of POA [ g/mol ]
 
@@ -1043,7 +1045,7 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
       
       ! Calculate fraction of mass transfer to/from each mode
       GR3FRAC( :,: ) = 0.0
-      Do im = ia_nuc,iacc
+      Do im = ia_nuc,ia_acc
         Where ( GR3( :,im ) .gt. 0. ) 
      &      GR3FRAC( :,im ) = GR3( :,im ) / Sum( GR3(:,:),DIM=2 ) !NPF Growth
       End Do
@@ -1056,21 +1058,29 @@ C gas tracer species to the array that will be multiplied by alpha
 C to give newly formed semivolatile vapors.
       totrog( : ) = 0.0
       Do i = 1, n_vapor
-         If ( drog_map( i ) .gt. 0 ) then
+         If ( drog_map( i ) .gt. 0 ) Then
            totrog( i ) = drog( drog_map( i ) )
          End If
       End Do
 
 C Transfer non-volatile products directly to aerospc_conc array (All modes).
 C Use the Size distribution splitting factor associated with ELVOCs
-C rather than recalculating the condensation sink for every condesnign
+C rather than recalculating the condensation sink for every condensing
 C species.
+      ! Find Growth Rates for ELVOA and use that for all other
+      ! nonvolatile condensation
+      Do i = 1, n_vapor
+          If ( vaporspc( i )%name .EQ. 'ELVOC' ) Then
+              ielvoc = i
+          End If
+      End Do
+
       Do im = ia_nuc, ia_acc
         Do i = 1, n_orgprod
            If ( orgprod_aeroMap( i ) .Gt. 0 ) Then
               aerospc_conc( orgprod_aeroMap( i ),im ) =
-     &        aerospc_conc( orgprod_aeroMap( i ),im )
-     &          + orgprod( i )%alphaH * drog( i ) * GR3FRAC( idx_ELVOC,im )
+     &          aerospc_conc( orgprod_aeroMap( i ),im )
+     &          + orgprod( i )%alphaH * drog( i ) * GR3FRAC( ielvoc,im )
            End If
         End Do
       End Do
@@ -1140,7 +1150,7 @@ C hard-coded values.
       totorg = totorgsw
       Do i = 1, n_vapor
          If( soa_aeroMap( i ) .lt. 1 )Cycle
-         totorg = totorg + sum ( aerospc_conc( soa_aeroMap( i ),ia_nuc:ia_acc )
+         totorg = totorg + sum ( aerospc_conc( soa_aeroMap( i ),ia_nuc:ia_acc) )
      &                      * mw_vap_m1( i )
       End Do
 
@@ -1250,7 +1260,7 @@ C Constrain caer to values between conmin and ctotf
 
       Else   ! threshold not exceeded; no material transferred to aerosol phase
 
-         caer = real( nmode-1,4 ) * conmin   ! array assignment
+         caer = real( n_mode-1,4 ) * conmin   ! array assignment
 
       End If    ! check on equilibrium threshold
 
@@ -1298,7 +1308,7 @@ C Transfer particle-phase SOA and vapor-phase SVOCs back to CBLK
                   Write( xmsg,'( A56,/,A11,I2,A9,E12.5,A9,E12.5 )' ) 
      &                 ' *** Too Much Evaporation from Existing Organic Aerosol:',
      &                 ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
-     &                 ' Mode 2: ',aerospc_conc( indx,ia_ait )
+     &                 ' Mode 2: ',aerospc_conc( indx,ia_ait ),
      &                 ' Mode 3: ',aerospc_conc( indx,ia_acc )
                   Call m3exit( pname, 0, 0, xmsg, xstat3 )
               End If
@@ -1362,7 +1372,7 @@ C condensation/evaporation does not affect the geometric standard deviation.
       m2wet_final( ia_nuc ) = m2wet_init( ia_nuc ) * ( m3wet_final( ia_nuc ) / m3wet_init( ia_nuc ) ) ** ( 2.0 / 3.0 )
       m2wet_final( ia_ait ) = m2wet_init( ia_ait ) * ( m3wet_final( ia_ait ) / m3wet_init( ia_ait ) ) ** ( 2.0 / 3.0 )
       m2wet_final( ia_acc ) = m2wet_init( ia_acc ) * ( m3wet_final( ia_acc ) / m3wet_init( ia_acc ) ) ** ( 2.0 / 3.0 )
-      moment2_conc( ia_nuc:ia_ait )  = m2wet_final( : )
+      moment2_conc( ia_nuc:ia_acc )  = m2wet_final( : )
 
       Return
       End Subroutine orgaer

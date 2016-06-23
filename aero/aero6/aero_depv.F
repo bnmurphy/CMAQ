@@ -922,8 +922,8 @@ C accumulation mode
                      EIM = MIN( EIM, 1.0 )
                      RD0AC = 1.0 / ( UTSCALE * ( SC0AC ** ( -TWO3 ) + EIM ) )
 
-                     VDEPJ( J,C,R,VDNACC ) = VGHAT0A
-     &                       / ( 1.0 - EXP(-VGHAT0A * ( Mosaic_Data%RA( C,R,J ) + RD0A ) ) )
+                     VDEPJ( J,C,R,VDNACC ) = VGHAT0AC
+     &                       / ( 1.0 - EXP(-VGHAT0AC * ( Mosaic_Data%RA( C,R,J ) + RD0AC ) ) )
 
 C coarse mode
 

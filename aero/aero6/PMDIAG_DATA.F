@@ -34,7 +34,7 @@ c-----------------------------------------------------------------------
           CHARACTER (LEN = 80) :: SPC_DESC
         END TYPE PMDIAG_SPC_RECORD_TYPE
 
-        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(57) = (/
+        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(72) = (/
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVNUC        ', 5, 'na              ', 'NPF mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVATKN       ', 5, 'na              ', 'Aitken mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVACC        ', 5, 'na              ', 
@@ -99,7 +99,7 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_SO4_DMA      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from DMA-H2SO4 Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_SO4_ORG      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Org-H2SO4 Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_ORG_ORG      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Org-Org Production' ), 
-     &    PMDIAG_SPC_RECORD_TYPE( 'M2_RICCO        ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from H2SO4-Org (Riccobono) Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_RICCO        ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from H2SO4-Org (Riccobono) Prod' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_Binary   ', 5, 'ug m-3          ', 'Change in H2SO4(g) from Binary NPF' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_Ternary  ', 5, 'ug m-3          ', 'Change in H2SO4(g) from Ternary NPF' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_SO4_DMA  ', 5, 'ug m-3          ', 'Change in H2SO4(g) from DMA NPF' ),

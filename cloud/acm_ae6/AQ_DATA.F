@@ -40,20 +40,19 @@ C     index equals the values for H3OP species as for aerosol water
 C     species 
 C-----------------------------------------------------------------------
       Use aero_data, Only: n_aerolist, n_aerospc, conmin,
-                           ia_nuc, ia_ait, ia_acc, ia_crs
+     &                     n_mode, ia_nuc, ia_ait, ia_acc, ia_crs
 
       Implicit None
 
       Integer, Parameter :: ngas = 15   ! number of gas-phase species for AQCHEM
 !     Integer, Parameter :: naddaer = 7 ! number of additional aerosol surrogate species for AQCHEM
       Integer, Parameter :: naddaer = 2 ! number of additional aerosol surrogate species for AQCHEM
-      Integer, Parameter :: nadd_tx = 6 ! number of surrogates for HAPS aerosol species for AQCHEM
+      Integer, Parameter :: nadd_tx = 7 ! number of surrogates for HAPS aerosol species for AQCHEM
 
       Integer, Parameter :: max_naer = n_aerolist + naddaer +  nadd_tx ! max number aero surrogates
 
       Integer, Save      :: naer        ! number of aerosol surrogate species for AQCHEM
       Integer, Parameter :: nliqs = 55  ! number of liquid-phase species in AQCHEM
-      Integer, Parameter :: nmodes = 3  ! number of aerosol modes
       Integer, Parameter :: mxsrg = 35  ! maximum number of species for surrogate
 
       integer, parameter :: nuc = ia_nuc     ! number for Nucleation mode
@@ -129,7 +128,7 @@ C...Aerosol surrogates species
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
       Type sur_aer_type
-         Character( 16 ) :: name( nmodes )     ! surrogate name
+         Character( 16 ) :: name( n_mode )     ! surrogate name
          Real            :: backgnd            ! background value
          Real            :: molwt              ! molecular weight
          Real            :: density            ! density (kg/m^3) 
@@ -311,7 +310,7 @@ C for TX version
       Integer, Private, External :: setup_logdev
 
 C.....Define scavenging coefficients for impaction of particles to hydrometeors
-      !Real       :: ALFA0( nmodes ), ALFA2( nmodes ), ALFA3( nmodes )
+      !Real       :: ALFA0( n_mode ), ALFA2( n_mode ), ALFA3( n_mode )
 
       Contains
  
@@ -418,13 +417,13 @@ C...Map aero species
          Call m3exit( 'aq_data_init', 0, 0, xmsg, xstat3 )
       End If
 
-      Allocate ( nsrgaer( naer,nmodes ), stat = ios )
+      Allocate ( nsrgaer( naer,n_mode ), stat = ios )
       If ( ios .Ne. 0 ) Then
          xmsg = '*** Error allocating nsrgaer'
          Call m3exit( 'aq_data_init', 0, 0, xmsg, xstat3 )
       End If
 
-      Allocate ( lsrgaer( naer,nmodes,mxsrg ), stat = ios )
+      Allocate ( lsrgaer( naer,n_mode,mxsrg ), stat = ios )
       If ( ios .Ne. 0 ) Then
          xmsg = '*** Error allocating lsrgaer'
          Call m3exit( 'aq_data_init', 0, 0, xmsg, xstat3 )
@@ -438,7 +437,7 @@ C...Add missing optional aerosol surrogate species
       Do var = 1, n_aerospc
 
          spc = nadd_tx + var
-         srgaer( spc ) = sur_aer_type( (/' ',' ',' '/), 0.0, 0.0, 0.0 )
+         srgaer( spc ) = sur_aer_type( (/' ',' ',' ',' '/), 0.0, 0.0, 0.0 )
 
          ! Skip H2O, H2OP, and SOIL species
          If ( var .Eq. ah2o_idx .Or. var .Eq. ah3op_idx ) Then
@@ -554,7 +553,7 @@ C...Create the pointers from CGRID to the aerosol species needed by AQCHEM
       nsrgaer = 0
       write(logdev, 1114)
       Do iaer = 1, naer
-         Do n = 1, nmodes
+         Do n = 1, n_mode
             If ( srgaer( iaer )%name( n ) .Ne. ' ' ) Then
                nsrgaer( iaer,n ) = indexn( srgaer( iaer )%name( n ), n_cgrid2aq,
      &                                     cgrid2aq, lsrg )
@@ -753,7 +752,7 @@ C Local Variables:
       Integer spc, n
 
       Do spc = 1, naer
-         Do n = 1, nmodes
+         Do n = 1, n_mode
             ! Write( *,'(a,i5)' ) vname, spc
             If ( srgaer( spc )%name( n ) .Eq. Trim( vname ) ) Then
                idx = spc

@@ -497,8 +497,8 @@ C     Production term is removed, because new particle formation
 C     and condensational growth are accounted for in VOLINORG.
       LOSS = (
      &        ( BNUNU( 2 ) * MOMENT0_CONC( IA_NUC )
-     &        ( BNUAT( 2 ) * MOMENT0_CONC( IA_AIT )
-     &        + BNUAC( 2 ) * MOMENT0_CONC( IA_ACC ) ) * MOMENT0_CONC( IA_NUC )
+     &          + BNUAT( 2 ) * MOMENT0_CONC( IA_AIT )
+     &          + BNUAC( 2 ) * MOMENT0_CONC( IA_ACC ) ) * MOMENT0_CONC( IA_NUC )
      &       ) / M20
 
 C *** Solve for M2_Aitken based on LOSS during this time step
@@ -1086,7 +1086,9 @@ C     mass partitioning between the modes
       REAL( 8 ) :: EQLBHIJ                ! H+ concentration from isoropia for I plus J-modes [ug/m**3]
 
       REAL( 8 ) :: TMP
-      INTEGER I, N                        ! loop and array indices
+      REAL( 8 ) :: AM3
+      REAL( 8 ) :: M3_NPF
+      INTEGER I, N, IAER                  ! loop and array indices
       INTEGER IMODE                       ! mode loop index  
       INTEGER ISTEP                       ! loop index, mass transfer time step loop
       INTEGER ISP                         ! loop index, species loop
@@ -1271,11 +1273,6 @@ C *** Initialize Variables
       JMBTCARATE = 0.0D0
       JELVOCRATE = 0.0D0
 
-      DMDT_SO4  = 0.0D0
-      DNDT      = 0.0D0
-      DM2DT     = 0.0D0
-      SCONDRATE = 0.0D0
-
 C *** Produce new particles only during time steps when the gas-phase 
 C     production rate of H2SO4 is non-zero
 
@@ -1301,7 +1298,7 @@ C *** Adjust ELVOC vapor concentration to an dequilibrium value as well
          END DO
 
          XELVOC = ELVOCRATE / TMP
-         XELVOC = MEX( XELVOC, CONMIN )
+         XELVOC = MAX( XELVOC, CONMIN )
          !XELVOC = PRECURSOR_CONC( ELVOC_IDX )
 
 
@@ -1316,7 +1313,7 @@ C       Organic-Organic
          XDMA = PRECURSOR_CONC( DMA_IDX )
          XMBTCA = PRECURSOR_CONC( MBTCA_IDX )
 
-         CALL NPFMULTI ( AIRRH, AIRPRESS, AIRTEMP, XH2SO4, SO4RATE,
+         CALL NPFMULTI ( AIRRH, AIRPRES, AIRTEMP, XH2SO4, SO4RATE,
      &                   XNH3, XDMA, XMBTCA, XELVOC, JRATE, JM2RATE,
      &                   JSO4RATE, JNH3RATE, JDMARATE, JMBTCARATE,
      &                   JELVOCRATE )
@@ -1711,7 +1708,7 @@ C     ISORROPIA. Convert everything to [mol m-3].
       !Compute sulfate from total sulfate production rate [ug/m3-s] for fine 
       !modes; add in H2SO4 nucleated in model timestep
       WI( 2 ) = ( SUM( AEROSPC_CONC( ASO4_IDX,IA_NUC:IA_ACC ) ) 
-     &           +( DMDT_SO4 + SUM( CONDSO4( IA_NUC:IA_ACC ) ) ) * DELT * H2SO4RATM1 ) * CFAC_ASO4
+     &           +( JSO4RATE + SUM( CONDSO4( IA_NUC:IA_ACC ) ) ) * DELT * H2SO4RATM1 ) * CFAC_ASO4
       WI( 3 ) = PRECURSOR_CONC( NH3_IDX )  * CFAC_GNH3
      &         +SUM( AEROSPC_CONC( ANH4_IDX,IA_NUC:IA_ACC ) ) * CFAC_ANH4 
       WI( 4 ) = PRECURSOR_CONC( HNO3_IDX ) * CFAC_GHNO3
@@ -1811,7 +1808,7 @@ C *** Apply modal partitioning of equilibrium aerosol mass
                 CFINAL( ISP,IMODE ) = 0.0D0
 
                 IF ( CFINAL( ISP, IA_AIT ) .LT. -1.0D-15 ) THEN
-                    CFINAL( ISP,ia_nuc ) = CFINAL( ISP,ia_nuc ) + ( CCFINAL( ISP,ia_ait ) - conmin )
+                    CFINAL( ISP,ia_nuc ) = CFINAL( ISP,IA_NUC ) + ( CFINAL( ISP,IA_AIT ) - conmin )
                     CFINAL( ISP,ia_ait ) = conmin
 
                     IF ( CFINAL( ISP,IA_NUC ) .LT. -1.0D-15 ) THEN
@@ -1846,9 +1843,9 @@ C *** Apply Final Concentrations to Moment Variables in Aerosol Scheme
 
          IF ( IMODE .EQ. IA_NUC ) THEN
             ! Update Number Concentration with NPF
-            MOMENT0_CONC( IMODE ) = AM0(IMODE) + DNDT * DELT
+            MOMENT0_CONC( IMODE ) = AM0(IMODE) + JRATE * DELT
             ! Add NPF to total condensation rate
-            RATE = DMDT_SO4 + CONDSO4( IMODE )
+            RATE = JSO4RATE + CONDSO4( IMODE )
             SO4 = CINORG( KSO4,IMODE ) + RATE * DELT * H2SO4RATM1 
          ELSE
             ! Ignore NPF. The small particles are not in these modes

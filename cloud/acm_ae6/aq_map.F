@@ -139,16 +139,16 @@ C Local Variables (scalars):
       REAL( 8 )  :: BETASO4
       REAL       :: EALFA2TNUC          ! EXP( -ALFA2 * TAUCLD )
       REAL       :: EALFA2TAKN          ! EXP( -ALFA2 * TAUCLD )
-      REAL( 8 )  :: M3NEW( NMODES )     ! modal mass at time t
-      REAL( 8 )  :: M3OLD( NMODES )     ! modal mass at time 0
+      REAL( 8 )  :: M3NEW( N_MODE )     ! modal mass at time t
+      REAL( 8 )  :: M3OLD( N_MODE )     ! modal mass at time 0
 
       REAL       :: HPWDEP                        ! hydrogen wet dep (mm mol/liter)
       REAL( 8 )  :: GAS    ( NGAS )               ! gas phase conc (mol/mol)
       REAL( 8 )  :: GASWDEP( NGAS )               ! gas phase wet dep array (mm mol/liter)
-      REAL( 8 )  :: AEROSOL( MAX_NAER, NMODES)        ! aerosol conc (mol/mol)
-      REAL( 8 )  :: AERWDEP( MAX_NAER, NMODES)        ! aerosol wet dep array (mm mol/liter)
+      REAL( 8 )  :: AEROSOL( MAX_NAER, N_MODE)        ! aerosol conc (mol/mol)
+      REAL( 8 )  :: AERWDEP( MAX_NAER, N_MODE)        ! aerosol wet dep array (mm mol/liter)
       REAL( 8 )  :: WSRGGAS( NGAS, MXSRG)             ! weights for surrogate
-      REAL( 8 )  :: WSRGAER( MAX_NAER, NMODES, MXSRG) ! weights for surrogate
+      REAL( 8 )  :: WSRGAER( MAX_NAER, N_MODE, MXSRG) ! weights for surrogate
 
 C External Functions:
 
@@ -157,15 +157,19 @@ C External Functions:
 
       INTERFACE
         SUBROUTINE AQCHEM ( JDATE, JTIME, TEMP, PRES_PA, TAUCLD, PRCRATE,
-     &                      WCAVG, WTAVG, AIRM, ALFA0, ALFA2, ALFA3, GAS,
-     &                      AEROSOL, GASWDEP, AERWDEP, HPWDEP, BETASO4, DARK )
-           INCLUDE SUBST_CONST          ! constants
-           INTEGER,   INTENT( IN )  :: JDATE  ! current model date, coded YYYYDDD
-           INTEGER,   INTENT( IN )  :: JTIME  ! current model time, coded HHMMSS
+     &                      WCAVG, WTAVG, AIRM, ALFA0NUC, ALFA2NUC, ALFA3NUC,
+     &                      ALFA0AIT, ALFA2AIT, ALFA3AIT, GAS, AEROSOL,
+     &                      GASWDEP, AERWDEP, HPWDEP, BETASO4, DARK )
+           INCLUDE SUBST_CONST                   ! constants
+           INTEGER,   INTENT( IN )  :: JDATE     ! current model date, coded YYYYDDD
+           INTEGER,   INTENT( IN )  :: JTIME     ! current model time, coded HHMMSS
            REAL,      INTENT( IN )  :: AIRM      ! total air mass in cloudy layers (mol/m2)
-           REAL,      INTENT( IN )  :: ALFA0     ! scav coef for aitken aerosol number
-           REAL,      INTENT( IN )  :: ALFA2     ! scav coef for aitken aerosol sfc area
-           REAL,      INTENT( IN )  :: ALFA3     ! scav coef for aitken aerosol mass
+           REAL,      INTENT( IN )  :: ALFA0NUC  ! scav coef for nuc. aerosol number
+           REAL,      INTENT( IN )  :: ALFA2NUC  ! scav coef for nuc. aerosol sfc area
+           REAL,      INTENT( IN )  :: ALFA3NUC  ! scav coef for nuc. aerosol mass
+           REAL,      INTENT( IN )  :: ALFA0AIT  ! scav coef for aitken aerosol number
+           REAL,      INTENT( IN )  :: ALFA2AIT  ! scav coef for aitken aerosol sfc area
+           REAL,      INTENT( IN )  :: ALFA3AIT  ! scav coef for aitken aerosol mass
            REAL,      INTENT( OUT ) :: HPWDEP    ! hydrogen wet deposition (mm mol/liter)
            REAL( 8 ), INTENT( OUT ) :: BETASO4  
            REAL,      INTENT( IN )  :: PRCRATE   ! precip rate (mm/hr)
@@ -241,7 +245,7 @@ C...load aerosol concentrations
       AERWDEP = 0.0D0
 
       DO IAER = 1, NAER
-        DO IMODE = 1, NMODES
+        DO IMODE = 1, N_MODE
 
           IF ( SRGAER( IAER )%NAME( IMODE ) .NE. ' ' ) THEN
             AEROSOL( IAER, IMODE ) = 0.0D0
@@ -324,7 +328,7 @@ C...Now, re-apportion mass back into cend/remov (cgrid-type) array
       END DO
 
       DO IAER = 1, NAER
-        DO IMODE = 1, NMODES
+        DO IMODE = 1, N_MODE
           IF( SRGAER( IAER )%NAME( IMODE ) .NE. ' ' ) THEN
             DO ISRG = 1, NSRGAER( IAER, IMODE )
               PNTR = CGRID2AQ_MAP( LSRGAER( IAER, IMODE, ISRG ) )

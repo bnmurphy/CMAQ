@@ -114,7 +114,7 @@ C----------------------------------------------------------------------
 
 C Number of aerosol species and modes
 
-      Integer, Parameter :: n_aerolist = 89     ! number of aero species
+      Integer, Parameter :: n_aerolist = 92     ! number of aero species
       Integer, Parameter :: n_mode = 4          ! number of modes
 
       Integer, Parameter :: ia_nuc = 1          ! 1 = Nucleation Mode 
@@ -122,7 +122,7 @@ C Number of aerosol species and modes
       Integer, Parameter :: ia_acc = 3          ! 3 = Accumulation Mode
       Integer, Parameter :: ia_crs = 4          ! 4 = Coarse Mode
 
-      Character( 1 ), Parameter :: size_subscript ( n_mode ) = C(/'H','I','J','K'/)
+      Character( 1 ), Parameter :: size_subscript ( n_mode ) = (/'H','I','J','K'/)
 
       Integer, Save :: n_aerospc ! number of aero species
 
@@ -213,22 +213,22 @@ C                  --------- --------- --------- ---------  --------- ------- + 
      & spcs_type((/'       ','       ','AALK2J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','AXYL1J ','       '/), cm_set, 1480.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','AXYL2J ','       '/), cm_set, 1480.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'       ','       ','AXYL3J ','       '/), cm_set, 1330.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'AXYL3H ','AXYL3I ','AXYL3J ','       '/), cm_set, 1330.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','ATOL1J ','       '/), cm_set, 1240.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','ATOL2J ','       '/), cm_set, 1240.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'       ','       ','ATOL3J ','       '/), cm_set, 1450.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'ATOL3H ','ATOL3I ','ATOL3J ','       '/), cm_set, 1450.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','ABNZ1J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','ABNZ2J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'       ','       ','ABNZ3J ','       '/), cm_set, 1400.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'ABNZ3H ','ABNZ3I ','ABNZ3J ','       '/), cm_set, 1400.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','ATRP1J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','ATRP2J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','AISO1J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','AISO2J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'       ','       ','AISO3J ','       '/), cm_set, 1400.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'AISO3H ','AISO3I ','AISO3J ','       '/), cm_set, 1400.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','ASQTJ  ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','APAH1J ','       '/), cm_set, 1480.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','APAH2J ','       '/), cm_set, 1480.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'       ','       ','APAH3J ','       '/), cm_set, 1550.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'APAH3H ','APAH3I ','APAH3J ','       '/), cm_set, 1550.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','AOLGAJ ','       '/), cm_set, 1400.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','AOLGBJ ','       '/), cm_set, 1400.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','AORGCJ ','       '/), cm_set, 1400.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
@@ -330,7 +330,7 @@ C See Ref. (4), above and https://cfpub.epa.gov/si/speciate/
 C number of chemical species in windblown dust aerosol
       Integer, Parameter :: ndust_spc = 19
 
-      Type( emis_table ), Parameter :: dust_spc( ndust_spc ) = (/
+      Type( emis_table ), Parameter :: dust_spc_list( ndust_spc ) = (/
 C                      --------------- name ---------------        ---------- spcfac ----------
 C                      Nuc        Aitken   Accum     Coarse         Nuc Aitken Accum   Coarse
      &   emis_table( (/'       ','       ','ASO4J  ','ASO4K  '/), (/ 0.0, 0.0, 0.02250, 0.02655/) ),   ! Sulfate
@@ -343,7 +343,6 @@ C                      Nuc        Aitken   Accum     Coarse         Nuc Aitken A
      &   emis_table( (/'       ','       ','AKJ    ','       '/), (/ 0.0, 0.0, 0.03770, 0.0    /) ),   ! Potassium
      &   emis_table( (/'       ','       ','APOCJ  ','       '/), (/ 0.0, 0.0, 0.01075, 0.0    /) ),   ! Organic Carbon
      &   emis_table( (/'       ','       ','APNCOMJ','       '/), (/ 0.0, 0.0, 0.00430, 0.0    /) ),   ! Non-Carbon Organic Matter
-     &   emis_table( (/'       ','       ','ALVPO1J','       '/), (/ 0.0, 0.0, 0.01505, 0.0    /) ),   ! Total Organic Matter
      &   emis_table( (/'       ','       ','AECJ   ','       '/), (/ 0.0, 0.0, 0.0,     0.0    /) ),   ! Elemental Carbon
      &   emis_table( (/'       ','       ','AFEJ   ','       '/), (/ 0.0, 0.0, 0.03355, 0.0    /) ),   ! Iron
      &   emis_table( (/'       ','       ','AALJ   ','       '/), (/ 0.0, 0.0, 0.05695, 0.0    /) ),   ! Aluminum
@@ -353,7 +352,10 @@ C                      Nuc        Aitken   Accum     Coarse         Nuc Aitken A
      &   emis_table( (/'       ','       ','AH2OJ  ','AH2OK  '/), (/ 0.0, 0.0, 0.00541, 0.00637/) ),   ! Water
      &   emis_table( (/'       ','       ','AOTHRJ ','       '/), (/ 0.0, 0.0, 0.48319, 0.0    /) ),   ! Other
      &   emis_table( (/'       ','       ','       ','ASOIL  '/), (/ 0.0, 0.0, 0.0,     0.95358/) ) /) ! Non-Anion Dust
-                                                                
+     
+      Type( emis_table ), Save :: dust_spc( ndust_spc )
+
+        
 C Sea-Salt Speciation factors based on seawater composition:
 
 C number of chemical species in seawater aerosol composition
@@ -430,6 +432,9 @@ C Required species
       Character( 16 ), Private, Parameter :: req_soil   = 'ASOIL'
       Character( 16 ), Private, Parameter :: req_cors   = 'ACORS'
       Character( 16 ), Private, Parameter :: req_seacat = 'ASEACAT'
+      Character( 16 ), Private, Parameter :: req_dma    = 'ADMA'
+      Character( 16 ), Private, Parameter :: req_elvo1  = 'AELVO1'
+      Character( 16 ), Private, Parameter :: req_mbtca  = 'AMBTCA'
 
 C Indices of required species
       Integer :: aso4_idx
@@ -449,6 +454,9 @@ C Indices of required species
       Integer :: asoil_idx
       Integer :: acors_idx
       Integer :: aseacat_idx
+      Integer :: adma_idx
+      Integer :: aelvo1_idx
+      Integer :: ambtca_idx
 
 C Optional Species
       Character( 16 ), Private, Parameter :: req_ietet  = 'AIETET'
@@ -738,6 +746,9 @@ C Find indices of required species
       asoil_idx   = findAero( req_soil,   .True. )
       acors_idx   = findAero( req_cors,   .True. )
       aseacat_idx = findAero( req_seacat, .True. )
+      adma_idx    = findAero( req_dma,    .False. )
+      aelvo1_idx  = findAero( req_elvo1,  .False. )
+      ambtca_idx  = findAero( req_mbtca,  .False. )
 
       If ( Index( mechname, 'NVPOA' ) .Eq. 0 ) Then
          apoc_idx    = findAero( 'ALVPO1          ', .True. )

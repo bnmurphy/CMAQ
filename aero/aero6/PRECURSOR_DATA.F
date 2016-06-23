@@ -50,7 +50,7 @@ C-----------------------------------------------------------------------
 
       Implicit None
 
-      Integer, Parameter :: n_precursor = 24   ! # of precursors
+      Integer, Parameter :: n_precursor = 27   ! # of precursors
 
       Type precursor_type
          Character( 16 ) :: name               ! species name
@@ -62,33 +62,33 @@ C-----------------------------------------------------------------------
       Type ( precursor_type ), Private :: precursor( n_precursor ) = (/
 C                       Name      RxnCounter  Update
 C                    ----------   ----------  ------
-     & precursor_type( 'NO2    ', .False. , .True.  ),
-     & precursor_type( 'N2O5   ', .False. , .True.  ),
-     & precursor_type( 'HNO3   ', .False. , .True.  ),
-     & precursor_type( 'HONO   ', .False. , .True.  ),
-     & precursor_type( 'ISOPRXN', .True.  , .True.  ),
-     & precursor_type( 'TRPRXN ', .True.  , .True.  ),
-     & precursor_type( 'SULF   ', .False. , .True.  ),
-     & precursor_type( 'SULPRD ', .True.  , .True.  ),
-     & precursor_type( 'HCL    ', .False. , .True.  ),
-     & precursor_type( 'ALK5RXN', .True.  , .True.  ),
-     & precursor_type( 'ALKRXN ', .True.  , .True.  ),
-     & precursor_type( 'TOLNRXN', .True.  , .True.  ),
-     & precursor_type( 'TOLHRXN', .True.  , .True.  ),
-     & precursor_type( 'XYLNRXN', .True.  , .True.  ),
-     & precursor_type( 'XYLHRXN', .True.  , .True.  ),
-     & precursor_type( 'BNZNRXN', .True.  , .True.  ),
-     & precursor_type( 'BNZHRXN', .True.  , .True.  ),
-     & precursor_type( 'SESQRXN', .True.  , .True.  ),
-     & precursor_type( 'NH3    ', .False. , .True.  ),
-     & precursor_type( 'OH     ', .False. , .False. ),
-     & precursor_type( 'PAHNRXN', .True.  , .True.  ),
-     & precursor_type( 'PAHHRXN', .True.  , .True.  ),
-     & precursor_type( 'PCSOARXN',.True.  , .True.  ),
-     & precursor_type( 'DMA    ', .False. , .True.  ),
-     & precursor_type( 'MBTCA  ', .False. , .True.  ),
-     & precursor_type( 'ELVOC  ', .False. , .True.  ),
-     & precursor_type( 'PHGRXN ', .True.  , .True. )/)
+     & precursor_type( 'NO2     ', .False. , .True.  ),
+     & precursor_type( 'N2O5    ', .False. , .True.  ),
+     & precursor_type( 'HNO3    ', .False. , .True.  ),
+     & precursor_type( 'HONO    ', .False. , .True.  ),
+     & precursor_type( 'ISOPRXN ', .True.  , .True.  ),
+     & precursor_type( 'TRPRXN  ', .True.  , .True.  ),
+     & precursor_type( 'SULF    ', .False. , .True.  ),
+     & precursor_type( 'SULPRD  ', .True.  , .True.  ),
+     & precursor_type( 'HCL     ', .False. , .True.  ),
+     & precursor_type( 'ALK5RXN ', .True.  , .True.  ),
+     & precursor_type( 'ALKRXN  ', .True.  , .True.  ),
+     & precursor_type( 'TOLNRXN ', .True.  , .True.  ),
+     & precursor_type( 'TOLHRXN ', .True.  , .True.  ),
+     & precursor_type( 'XYLNRXN ', .True.  , .True.  ),
+     & precursor_type( 'XYLHRXN ', .True.  , .True.  ),
+     & precursor_type( 'BNZNRXN ', .True.  , .True.  ),
+     & precursor_type( 'BNZHRXN ', .True.  , .True.  ),
+     & precursor_type( 'SESQRXN ', .True.  , .True.  ),
+     & precursor_type( 'NH3     ', .False. , .True.  ),
+     & precursor_type( 'OH      ', .False. , .False. ),
+     & precursor_type( 'PAHNRXN ', .True.  , .True.  ),
+     & precursor_type( 'PAHHRXN ', .True.  , .True.  ),
+     & precursor_type( 'PCSOARXN', .True.  , .True.  ),
+     & precursor_type( 'DMA     ', .False. , .True.  ),
+     & precursor_type( 'MBTCA   ', .False. , .True.  ),
+     & precursor_type( 'ELVOC   ', .False. , .True.  ),
+     & precursor_type( 'PHGRXN  ', .True.  , .True. )/)
 
 C Required species
       Character( 16 ), Private, Parameter :: req_NO2    = 'NO2'

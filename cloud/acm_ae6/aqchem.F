@@ -150,8 +150,8 @@ C  ---------     ----  ------------  --------------------------------
 C  GAS(ngas)     real  input&output  Concentration for species i=1,15
 C  GASWDEP(ngas) real     output     wet deposition for species
 
-C  AEROSOL(naer,nmodes) real input&output   Concentration for species i=1,51
-C  AERWDEP(naer,nmodes) real     output     wet deposition for species
+C  AEROSOL(naer,n_mode) real input&output   Concentration for species i=1,51
+C  AERWDEP(naer,n_mode) real     output     wet deposition for species
 C-----------------------------------------------------------------------
 
       USE RXNS_DATA       ! chemical mechanism data
@@ -447,7 +447,7 @@ C...........Local Variables (scalars):
 
 C...........Local Variables (arrays):
 
-      REAL( 8 ) :: LOADING( MAX_NAER, NMODES ) ! aerosol loading (mol/liter)
+      REAL( 8 ) :: LOADING( MAX_NAER, N_MODE ) ! aerosol loading (mol/liter)
       REAL( 8 ) :: INITGAS( NGAS ) ! initial gas partial pressure (atm)
       REAL( 8 ) :: LIQUID( NLIQS ) ! wet deposition array (mm mol/liter)
       REAL( 8 ) :: WETDEP( NLIQS ) ! wet deposition array (mm mol/liter)
@@ -1636,7 +1636,6 @@ C...Compute for Aerosol species in  TXHG Version
       AEROSOL( LTRACER_AKN, AKN ) = AEROSOL( LTRACER_AKN, AKN ) * EALFA3TAKN
       AEROSOL( LTRACER_ACC, ACC ) = TRACER    * XL * RECIPAP1
       AEROSOL( LTRACER_COR, COR ) = TRACERCOR * XL * RECIPAP1
-      AEROSOL( LPHG_NUC, NUC )    = AEROSOL( LPHG_NUC, NUC ) * EALFA3TNUC
       AEROSOL( LPHG_AKN, AKN )    = AEROSOL( LPHG_AKN, AKN ) * EALFA3TAKN
       AEROSOL( LPHG_ACC, ACC )    = HGFINE * XL * RECIPAP1
       AEROSOL( LPHG_COR, COR )    = HGCOR * XL * RECIPAP1
