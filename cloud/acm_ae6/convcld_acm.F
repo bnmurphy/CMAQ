@@ -254,9 +254,12 @@ C-------------------------------------------
       REAL             AIRM             ! total air mass (mol/m2) in cloudy air
       REAL             AIRMB0           ! mol/m2 air below cloud
       REAL             AIRMBI           ! inverse mol/m2 air below cloud
-      REAL             ALFA0            ! aitken mode number scavenging coef
-      REAL             ALFA2            ! aitken mode sfc area scavenging coef
-      REAL             ALFA3            ! aitken mode mass scavenging coef
+      REAL             ALFA0NUC         ! aitken mode number scavenging coef
+      REAL             ALFA2NUC         ! aitken mode sfc area scavenging coef
+      REAL             ALFA3NUC         ! aitken mode mass scavenging coef
+      REAL             ALFA0AIT         ! aitken mode number scavenging coef
+      REAL             ALFA2AIT         ! aitken mode sfc area scavenging coef
+      REAL             ALFA3AIT         ! aitken mode mass scavenging coef
       REAL             ARPRES           ! ave cloud pres in atm
       REAL             CONDIS           !
       REAL             CTHK             ! cloud thickness (m)
@@ -400,25 +403,29 @@ C...........Statement Functions
       INTERFACE
         SUBROUTINE SCAVWDEP ( JDATE, JTIME, WTBAR, WCBAR, TBARC, PBARC,
      &                        CTHK1, AIRM, PRATE1, TAUCLD, POLC, CEND,
-     &                        REMOV, REMOVAC, ALFA0, ALFA2, ALFA3 )
+     &                        REMOV, REMOVAC, ALFA0NUC, ALFA2NUC, ALFA3NUC,
+     &                        ALFA0AIT, ALFA2AIT, ALFA3AIT )
           INTEGER, INTENT( IN )  :: JDATE, JTIME
           REAL,    INTENT( IN )  :: WTBAR, WCBAR, TBARC, PBARC,
      &                              CTHK1, AIRM, PRATE1, TAUCLD
           REAL,    INTENT( IN )  :: POLC ( : )
           REAL,    INTENT( OUT ) :: CEND( : ), REMOV( : )
           REAL,    INTENT( OUT ) :: REMOVAC
-          REAL,    INTENT( OUT ) :: ALFA0, ALFA2, ALFA3
+          REAL,    INTENT( OUT ) :: ALFA0NUC, ALFA2NUC, ALFA3NUC
+          REAL,    INTENT( OUT ) :: ALFA0AIT, ALFA2AIT, ALFA3AIT
         END SUBROUTINE SCAVWDEP
         SUBROUTINE AQ_MAP( JDATE, JTIME, WTBAR, WCBAR, TBARC, PBARC,
      &                     CTHK1, AIRM, PRATE1, TAUCLD, POLC, CEND,
-     &                     REMOV, REMOVAC, ALFA0, ALFA2, ALFA3, DARK )
+     &                     REMOV, REMOVAC, ALFA0NUC, ALFA2NUC, ALFA3NUC, 
+     &                     ALFA0AIT, ALFA2AIT, ALFA3AIT, DARK )
           INTEGER, INTENT( IN )    :: JDATE, JTIME
           REAL,    INTENT( IN )    :: WTBAR, WCBAR, TBARC, PBARC,
      &                                CTHK1, AIRM, PRATE1, TAUCLD
           REAL,    INTENT( IN )    :: POLC ( : )
           REAL,    INTENT( INOUT ) :: CEND( : ), REMOV( : )
           REAL,    INTENT( INOUT ) :: REMOVAC
-          REAL,    INTENT( IN )    :: ALFA0, ALFA2, ALFA3
+          REAL,    INTENT( IN )    :: ALFA0NUC, ALFA2NUC, ALFA3NUC
+          REAL,    INTENT( IN )    :: ALFA0AIT, ALFA2AIT, ALFA3AIT
           LOGICAL, INTENT( IN )    :: DARK            
         END SUBROUTINE AQ_MAP
         SUBROUTINE CZANGLE( JDATE, JTIME, NX, NY, COSZEN )
@@ -1512,7 +1519,8 @@ C...Finally, get in cloud pollutant concentrations in mol sp per mol air
           CALL SCAVWDEP ( JDATE, JTIME, WTBAR,
      &                    WCBAR, TBARC, PBARC,
      &                    CTHK1, AIRM, PRATE1, DTCLD, POLC, CEND,
-     &                    REMOV, REMOVAC, ALFA0, ALFA2, ALFA3 )
+     &                    REMOV, REMOVAC, ALFA0NUC, ALFA2NUC, 
+     &                    ALFA3NUC, ALFA0AIT, ALFA2AIT, ALFA3AIT )
 
 C...if the liquid water content is above the specified threshold
 C...  then perform the aqueous chemistry within the cloud and
@@ -1535,7 +1543,8 @@ C *** Golam Sarwar
 
             CALL AQ_MAP ( JDATE, JTIME, WTBAR, WCBAR, TBARC, PBARC,
      &                    CTHK1, AIRM, PRATE1, DTCLD, POLC, CEND,
-     &                    REMOV, REMOVAC, ALFA0, ALFA2, ALFA3, DARK )
+     &                    REMOV, REMOVAC, ALFA0NUC, ALFA2NUC, ALFA3NUC, 
+     &                    ALFA0AIT, ALFA2AIT, ALFA3AIT, DARK )
 
           END IF
 

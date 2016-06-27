@@ -263,8 +263,8 @@ C                  --------- --------- --------- ---------  --------- ------- + 
        ! pcSOA                                                                          
      & spcs_type((/'APCSOH ','APCSOI  ','APCSOJ  ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
        ! Organics for ultrafine particle formation                                                                          
-     & spcs_type((/'ADMAH  ','ADMAI   ','ADMAJ   ','      '/),cm_set, 1400.0, F, F, F,  1,  4.0, 0.0,F, 'SOLUTE','      ',es_0),
-     & spcs_type((/'AMBTCAH','AMBTCAI ','AMBTCAJ ','      '/),cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'ADMAH  ','ADMAI   ','ADMAJ   ','      '/),cm_set,  670.0, F, F, F,  1,  4.0, 0.0,F, 'SOLUTE','      ',es_0),
+     & spcs_type((/'AMBTCAH','AMBTCAI ','AMBTCAJ ','      '/),cm_set, 1250.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'AELVO1H','AELVO1I ','AELVO1J ','      '/),cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
 
        ! The following species are associated with the Multi-Pollutant code
@@ -794,14 +794,14 @@ C Adjust Dust Emissions for Organic Species, if running with semivolatile POA
       If ( Index( mechname, 'NVPOA' ) .Eq. 0 ) Then
          ! Find Indices for Nonvolatile Organics
          Do idust = 1, ndust_spc
-            If ( Index( dust_spc( idust )%name( 2 ), 'APOCJ' ) .Gt. 0 ) dust_org1 = idust
-            If ( Index( dust_spc( idust )%name( 2 ), 'APNCOMJ') .Gt. 0 ) dust_org2 = idust
+            If ( Index( dust_spc( idust )%name( IA_ACC ), 'APOCJ' ) .Gt. 0 ) dust_org1 = idust
+            If ( Index( dust_spc( idust )%name( IA_ACC ), 'APNCOMJ') .Gt. 0 ) dust_org2 = idust
          End Do
 
          ! Compute Total Organic Dust Scale Factor and O:C Ratio
          ! The dust OM:OC should equal 1.4 if it consistent with Simon and Bhave (2011).
-         dust_POC = dust_spc( dust_org1 )%spcfac( 2 )
-         dust_PNC = dust_spc( dust_org2 )%spcfac( 2 )
+         dust_POC = dust_spc( dust_org1 )%spcfac( IA_ACC )
+         dust_PNC = dust_spc( dust_org2 )%spcfac( IA_ACC )
          dust_OMOC = ( dust_POC + dust_PNC ) / dust_POC
          dust_OC = 12.0 / 15.0 * dust_OMOC - 14.0 / 15.0
 
@@ -815,10 +815,10 @@ C Adjust Dust Emissions for Organic Species, if running with semivolatile POA
          dust_OOA = 1.0 / ( 1.0 + ( dust_OC - OOA_OC ) / ( POA_OC - dust_OC ) )
 
          ! Assign new names and speciation to dust table
-         dust_spc( dust_org1 )%name( 2 ) = 'ALVPO1J'
-         dust_spc( dust_org2 )%name( 2 ) = 'ALVOO2J'
-         dust_spc( dust_org1 )%spcfac( 2 ) = dust_POA * ( dust_POC + dust_PNC )
-         dust_spc( dust_org2 )%spcfac( 2 ) = dust_OOA * ( dust_POC + dust_PNC )
+         dust_spc( dust_org1 )%name( IA_ACC ) = 'ALVPO1J'
+         dust_spc( dust_org2 )%name( IA_ACC ) = 'ALVOO2J'
+         dust_spc( dust_org1 )%spcfac( IA_ACC ) = dust_POA * ( dust_POC + dust_PNC )
+         dust_spc( dust_org2 )%spcfac( IA_ACC ) = dust_OOA * ( dust_POC + dust_PNC )
       End If
 
 #ifdef verbose_aero

@@ -171,13 +171,13 @@ C                      Name      Parent     Aerospc  AlphaH
 C                     -------    -------    ------   ------
      & orgprod_type( 'ALKRXN  ', 'SOAALK ', '      ', 0.000 ),
      & orgprod_type( 'XYLNRXN ', 'XYL    ', '      ', 0.000 ),
-     & orgprod_type( 'XYLHRXN ', 'XYL    ', 'AXYL3J', 0.360 ),
+     & orgprod_type( 'XYLHRXN ', 'XYL    ', 'AXYL3 ', 0.360 ),
      & orgprod_type( 'TOLNRXN ', 'TOL    ', '      ', 0.000 ),
-     & orgprod_type( 'TOLHRXN ', 'TOL    ', 'ATOL3J', 0.300 ),
+     & orgprod_type( 'TOLHRXN ', 'TOL    ', 'ATOL3 ', 0.300 ),
      & orgprod_type( 'BNZNRXN ', 'BENZENE', '      ', 0.000 ),
-     & orgprod_type( 'BNZHRXN ', 'BENZENE', 'ABNZ3J', 0.370 ),
+     & orgprod_type( 'BNZHRXN ', 'BENZENE', 'ABNZ3 ', 0.370 ),
      & orgprod_type( 'PAHNRXN ', 'NAPH   ', '      ', 0.000 ),
-     & orgprod_type( 'PAHHRXN ', 'NAPH   ', 'APAH3J', 0.730 ),
+     & orgprod_type( 'PAHHRXN ', 'NAPH   ', 'APAH3 ', 0.730 ),
      & orgprod_type( 'TRPRXN  ', 'TRPRXN ', '      ', 0.000 ),
      & orgprod_type( 'ISOPRXN ', 'ISOPRXN', '      ', 0.000 ),
      & orgprod_type( 'SESQRXN ', 'SESQRXN', '      ', 0.000 ),
@@ -419,9 +419,11 @@ C aerosol modes.
            If ( vaporspc( spc )%soa_name .Ne. ' ' ) Then
              Do imode = ia_nuc, ia_crs
                tmpName = trim(vaporspc( spc )%soa_name) // size_subscript( imode )
-               soa_aeroMap( spc ) = findAero( tmpName, .False. )
+               If ( soa_aeroMap( spc ) .EQ. 0 ) Then
+                 soa_aeroMap( spc ) = findAero( tmpName, .False. )
+               End If
              End Do
-             If ( .NOT. soa_aeroMap( spc ) ) Then
+             If ( soa_aeroMap( spc ) .EQ. 0 ) Then
                 !Exit since this species from the master namelist is not
                 !in the aero_data table
                 Write( xmsg,'( A19,I3,A42 )' ) ' *** Organic Vapor ', spc,
@@ -439,9 +441,11 @@ C (aerospc is used inside findAero).
            If ( orgprod( spc )%aerospc .Ne. ' ' ) Then
              Do imode = ia_nuc, ia_crs
                tmpName = trim( orgprod( spc )%aerospc ) // size_subscript( imode )
-               orgprod_aeroMap( spc ) = findAero( tmpName, .False. )
+               If ( orgprod_aeroMap( spc ) .EQ. 0 ) Then
+                 orgprod_aeroMap( spc ) = findAero( tmpName, .False. )
+               End If
              End Do
-             If ( .NOT. orgprod_aeroMap( spc ) ) Then
+             If ( orgprod_aeroMap( spc ) .EQ. 0 ) Then
                !Exit since this species from the master namelist is not
                !in the aero_data table
                Write( xmsg,'( A33,I3,A42 )' ) ' *** Nonvolatile Organic Product ', spc,
@@ -619,7 +623,7 @@ C Local Variables:
       End Function findOrgprod
 
 C-----------------------------------------------------------------------
-      Subroutine orgaer( dt, layer )
+      Subroutine orgaer( dt, layer, xlm, amu, sqrt_temp )
 
 C Updates CGRID via several pathways for secondary organic aerosol (SOA)
 C formation, as recommended by Edney et al. (2007).  These include SOA
@@ -913,6 +917,9 @@ C Key Subroutines/Functions called:  newt, soabisection
 C Arguments:
       Real    :: dt            ! Synchronization time step [ s ]
       Integer :: layer         ! model layer number
+      Real    :: xlm
+      Real    :: amu
+      Real    :: sqrt_temp
 
 C External functions:
       Integer, External :: setup_logdev
@@ -941,7 +948,10 @@ C Parameters & variables for adjusting cstar to ambient conditions
       Real, Parameter :: threshmin = 1.0E-19     ! small positive number
       Real, Parameter :: ctolmin = 1.0E-06
       Real, Parameter :: convfac_298 = 101325.0 * rgas1 * trefm1  ! P/RT at 1 atm and 298 K [ mole/m**3 ]
-      Real, Parameter :: difforg = 9.36e-6  ! Diffusivity of organics [m2 s-1]
+      Real, Parameter :: difforg = 5.8e-6   ! Diffusivity of organics [m2 s-1]. This factor will cause the 
+                                            ! formula below to equal a compromise between the MBTCA and ELVOC
+                                            ! diffusivities calculated with the Fuller et al. (1966) method 
+                                            ! in VOLINORG
       Real, Parameter :: alphorg = 1.0      ! accomodation coefficient
 
       Real convfac
@@ -995,6 +1005,14 @@ C Added for new SOA bisection (hotp 7/6/11)
       Real               :: lowb, upb, orgmoles      ! lower bound, upper bound, total aerosol moles
       Logical, Parameter :: newtpartition = .False.   ! true to use original method, false to use new bisection
 
+C Variables needed for Growth Calculations
+      Real    dm_org  ! Diameter of an organic vapor molecule
+      Real    Kn
+      Real    Cc
+      Real    Cbar_p ( n_mode ) !Velocity of a particle
+      Real    Dv_p( n_mode )    !Diffusivity of Particle
+      Real    mass_p            !Mass of individual particle [ kg ]
+
 C-----------------------------------------------------------------------
 
       If ( first_time )  Then
@@ -1006,6 +1024,9 @@ C Set unit conversion and inverse mw constants
          Allocate( mw_vap_m1( n_vapor ) )
          mw_vap_m1( : ) = 1.0 / vapor_mw( : )
          mwpoa = aerospc_mw( apoc_idx )
+
+         dm_org = ( 1.0e-3 * 250.0 / AVO 
+     &             / aerospc( aelvo1_idx )%density ) ** (1./3.)
 
       End If ! first_time
 
@@ -1033,12 +1054,24 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
       Do im = ia_nuc,ia_acc
         m1wet_init( im ) = m0_init( im ) * aeromode_diam( im ) * 
      &                         exp( 0.5 * aeromode_lnsg( im ) ** 2 )
-
+        
+        ! Calculate Diffusive properties of each mode
+        mass_p = aeromode_diam( im ) ** 3 * pi6 * aeromode_dens( im ) 
+        CBAR_P( im ) = SQRT_TEMP * SQRT( 8.0 * BOLTZMANN / ( PI * mass_p ) ) ! [m/sec]
+        Kn    = XLM / AEROMODE_DIAM( IM )                         ! Knudsen number
+        Cc    = 1 + Kn * ( 1.257 + 0.4 * exp( - 1.1 / Kn ) )     ! Cunningham correction
+        DV_P( IM ) = BOLTZMANN * AIRTEMP * Cc / 
+     &             (3.0 * PI * AMU * AEROMODE_DIAM( IM ) )         ! [ m**2 / sec ]
+     
         Do i = 1, n_vapor
           If ( aero_missing( soa_aeroMap( i ),im ) ) Cycle
           
-          Call HCOND3( m0_init( im ), m1wet_init( im ),
-     &                 m2wet_initD( im ), Dv_org, alphorg, cbar_org(i), GRtmp )
+!          Call HCOND3( m0_init( im ), m1wet_init( im ),
+!     &                 m2wet_initD( im ), Dv_org, alphorg, cbar_org(i), GRtmp )
+          CALL HCOND4( m0_init( im ), m1wet_init( im ), m2wet_init( im ),
+     &                dv_org, DV_P( IM ), cbar_org, CBAR_P( IM ), 
+     &                dm_org, AEROMODE_DIAM( IM ), GRtmp )
+         
           GR3( i,im ) = GRtmp( 2 )
         End Do
       End Do

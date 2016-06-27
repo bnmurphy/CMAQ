@@ -314,7 +314,7 @@ C Map aerospc data
 C Determine number of sea-salt species
             NSSSPC = 0
             DO S = 1, N_AEROSPC
-               IF ( AEROSPC_SSF( 2,S ) + AEROSPC_SSF( 3,S ) .GT. 0.0 ) NSSSPC = NSSSPC + 1
+               IF ( AEROSPC_SSF( IA_ACC,S ) + AEROSPC_SSF( IA_CRS,S ) .GT. 0.0 ) NSSSPC = NSSSPC + 1
             END DO
 C Include H2O
             NSSSPC = NSSSPC + 1
@@ -330,7 +330,7 @@ C Allocate mapping array
 C build mapping array SSSPC_MAP
             NSSSPC = 0
             DO S = 1, N_AEROSPC
-               IF ( AEROSPC_SSF( 2,S ) + AEROSPC_SSF( 3,S ) .GT. 0.0 ) THEN
+               IF ( AEROSPC_SSF( IA_ACC,S ) + AEROSPC_SSF( IA_CRS,S ) .GT. 0.0 ) THEN
                   NSSSPC = NSSSPC + 1
                   SSSPC_MAP( NSSSPC ) = S
                END IF
@@ -374,8 +374,8 @@ C Get sea-salt-emission diagnostic output file flag.
 C Determine number of sea-salt species For diagnostic file
             NSSDIAG = 0
                DO S = 1, N_AEROSPC
-                  IF ( AEROSPC_SSF( 2,S ) .GT. 0.0 ) NSSDIAG = NSSDIAG + 1
-                  IF ( AEROSPC_SSF( 3,S ) .GT. 0.0 ) NSSDIAG = NSSDIAG + 1
+                  IF ( AEROSPC_SSF( IA_ACC,S ) .GT. 0.0 ) NSSDIAG = NSSDIAG + 1
+                  IF ( AEROSPC_SSF( IA_CRS,S ) .GT. 0.0 ) NSSDIAG = NSSDIAG + 1
                END DO
 C Include H2O
                NSSDIAG = NSSDIAG + 2   !! count both J and K modes
@@ -393,7 +393,7 @@ C Allocate diagnostic arrays
 
 C Build diagnostic file write buffer (WRSS_SPC) array
                NSSDIAG = 0
-               DO N = 2, N_MODE
+               DO N = IA_ACC, N_MODE
                   DO S = 1, N_AEROSPC
                      IF ( AEROSPC_SSF( N,S ) .GT. 0.0 ) THEN
                         NSSDIAG = NSSDIAG + 1
@@ -406,13 +406,13 @@ C Include H2O
                END DO
 
 C Include Mode NUMBER to diagnostic
-               DO N = 2, N_MODE
+               DO N = IA_ACC, N_MODE
                   NSSDIAG = NSSDIAG + 1
                   WRSS_SPC( NSSDIAG ) = AEROMODE( N )%NUM_NAME
                END DO
  
 C Include Mode SURFACE_AREA to diagnostic
-               DO N = 2, N_MODE
+               DO N = IA_ACC, N_MODE
                   NSSDIAG = NSSDIAG + 1
                   WRSS_SPC( NSSDIAG ) = AEROMODE( N )%SRF_NAME
                END DO
@@ -783,7 +783,7 @@ C Calculate dry sea-salt [kg/m3]
                   DO S = 1, NSSSPC
                      IF ( S .EQ. KH2O ) CYCLE     !! do not include Water
                      RHSUM = RHSUM
-     &                     + REAL( ( AEROSPC_SSF( 2,SSSPC_MAP( S ) ) 
+     &                     + REAL( ( AEROSPC_SSF( IA_ACC,SSSPC_MAP( S ) ) 
      &                             / AEROSPC( SSSPC_MAP( S ) )%DENSITY ), 8 )
                   END DO
                   RHOSSDRY = 1.0D0 / RHSUM    
@@ -878,23 +878,23 @@ C obtain speciated mass emissions.
                   DO S = 1, NSSSPC
                      SSOUTM( S,1,C,R ) = 0.0
                      IF ( S .EQ. KH2O ) THEN    ! Water
-                        SSOUTM( S,2,C,R ) = ESEASJ * REAL( ( 1.0D0 - XSW ), 4 )
-                        SSOUTM( S,3,C,R ) = ESEASK * REAL( ( 1.0D0 - XSW ), 4 )
+                        SSOUTM( S,IA_ACC,C,R ) = ESEASJ * REAL( ( 1.0D0 - XSW ), 4 )
+                        SSOUTM( S,IA_CRS,C,R ) = ESEASK * REAL( ( 1.0D0 - XSW ), 4 )
                      ELSE
-                        SSOUTM( S,2,C,R ) = ESEASJ * REAL( XSW, 4 )
-     &                                    * AEROSPC_SSF( 2,SSSPC_MAP( S ) )
-                        SSOUTM( S,3,C,R ) = ESEASK * REAL( XSW, 4 )
-     &                                    * AEROSPC_SSF( 3,SSSPC_MAP( S ) )
+                        SSOUTM( S,IA_ACC,C,R ) = ESEASJ * REAL( XSW, 4 )
+     &                                    * AEROSPC_SSF( IA_ACC,SSSPC_MAP( S ) )
+                        SSOUTM( S,IA_CRS,C,R ) = ESEASK * REAL( XSW, 4 )
+     &                                    * AEROSPC_SSF( IA_CRS,SSSPC_MAP( S ) )
                      END IF
 
                      IF( SSSPC_MAP( S ) .EQ. ana_idx )
-     &                  Met_Data%NACL_EMIS( C,R ) = Met_Data%NACL_EMIS( C,R ) + SSOUTM( S,2,C,R ) / RLAY1HT
+     &                  Met_Data%NACL_EMIS( C,R ) = Met_Data%NACL_EMIS( C,R ) + SSOUTM( S,IA_ACC,C,R ) / RLAY1HT
 C 0.80 = ratio of seasalt emisisions with d<10 um to all K-mode emisisions, 0.8373 = NA fraction in SEACAT, 0.66984 = 0.80 * 0.8373
                      IF( SSSPC_MAP( S ) .EQ. aseacat_idx )
-     &                  Met_Data%NACL_EMIS( C,R ) = Met_Data%NACL_EMIS( C,R ) + SSOUTM( S,3,C,R ) / RLAY1HT * 0.66984
+     &                  Met_Data%NACL_EMIS( C,R ) = Met_Data%NACL_EMIS( C,R ) + SSOUTM( S,IA_CRS,C,R ) / RLAY1HT * 0.66984
                      IF( SSSPC_MAP( S ) .EQ. acl_idx )
-     &                  Met_Data%NACL_EMIS( C,R ) = Met_Data%NACL_EMIS( C,R ) + SSOUTM( S,2,C,R ) / RLAY1HT
-     &                                                                        + SSOUTM( S,3,C,R ) / RLAY1HT * 0.80
+     &                  Met_Data%NACL_EMIS( C,R ) = Met_Data%NACL_EMIS( C,R ) + SSOUTM( S,IA_ACC,C,R ) / RLAY1HT
+     &                                                                        + SSOUTM( S,IA_CRS,C,R ) / RLAY1HT * 0.80
 
                   END DO
 
@@ -911,9 +911,10 @@ C Roselle (2003)
                   FACTM2K  = EXP( 0.5 * LNSGK * LNSGK ) / DGVKRH 
 
 C Calculate mode-specific emission rates of particle number [1/s]
-                  SSOUTN( 1,C,R ) = 0.0
-                  SSOUTN( 2,C,R ) = M3J * FACTNUMJ
-                  SSOUTN( 3,C,R ) = M3K * FACTNUMK
+                  SSOUTN( IA_NUC,C,R ) = 0.0
+                  SSOUTN( IA_AIT,C,R ) = 0.0
+                  SSOUTN( IA_ACC,C,R ) = M3J * FACTNUMJ
+                  SSOUTN( IA_CRS,C,R ) = M3K * FACTNUMK
 
 C Calculate mode-specific dry surface area emission rates [m2/m3/s].  
 C Subtract water from 3rd moment to obtain dry 3rd moment emission rate.  
@@ -921,22 +922,23 @@ C Calculate dry 2nd moment while holding the standard deviation constant.
 C Multiply dry 2nd moment by PI to obtain dry surface area emission rate.
                   WET_M3J = M3J 
                   WET_M2J = M3J * FACTM2J
-                  DRY_M3J = WET_M3J - F6PI * SSOUTM( KH2O,2,C,R ) * 1.0E-06
+                  DRY_M3J = WET_M3J - F6PI * SSOUTM( KH2O,IA_ACC,C,R ) * 1.0E-06
                   DRY_M2J = WET_M2J * ( DRY_M3J / WET_M3J ) ** TWO3
 
                   WET_M3K = M3K
                   WET_M2K = M3K * FACTM2K
-                  DRY_M3K = WET_M3K - F6PI * SSOUTM( KH2O,3,C,R ) * 1.0E-06
+                  DRY_M3K = WET_M3K - F6PI * SSOUTM( KH2O,IA_CRS,C,R ) * 1.0E-06
                   DRY_M2K = WET_M2K * ( DRY_M3K / WET_M3K ) ** TWO3
 
-                  SSOUTS( 1,C,R ) = 0.0
-                  SSOUTS( 2,C,R ) = PI * DRY_M2J
-                  SSOUTS( 3,C,R ) = PI * DRY_M2K
+                  SSOUTS( IA_NUC,C,R ) = 0.0
+                  SSOUTS( IA_AIT,C,R ) = 0.0
+                  SSOUTS( IA_ACC,C,R ) = PI * DRY_M2J
+                  SSOUTS( IA_CRS,C,R ) = PI * DRY_M2K
 
 C Update the SSBF array, for writing the diagnostic sea-salt-emission file.
                   IF ( SSEMDIAG ) THEN
                      V = 0
-                     DO N = 2, 3
+                     DO N = IA_ACC, IA_CRS
                         DO S = 1, NSSSPC
                            IF ( S .EQ. KH2O .OR. AEROSPC_SSF( N,SSSPC_MAP( S ) ) .GT. 0 ) THEN
                               V = V + 1
@@ -945,12 +947,12 @@ C Update the SSBF array, for writing the diagnostic sea-salt-emission file.
                         END DO
                      END DO
 
-                     DO N = 2, 3
+                     DO N = IA_ACC, IA_CRS
                         V = V + 1
                         SSOUTD( V ) = SSOUTN( N,C,R )
                      END DO
 
-                     DO N = 2, 3
+                     DO N = IA_ACC, IA_CRS
                         V = V + 1
                         SSOUTD( V ) = SSOUTS( N,C,R )
                      END DO

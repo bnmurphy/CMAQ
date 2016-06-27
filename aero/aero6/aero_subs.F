@@ -222,18 +222,11 @@ C *** arguments:
       INTEGER, INTENT( IN ) :: LAYER       ! Layer of cell
 
 C *** Parameters
-      REAL, PARAMETER :: DIFFSULF = 9.36E-06  ! molecular diffusiviity for sulfuric acid
-      REAL, PARAMETER :: DIFFDMA  = 9.36E-06  ! molecular diffusiviity for dimethylamine
-      REAL, PARAMETER :: DIFFELVOC= 9.36E-06  ! molecular diffusiviity for ELVOC
       REAL, PARAMETER :: SQRT2 = 1.4142135623731
       REAL, PARAMETER :: T0 = 288.15   ! [ K ]
       REAL, PARAMETER :: TWOTHIRDS = 2.0 / 3.0
 
 C *** local variables
-      REAL         DIFFCORR   ! Correction to DIFFSULF & DIFFORG for pressure
-      REAL         DV_SO4     ! molecular diffusivity of H2SO4 vapor after correction for ambient conditions
-      REAL         DV_DMA     ! molecular diffusivity of DMA vapor after correction for ambient conditions
-      REAL         DV_ELVOC   ! molecular diffusivity of ELVOC vapor after correction for ambient conditions
       REAL         SQRT_TEMP  ! square root of ambient temperature
       REAL         XLM        ! atmospheric mean free path [m]
       REAL         AMU        ! atmospheric dynamic viscosity [kg/m s]
@@ -340,22 +333,17 @@ C     partitioning between the particle and vapor phases.  Assume all
 C     SOA resides in the accumulation mode.
 C
 C     Aerosol is wet when it enters orgaer
-      CALL ORGAER( DT, LAYER )
+      CALL ORGAER( DT, LAYER, XLM, AMU, SQRT_TEMP )
 
 C *** Secondary Inorganics
 C     The VOLINORG subroutine includes the treatment of new particle
 C     production and a fully dynamic treatment of inorganic gas-to-
 C     particle mass transfer.
 
-C *** Compute H2SO4 diffusivity, correct for temperature and pressure
-      DIFFCORR = ( STDATMPA / AIRPRES ) * ( AIRTEMP / 273.16 ) ** 1.75
-      DV_SO4 = DIFFSULF * DIFFCORR
-
 C *** Update size parameters (distribution is wet from ORGAER)
       CALL GETPAR( LIMIT_Sg )
 
-      CALL VOLINORG( DT, COL, ROW, LAYER, 
-     &               DV_SO4, DV_DMA, DV_ELVOC, CGR )
+      CALL VOLINORG( DT, COL, ROW, LAYER, XLM, AMU, SQRT_TEMP, CGR )
 
 C *** Coagulation
 C     Calculate coagulation coefficients using a method dictated by
@@ -880,8 +868,7 @@ C *** Set minimum value for all concentrations in the CBLK array
 
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      SUBROUTINE VOLINORG( DT, COL, ROW, LAYER,
-     &                     DV_SO4, DV_DMA, DV_ELVOC, CGR )
+      SUBROUTINE VOLINORG( DT, COL, ROW, LAYER, XLM, AMU, SQRT_TEMP, CGR )
 
 C *** Calculates the partitioning of inorganic components (CL,NO3,NH4,SO4)
 C     between the aerosol and gas phase over the operator synchronization
@@ -936,10 +923,9 @@ C *** Arguments:
       INTEGER COL             ! grid column index
       INTEGER ROW             ! grid row index
       INTEGER LAYER           ! model layer index
-      REAL    DV_SO4          ! molecular diffusivity of H2SO4 vapor 
-      REAL    DV_DMA          ! molecular diffusivity of DMA vapor 
-                              ! after correction for ambient conditions
-      REAL    DV_ELVOC        ! molecular diffusivity of DMA vapor 
+      REAL    XLM             ! 
+      REAL    AMU             ! 
+      REAL    SQRT_TEMP       ! Square root of T used in calculations.
       REAL( 8 ) :: CGR( N_MODE-1 ) ! 3rd moment SO4 growth rate [m^3/m^3-s]
 
 C *** Parameters: 
@@ -956,21 +942,63 @@ C *** Parameters:
       REAL, PARAMETER :: ALPHSULF = 0.1  ! Accommodation coefficient for sulfuric acid
                                          ! see Capaldo et al. (2000)
       REAL, PARAMETER :: ALPHDMA = 1.0   ! Accommodation coefficient for DMA
-      REAL, PARAMETER :: ALPHELVOC= 1.0   ! Accommodation coefficient for ELVOC
+      REAL, PARAMETER :: ALPHELVOC= 1.0  ! Accommodation coefficient for ELVOC
       REAL, PARAMETER :: GAMMA_DMA = 1.0 ! GAMMA DMA
+      REAL, PARAMETER :: C_MBTCA =  8.0, H_MBTCA = 12.0, O_MBTCA = 6.0
+      REAL, PARAMETER :: C_ELVOC = 10.0, H_ELVOC = 16.0, O_ELVOC = 9.0 
+      REAL, PARAMETER :: SIG_AIR   = 19.7    ! Diffusion Volume of Air [ cm-3 ]
+      REAL, PARAMETER :: SIG_SULF  = 75.     ! Diffusion Volume of H2SO4 [ cm-3 ]
+      REAL, PARAMETER :: SIG_DMA   = 52.55   ! Diffusion Volume of DMA   [ cm-3 ]
+      REAL, PARAMETER :: SIG_MBTCA = 191.58  ! Diffusion Volume of MBTCA [ cm-3 ]
+      REAL, PARAMETER :: SIG_ELVOC = 250.95  ! Diffusion Volume of ELVOC [ cm-3 ]
+      
+      REAL, PARAMETER :: DIFFSULF = 9.36E-06  ! molecular diffusiviity for sulfuric acid
+      REAL         DIFFCORR   ! Correction to DIFFSULF & DIFFORG for pressure
+      REAL, SAVE ::DIFFV_SULF ! Correction to DIFFSULF & DIFFORG for pressure
+      REAL, SAVE ::DIFFV_DMA  ! Correction to DIFFDMA & DIFFORG for pressure
+      REAL, SAVE ::DIFFV_MBTCA! Correction to DIFFMBTCA & DIFFORG for pressure
+      REAL, SAVE ::DIFFV_ELVOC! Correction to DIFFELVOC & DIFFORG for pressure
+      REAL         DV_FAC     ! T and P Dependent diffusivity parameter
+      REAL         DV_SO4     ! molecular diffusivity of H2SO4 vapor after correction for ambient conditions
+      REAL         DV_DMA     ! molecular diffusivity of DMA vapor after correction for ambient conditions
+      REAL         DV_MBTCA   ! molecular diffusivity of MBTCA vapor after correction for ambient conditions
+      REAL         DV_ELVOC   ! molecular diffusivity of ELVOC vapor after correction for ambient conditions
+      REAL         MV_H2SO4   ! molecular volume of H2SO4 vapor after correction for ambient conditions
+      REAL         MV_DMA     ! molecular volume of DMA vapor after correction for ambient conditions
+      REAL         MV_MBTCA   ! molecular volume of MBTCA vapor after correction for ambient conditions
+      REAL         MV_ELVOC   ! molecular volume of ELVOC vapor after correction for ambient conditions
+      REAL         DM_H2SO4   ! molecular diameter of H2SO4 vapor after correction for ambient conditions
+      REAL         DM_DMA     ! molecular diameter of DMA vapor after correction for ambient conditions
+      REAL         DM_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
+      REAL         DM_ELVOC   ! molecular diameter of ELVOC vapor after correction for ambient conditions
+      REAL         RHO_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
+      REAL         RHO_ELVOC   ! molecular diameter of ELVOC vapor after correction for ambient conditions
+
 
 C *** Local Variables:
 
 C *** Inputs to subroutine HCOND3
 
-      REAL, SAVE :: COFCBAR_SO4  ! Temperature-independent coefficients
-                                 ! for caculating molecular vel [m/s]
-                                 ! = sqrt((8*Rgas)/(pi*MW)) 
-      REAL         CBAR_SO4      ! molecular velocity of H2SO4                      
-      REAL, SAVE :: COFCBAR_DMA  ! Temperature-independent coefficients
-      REAL         CBAR_DMA      ! molecular velocity of DMA
+      REAL, SAVE :: COFCBAR_SO4   ! Temperature-independent coefficients
+                                  ! for caculating molecular vel [m/s]
+                                  ! = sqrt((8*Rgas)/(pi*MW)) 
+      REAL          CBAR_SO4      ! molecular velocity of H2SO4                      
+      REAL, SAVE :: COFCBAR_DMA   ! Temperature-independent coefficients
+      REAL          CBAR_DMA      ! molecular velocity of DMA
+      REAL, SAVE :: COFCBAR_MBTCA ! Temperature-independent coefficients
+      REAL          CBAR_MBTCA    ! molecular velocity of MBTCA
       REAL, SAVE :: COFCBAR_ELVOC ! Temperature-independent coefficients
-      REAL         CBAR_ELVOC     ! molecular velocity of DMA
+      REAL          CBAR_ELVOC    ! molecular velocity of DMA
+      REAL, SAVE :: SIG_AIR_13    ! Cube root of Air Diffusion volume
+      REAL, SAVE :: SIG_SULF_13   ! Cube root of H2SO4 Diffusion volume
+      REAL, SAVE :: SIG_DMA_13    ! Cube root of DMA Diffusion volume
+      REAL, SAVE :: SIG_MBTCA_13  ! Cube root of MBTCA Diffusion volume
+      REAL, SAVE :: SIG_ELVOC_13  ! Cube root of ELVOC Diffusion volume
+      REAL, SAVE :: MASS_P
+      REAL       :: Kn
+      REAL       :: Cc
+      REAL       :: CBAR_P( N_MODE ) ! 
+      REAL       :: DV_P( N_MODE )   ! 
 
       REAL( 8 ) :: AM0( N_MODE ) ! zeroth moments
       REAL( 8 ) :: AM1( N_MODE ) ! first moments
@@ -1018,6 +1046,7 @@ C *** Variables for new particle formation:
 C *** Mode-specific sulfate production rate [ ug/m**3 s ]
       REAL( 8 ) :: CONDSO4( N_MODE )    ! sulfate condensation rate [ ug/m**3 s ]
       REAL( 8 ) :: RATE                 ! CONDSO4 or cond+nucl rate
+      REAL( 8 ) :: DMA_MODE             ! DMA condensation calculated for each mode
 
 C *** Size-dependent portion of mass-transfer rate equation
       REAL( 8 ) :: GRFAC1( N_MODE )     ! 2nd moment [ m**2/m**3-s ] 
@@ -1101,14 +1130,15 @@ C     mass partitioning between the modes
 C *** Local Saved Variables 
       LOGICAL, SAVE :: FIRSTIME = .TRUE.
       LOGICAL, SAVE :: FIRSTWRITE = .TRUE.
-      REAL( 8 ), SAVE :: SO4FAC         !  F6DPIM9 / RHOSO4
       REAL( 8 ), SAVE :: SOILFAC        !  F6DPIM9 / RHOSOIL
       REAL( 8 ), SAVE :: ANTHFAC        !  F6DPIM9 / RHOANTH
       REAL( 8 ), SAVE :: NH3RAT         ! Mol. wt ratios NH3/NH4
       REAL( 8 ), SAVE :: HNO3RAT        ! Mol. wt ratios HNO3/NO3
       REAL( 8 ), SAVE :: HCLRAT         ! Mol. wt ratios HCL/CL 
       REAL( 8 ), SAVE :: MWH2SO4        ! molecular weight for H2SO4
-      REAL( 8 ), SAVE :: FAERH2SO4      ! 1e-6 / mw(h2so4)
+      REAL( 8 ), SAVE :: MWDMA          ! molecular weight for DMA4
+      REAL( 8 ), SAVE :: MWMBTCA        ! molecular weight for MBTCA
+      REAL( 8 ), SAVE :: MWELVOC        ! molecular weight for ELVOC
 
       REAL( 8 ), SAVE :: CFAC_ANA
       REAL( 8 ), SAVE :: CFAC_ASO4
@@ -1161,15 +1191,9 @@ C-----------------------------------------------------------------------
          M3FAC_ANO3 = 1.0D-9 * F6DPI / REAL( AEROSPC( ANO3_IDX )%DENSITY, 8 )
          M3FAC_ACL  = 1.0D-9 * F6DPI / REAL( AEROSPC( ACL_IDX )%DENSITY, 8 )
          M3FAC_H2O  = 1.0D-9 * F6DPI / REAL( AEROSPC( AH2O_IDX )%DENSITY, 8 )
-
-         MWH2SO4 = PRECURSOR_MW( SULF_IDX ) ! molecular weight for H2SO4
-         FAERH2SO4 = 1.0E-6 / MWH2SO4
-
-         COFCBAR_SO4 = SQRT( 8.0 * RGASUNIV / ( PI * MWH2SO4 * 1.0E-3 ) )
-         H2SO4RATM1 = AEROSPC_MW( ASO4_IDX ) / MWH2SO4
-         SO4FAC  = 1.0D-9 * F6DPI / REAL( AEROSPC( ASO4_IDX )%DENSITY, 8 )
          SOILFAC = 1.0D-9 * F6DPI / REAL( AEROSPC( ASOIL_IDX )%DENSITY, 8 )
          ANTHFAC = 1.0D-9 * F6DPI / REAL( AEROSPC( ACORS_IDX )%DENSITY, 8 )
+
 
          DF( KNH4 ) = 1.0D0 / CFAC_ANH4
          DF( KNO3 ) = 1.0D0 / CFAC_ANO3
@@ -1180,6 +1204,57 @@ C-----------------------------------------------------------------------
          NH3RAT  = PRECURSOR_MW( NH3_IDX )  / REAL( AEROSPC_MW( ANH4_IDX ), 8 )
          HNO3RAT = PRECURSOR_MW( HNO3_IDX ) / REAL( AEROSPC_MW( ANO3_IDX ), 8 )
          HCLRAT  = PRECURSOR_MW( HCL_IDX )  / REAL( AEROSPC_MW( ACL_IDX ), 8 )
+         
+         ! Calculate Time-Independent Properties of Gases for
+         ! participation in New Particle Formation
+         SIG_AIR_13 = ( SIG_AIR ) ** ( 1./3. )
+
+         ! H2SO4
+         MWH2SO4 = PRECURSOR_MW( SULF_IDX ) ! molecular weight for H2SO4
+         MV_H2SO4 = 1.0e-3 * MWH2SO4 / AVO / AEROSPC( ASO4_IDX )%DENSITY
+         DM_H2SO4 = MV_H2SO4 **(1./3.)
+         COFCBAR_SO4 = SQRT( 8.0 * RGASUNIV / ( PI * MWH2SO4 * 1.0E-3 ) )
+         SIG_SULF_13 = ( SIG_SULF ) ** ( 1./3. )
+         DIFFV_SULF = 1.0d-4 * sqrt( 1. / MWH2SO4 + 1. / MWAIR ) / 
+     &                   ( SIG_SULF_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
+         H2SO4RATM1 = AEROSPC_MW( ASO4_IDX ) / MWH2SO4
+         
+         ! DMA
+         MWDMA = PRECURSOR_MW( DMA_IDX ) ! molecular weight for H2SO4
+         MV_DMA = 1.0e-3 * MWDMA / AVO / AEROSPC( ADMA_IDX )%DENSITY
+         DM_DMA = MV_DMA **(1./3.)
+         COFCBAR_DMA = SQRT( 8.0 * RGASUNIV / ( PI * MWDMA * 1.0E-3 ) )
+         SIG_DMA_13 = ( SIG_DMA ) ** ( 1./3. )
+         DIFFV_DMA = 1.0d-4 * sqrt( 1. / MWDMA + 1. / MWAIR ) / 
+     &                   ( SIG_DMA_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
+
+         ! ELVOC
+         SIG_ELVOC_13 = SIG_ELVOC ** (1./3.)
+         MWELVOC = PRECURSOR_MW( ELVOC_IDX ) ! molecular weight for H2SO4
+         RHO_ELVOC = 1000.0 *( 12.0 + 1.0 * H_ELVOC/C_ELVOC + 16.0 * O_ELVOC/C_ELVOC ) /
+     &                       ( 7.0 + 5.0 * H_ELVOC/C_ELVOC + 4.15 * O_ELVOC/C_ELVOC )
+         MV_ELVOC  = 1.0e-3 * MWELVOC / AVO / RHO_ELVOC ! Volume of ELVOC Molecule [m**3]
+         DM_ELVOC  = MV_ELVOC ** ( 1./3. ) ! Diameter of ELVOC Molecule [ m ]
+         COFCBAR_ELVOC = SQRT( 8.0 * RGASUNIV / ( PI * MWELVOC * 1.0E-3 ) )
+         SIG_ELVOC_13 = ( SIG_ELVOC ) ** ( 1./3. )
+            ! Calculate diff_v  Fuller et al. (1966) method.
+         DIFFV_ELVOC = 1.0d-4 * sqrt( 1. / MWELVOC + 1. / MWAIR ) / 
+     &                   ( SIG_ELVOC_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
+
+         ! MBTCA
+         SIG_MBTCA_13 = SIG_MBTCA ** (1./3.)
+         MWMBTCA   = PRECURSOR_MW( MBTCA_IDX ) ! molecular weight for H2SO4
+         RHO_MBTCA = 1000.0 *( 12.0 + 1.0 * H_MBTCA/C_MBTCA + 16.0 * O_MBTCA/C_MBTCA ) /
+     &                       ( 7.0 + 5.0 * H_MBTCA/C_MBTCA + 4.15 * O_MBTCA/C_MBTCA )    !kg m-3
+         MV_MBTCA  = 1.0e-3 * MWMBTCA / AVO / RHO_MBTCA ! Volume of MBTCA Molecule [m**3]
+         DM_MBTCA  = MV_MBTCA ** ( 1./3. ) ! Diameter of MBTCA Molecule [ m ]
+         COFCBAR_MBTCA = SQRT( 8.0 * RGASUNIV / ( PI * MWMBTCA * 1.0E-3 ) )
+         SIG_MBTCA_13 = ( SIG_MBTCA ) ** ( 1./3. )
+            ! Calculate diff_v  Fuller et al. (1966) method.
+         DIFFV_MBTCA = 1.0d-4 * sqrt( 1. / MWMBTCA + 1. / MWAIR ) / 
+     &                   ( SIG_MBTCA_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
+ 
+      
       END IF
 
 C *** Determine if Hybrid
@@ -1199,16 +1274,27 @@ C *** Determine if Hybrid
       TEMPI = AIRTEMP             ! assume const within synch timestep
       RHI   = MIN( 0.95, AIRRH )  ! "        "     "      "     "
 
-C *** Calculate molecular velocities (temperature dependent) and
+C *** Calculate molecular velocities and diffusivities (temperature dependent) and
 C     H+ concentration
 
-      CBAR_SO4   = COFCBAR_SO4 * SQRT( AIRTEMP )
-      CBAR_ELVOC = COFCBAR_ELVOC * SQRT( AIRTEMP )
+      CBAR_SO4   = COFCBAR_SO4 * SQRT_TEMP
+      CBAR_DMA   = COFCBAR_DMA * SQRT_TEMP
+      CBAR_ELVOC = COFCBAR_ELVOC * SQRT_TEMP
+      CBAR_MBTCA = COFCBAR_MBTCA * SQRT_TEMP
+
+C *** Compute H2SO4 diffusivity, correct for temperature and pressure
+      !DIFFCORR = ( STDATMPA / AIRPRES ) * ( AIRTEMP / 273.16 ) ** 1.75
+      !DV_SO4 = DIFFSULF * DIFFCORR
+      DV_FAC   = AIRTEMP **1.75 / ( AIRPRES / STDATMPA )
+      DV_SO4   = DIFFV_SULF * DV_FAC
+      DV_DMA   = DIFFV_DMA * DV_FAC 
+      DV_ELVOC = DIFFV_ELVOC * DV_FAC 
+      DV_MBTCA = DIFFV_MBTCA * DV_FAC
 
       HPLUS = 0.0
       DO I = 1, N_MODE
          DO N = 1, N_AEROSPC
-            IF(  AEROSPC( N )%tracer )CYCLE
+            IF (  AEROSPC( N )%tracer ) CYCLE
             HPLUS( I ) = HPLUS( I )
      &                 - AEROSPC( N )%CHARGE * AEROSPC_CONC( N,I ) / AEROSPC_MW( N )
          END DO
@@ -1229,6 +1315,14 @@ C     N.B: these are for a "wet" size distribution
          AM1( I ) = MOMENT0_CONC( I ) * AEROMODE_DIAM( I )
      &            * EXP( 0.5 * AEROMODE_LNSG( I ) * AEROMODE_LNSG( I ) )
          AM2( I ) = MOMENT2_CONC( I )
+       
+         ! Calculate Diffusive properties of each mode
+         MASS_P = AEROMODE_DIAM( I ) ** 3 * PI6 * AEROMODE_DENS( I ) 
+         CBAR_P( I ) = SQRT_TEMP * SQRT( 8.0 * BOLTZMANN / ( PI * mass_p ) ) ! [m/sec]
+         Kn    = XLM / AEROMODE_DIAM( I )                         ! Knudsen number
+         Cc    = 1 + Kn * ( 1.257 + 0.4 * exp( - 1.1 / Kn ) )     ! Cunningham correction
+         DV_P( I ) = BOLTZMANN * AIRTEMP * Cc / 
+     &             (3.0 * PI * AMU * AEROMODE_DIAM( I ) )         ! [ m**2 / sec ]
       END DO
       
 C *** Calculate the size-dependent terms in the condensational-
@@ -1236,12 +1330,18 @@ C     growth factor expressions for sulfate using
 C     Equations A13-A14 of Binkowski & Shankar (1995). 
        
       DO I = 1, N_MODE
-         CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
-     &                DV_SO4, ALPHSULF, CBAR_SO4, FCONC_OUT )
+!         CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
+!     &                DV_SO4, ALPHSULF, CBAR_SO4, FCONC_OUT )
+         CALL HCOND4( AM0( I ), AM1( I ), AM2( I ),
+     &                DV_SO4, DV_P( I ), CBAR_SO4, CBAR_P( I ), 
+     &                DM_H2SO4, AEROMODE_DIAM( I ), FCONC_OUT )
          FCONC_SO4( I, : ) = FCONC_OUT( : )
          
-	 CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
-     &                DV_ELVOC, ALPHELVOC, CBAR_ELVOC, FCONC_OUT )
+!	     CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
+!     &                DV_ELVOC, ALPHELVOC, CBAR_ELVOC, FCONC_OUT )
+         CALL HCOND4( AM0( I ), AM1( I ), AM2( I ),
+     &                DV_ELVOC, DV_P( I ), CBAR_ELVOC, CBAR_P( I ), 
+     &                DM_ELVOC, AEROMODE_DIAM( I ), FCONC_OUT )
          FCONC_ELVOC( I, : ) = FCONC_OUT( : )
 
 
@@ -1304,7 +1404,6 @@ C *** Adjust ELVOC vapor concentration to an dequilibrium value as well
          XELVOC = ELVOCRATE / TMP
          XELVOC = MAX( XELVOC, CONMIN )
          !XELVOC = PRECURSOR_CONC( ELVOC_IDX )
-
 
 C *** Calculate new particle production rate for 0th, 2nd, & 3rd moments
 C     from several multicomponent pathways including:
@@ -1380,9 +1479,9 @@ C     to avoid mass conservation violations arising from numerical error.
       OMEGA_AC_SO4 = FCONCM1_SO4 * FCONC_SO4( IA_ACC,2 )
 
 C *** Growth values for mode merge condition
-      CGR( IA_NUC ) = SO4FAC * SCONDRATE * OMEGA_NU_SO4
-      CGR( IA_AIT ) = SO4FAC * SCONDRATE * OMEGA_AT_SO4
-      CGR( IA_ACC ) = SO4FAC * SCONDRATE * OMEGA_AC_SO4
+      CGR( IA_NUC ) = M3FAC_ASO4 * SCONDRATE * OMEGA_NU_SO4
+      CGR( IA_AIT ) = M3FAC_ASO4 * SCONDRATE * OMEGA_AT_SO4
+      CGR( IA_ACC ) = M3FAC_ASO4 * SCONDRATE * OMEGA_AC_SO4
 
       CONDSO4( IA_NUC ) = OMEGA_NU_SO4 * SCONDRATE      
       CONDSO4( IA_AIT ) = OMEGA_AT_SO4 * SCONDRATE      
@@ -1405,8 +1504,11 @@ C     (Yu and Luo, ACP, 14, pp12455-12464, 2014).
         DO I = 1, N_MODE
           !AM0, AM1 and AM2 have not changed since SO4 condensation rates
           !were calculated
-          CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
-     &                 DV_DMA, ALPHDMA, CBAR_DMA, FCONC_OUT )
+!          CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
+!     &                 DV_DMA, ALPHDMA, CBAR_DMA, FCONC_OUT )
+          CALL HCOND4( AM0( I ), AM1( I ), AM2( I ),
+     &                 DV_DMA, DV_P( I ), CBAR_DMA, CBAR_P( I ), 
+     &                 DM_DMA, AEROMODE_DIAM( I ), FCONC_OUT )
           FCONC_DMA( I, : ) = FCONC_OUT( : )
         ENDDO
         COND_DMA = SUM( FCONC_DMA( :,2 )) * PRECURSOR_CONC( DMA_IDX ) 
@@ -1423,12 +1525,14 @@ C     (Yu and Luo, ACP, 14, pp12455-12464, 2014).
             FACTOR = 1.0E-9 * f6pi / AEROSPC( IAER )%density
             AM3 = AM3 + AEROSPC_CONC( IAER, IMODE ) * FACTOR
           ENDDO
-        
-          MOMENT2_CONC( IMODE ) = MOMENT2_CONC( IMODE ) *
-     &      (( AM3 + COND_DMA*1.0E-9*f6pi/AEROSPC(ADMA_IDX)%density )/ AM3)**(2.0/3.0)
+          AM3 = MAX( CONMIND, AM3 )
 
-          AEROSPC_CONC( ADMA_IDX, IMODE ) = AEROSPC_CONC( ADMA_IDX, IMODE ) + 
-     &            COND_DMA * FCONC_DMA( IMODE,2 ) / SUM(FCONC_DMA( :,2 ))
+          DMA_MODE = COND_DMA * FCONC_DMA( IMODE,2 ) / SUM(FCONC_DMA( :,2 ))
+
+          MOMENT2_CONC( IMODE ) = MOMENT2_CONC( IMODE ) *
+     &      (( AM3 + DMA_MODE*1.0D-9*f6pi/AEROSPC(ADMA_IDX)%density )/ AM3)**(2.0/3.0)
+
+          AEROSPC_CONC( ADMA_IDX, IMODE ) = AEROSPC_CONC( ADMA_IDX, IMODE ) + REAL( DMA_MODE,4 )
         ENDDO
 
 

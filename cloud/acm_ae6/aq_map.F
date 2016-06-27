@@ -28,7 +28,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE AQ_MAP ( JDATE, JTIME, WTBAR, WCBAR, TBARC, PBARC,
      &                    CTHK1, AIRM, PRATE1, TAUCLD, POLC, CEND,
      &                    REMOV, REMOVAC, ALFA0NUC, ALFA2NUC, ALFA3NUC,
-     &                    ALFA0AKN, ALFA2AKN, ALFA3AKN, DARK )
+     &                    ALFA0AIT, ALFA2AIT, ALFA3AIT, DARK )
 
 C-----------------------------------------------------------------------
 C  DESCRIPTION:  This is an interface processor between the cloud dynamics
@@ -76,9 +76,9 @@ C    REMOVAC    real    output  variable storing H+ deposition
 C    ALFA0NUC   real     input  scav coef for nucleation aerosol number
 C    ALFA2NUC   real     input  scav coef for nucleation aerosol surface area
 C    ALFA3NUC   real     input  scav coef for nucleation aerosol mass
-C    ALFA0AKN   real     input  scav coef for aitken aerosol number
-C    ALFA2AKN   real     input  scav coef for aitken aerosol surface area
-C    ALFA3AKN   real     input  scav coef for aitken aerosol mass
+C    ALFA0AIT   real     input  scav coef for aitken aerosol number
+C    ALFA2AIT   real     input  scav coef for aitken aerosol surface area
+C    ALFA3AIT   real     input  scav coef for aitken aerosol mass
 C    DARK       logical  input DARK = TRUE is night,  DARK = FALSE is day
 C-----------------------------------------------------------------------
 
@@ -118,9 +118,9 @@ C Arguments:
       REAL,    INTENT( IN )    :: ALFA0NUC  ! scav coef for nucleation aerosol number
       REAL,    INTENT( IN )    :: ALFA2NUC  ! scav coef for nucleation aerosol sfc area
       REAL,    INTENT( IN )    :: ALFA3NUC  ! scav coef for nucleation aerosol mass
-      REAL,    INTENT( IN )    :: ALFA0AKN  ! scav coef for aitken aerosol number
-      REAL,    INTENT( IN )    :: ALFA2AKN  ! scav coef for aitken aerosol sfc area
-      REAL,    INTENT( IN )    :: ALFA3AKN  ! scav coef for aitken aerosol mass
+      REAL,    INTENT( IN )    :: ALFA0AIT  ! scav coef for aitken aerosol number
+      REAL,    INTENT( IN )    :: ALFA2AIT  ! scav coef for aitken aerosol sfc area
+      REAL,    INTENT( IN )    :: ALFA3AIT  ! scav coef for aitken aerosol mass
       LOGICAL, INTENT( IN )    :: DARK      ! DARK = TRUE is night,  DARK = FALSE is day
 
 C Local Variables (scalars):
@@ -138,7 +138,7 @@ C Local Variables (scalars):
 
       REAL( 8 )  :: BETASO4
       REAL       :: EALFA2TNUC          ! EXP( -ALFA2 * TAUCLD )
-      REAL       :: EALFA2TAKN          ! EXP( -ALFA2 * TAUCLD )
+      REAL       :: EALFA2TAIT          ! EXP( -ALFA2 * TAUCLD )
       REAL( 8 )  :: M3NEW( N_MODE )     ! modal mass at time t
       REAL( 8 )  :: M3OLD( N_MODE )     ! modal mass at time 0
 
@@ -306,12 +306,12 @@ C...perform aqueous-phase chemistry calculations
 
       CALL AQCHEM ( JDATE, JTIME, TBARC, PBARC, TAUCLD, PRATE1,
      &              WCBAR, WTBAR, AIRM, ALFA0NUC, ALFA2NUC, ALFA3NUC, 
-     &              ALFA0AKN, ALFA2AKN, ALFA3AKN, GAS,
+     &              ALFA0AIT, ALFA2AIT, ALFA3AIT, GAS,
      &              AEROSOL, GASWDEP, AERWDEP, HPWDEP, BETASO4, DARK )
 
 C...  compute the scavenging coefficient for aerosol surface area
       EALFA2TNUC = EXP( -ALFA2NUC * TAUCLD )
-      EALFA2TAKN = EXP( -ALFA2AKN * TAUCLD )
+      EALFA2TAIT = EXP( -ALFA2AIT * TAUCLD )
 
 C...store the amount of hydrogen deposition
 
@@ -371,7 +371,7 @@ C...Update surface area
 
       CEND( AEROSRF_MAP( IA_NUC ) ) = POLC( AEROSRF_MAP( IA_NUC ) ) * EALFA2TNUC
       
-      CEND( AEROSRF_MAP( IA_AIT ) ) = POLC( AEROSRF_MAP( IA_AIT ) ) * EALFA2TAKN
+      CEND( AEROSRF_MAP( IA_AIT ) ) = POLC( AEROSRF_MAP( IA_AIT ) ) * EALFA2TAIT
       
       CEND( AEROSRF_MAP( IA_ACC ) ) = POLC( AEROSRF_MAP( IA_ACC ) )
      &                         * EXP( -BETASO4 * TAUCLD * ONETHIRD )

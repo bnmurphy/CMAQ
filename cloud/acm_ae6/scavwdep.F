@@ -28,7 +28,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE SCAVWDEP ( JDATE, JTIME, WTBAR, WCBAR, TBARC, PBARC,
      &                      CTHK1, AIRM, PRATE1, TAUCLD, POLC, CEND,
      &                      REMOV, REMOVAC, ALFA0NUC, ALFA2NUC, ALFA3NUC,
-     &                      ALFA0AKN, ALFA2AKN, ALFA3AKN )
+     &                      ALFA0AIT, ALFA2AIT, ALFA3AIT )
 C-----------------------------------------------------------------------
 C  Description: Compute simplistic incloud scavenging and wet removal
  
@@ -72,9 +72,9 @@ C    REMOVAC    real    output  variable storing H+ deposition
 C    ALFA0NUC   real    output  scav coef for nucleaiton aerosol number
 C    ALFA2NUC   real    output  scav coef for nucleation mode sfc area
 C    ALFA3NUC   real    output  scav coef for nucleation aerosol mass
-C    ALFA0AKN   real    output  scav coef for aitken aerosol number
-C    ALFA2AKN   real    output  scav coef for aitken mode sfc area
-C    ALFA3AKN   real    output  scav coef for aitken aerosol mass
+C    ALFA0AIT   real    output  scav coef for aitken aerosol number
+C    ALFA2AIT   real    output  scav coef for aitken mode sfc area
+C    ALFA3AIT   real    output  scav coef for aitken aerosol mass
  
 C-----------------------------------------------------------------------
 
@@ -119,9 +119,9 @@ C...........Arguments:
       REAL,    INTENT( OUT ) :: ALFA0NUC ! scav coef for aitken aerosol number
       REAL,    INTENT( OUT ) :: ALFA2NUC ! scav coef for aitken aerosol sfc area
       REAL,    INTENT( OUT ) :: ALFA3NUC ! scav coef for aitken aerosol mass
-      REAL,    INTENT( OUT ) :: ALFA0AKN ! scav coef for aitken aerosol number
-      REAL,    INTENT( OUT ) :: ALFA2AKN ! scav coef for aitken aerosol sfc area
-      REAL,    INTENT( OUT ) :: ALFA3AKN ! scav coef for aitken aerosol mass
+      REAL,    INTENT( OUT ) :: ALFA0AIT ! scav coef for aitken aerosol number
+      REAL,    INTENT( OUT ) :: ALFA2AIT ! scav coef for aitken aerosol sfc area
+      REAL,    INTENT( OUT ) :: ALFA3AIT ! scav coef for aitken aerosol mass
       REAL,    INTENT( OUT ) :: REMOVAC ! variable storing H+ deposition
       REAL,    INTENT(  IN ) :: POLC ( : )  ! avg vert conc incloud (moles/mole)
       REAL,    INTENT( OUT ) :: CEND ( : )  ! ending incloud conc (moles/mole)
@@ -138,18 +138,18 @@ C...........Local Variables:
       INTEGER, ALLOCATABLE, SAVE :: L_NUMNUC( : ) ! pointers to nucleation aerosol #
       INTEGER, ALLOCATABLE, SAVE :: L_MASNUC( : ) ! pointers to nucleation aerosols
       INTEGER, ALLOCATABLE, SAVE :: L_SRFNUC( : ) ! pntrs to nucleation aerosol surface area
-      INTEGER, ALLOCATABLE, SAVE :: L_NUMAKN( : ) ! pointers to aitken aerosol #
-      INTEGER, ALLOCATABLE, SAVE :: L_MASAKN( : ) ! pointers to aitken aerosols
-      INTEGER, ALLOCATABLE, SAVE :: L_SRFAKN( : ) ! pntrs to aitken aerosol surface area
+      INTEGER, ALLOCATABLE, SAVE :: L_NUMAIT( : ) ! pointers to aitken aerosol #
+      INTEGER, ALLOCATABLE, SAVE :: L_MASAIT( : ) ! pointers to aitken aerosols
+      INTEGER, ALLOCATABLE, SAVE :: L_SRFAIT( : ) ! pntrs to aitken aerosol surface area
       INTEGER ASTAT
 
       INTEGER       I
       INTEGER, SAVE :: N_NUMNUC            ! # nucleation aerosol number species
       INTEGER, SAVE :: N_MASNUC            ! # nucleation aerosol mass species
       INTEGER, SAVE :: N_SRFNUC            ! # nucleation aerosol sfc area species
-      INTEGER, SAVE :: N_NUMAKN            ! # aitken aerosol number species
-      INTEGER, SAVE :: N_MASAKN            ! # aitken aerosol mass species
-      INTEGER, SAVE :: N_SRFAKN            ! # aitken aerosol sfc area species
+      INTEGER, SAVE :: N_NUMAIT            ! # aitken aerosol number species
+      INTEGER, SAVE :: N_MASAIT            ! # aitken aerosol mass species
+      INTEGER, SAVE :: N_SRFAIT            ! # aitken aerosol sfc area species
       INTEGER       PNTR                ! relative pointer variable
       INTEGER       SPC                 ! liquid species loop counter
       INTEGER       VAR                 ! variable loop counter
@@ -159,9 +159,9 @@ C...........Local Variables:
       REAL          NUMNUC              ! Nucleation mode aerosol # (#/m3)
       REAL          MASNUC              ! Total nucleation mode mass (ug/m3)
       REAL          SRFNUC              ! Nucleation mode surface area (m2/m3)
-      REAL          NUMAKN              ! Aitken mode aerosol # (#/m3)
-      REAL          MASAKN              ! Total Aitken mode mass (ug/m3)
-      REAL          SRFAKN
+      REAL          NUMAIT              ! Aitken mode aerosol # (#/m3)
+      REAL          MASAIT              ! Total Aitken mode mass (ug/m3)
+      REAL          SRFAIT
       REAL          ONE_OVER_TWASH      ! 1 / TWASH
       REAL,    SAVE :: HPLUS = 1.0E-4   ! typical value hydrogen ion concentration [mol/l]
       REAL          RHOAIR              ! air density in kg/m3
@@ -208,11 +208,11 @@ C...  for scavenging, otherwise notify the user and return
         ALLOCATE ( L_NUMNUC( MXSPCS ),
      &             L_MASNUC( MXSPCS ),
      &             L_SRFNUC( MXSPCS ),
-     &             L_NUMAKN( MXSPCS ),
-     &             L_MASAKN( MXSPCS ),
-     &             L_SRFAKN( MXSPCS ), STAT = ASTAT )
+     &             L_NUMAIT( MXSPCS ),
+     &             L_MASAIT( MXSPCS ),
+     &             L_SRFAIT( MXSPCS ), STAT = ASTAT )
         IF ( ASTAT .NE. 0 ) THEN
-          XMSG = 'Failure allocating L_NUMAKN, L_MASAKN or L_SRFAKN'
+          XMSG = 'Failure allocating L_NUMAIT, L_MASAIT or L_SRFAIT'
           CALL M3EXIT( PNAME, JDATE, JTIME, XMSG, XSTAT1 )
         END IF
 
@@ -259,14 +259,16 @@ C...create the pointers from CGRID to the species needed by AQCHEM
 
         N_NUMNUC = INDEXN( 'NUM_NUCLN       ', N_CGRID_SCAV, CGRID_SCAV,
      &                     L_NUMNUC )
-        N_MASNUC = INDEXN( 'NUCLN', N_CGRID_SCAV, CGRID_SCAV, L_MASNUC )
-        N_SRFNUC = INDEXN( 'SRF_NUCLN      ', N_CGRID_SCAV, CGRID_SCAV,
+        N_MASNUC = INDEXN( 'NUCLN           ', N_CGRID_SCAV, CGRID_SCAV, 
+     &                     L_MASNUC )
+        N_SRFNUC = INDEXN( 'SRF_NUCLN       ', N_CGRID_SCAV, CGRID_SCAV,
      &                     L_SRFNUC )
-        N_NUMAKN = INDEXN( 'NUM_AITKEN      ', N_CGRID_SCAV, CGRID_SCAV,
-     &                     L_NUMAKN )
-        N_MASAKN = INDEXN( 'AITKEN', N_CGRID_SCAV, CGRID_SCAV, L_MASAKN )
-        N_SRFAKN = INDEXN( 'SRF_AITKEN      ', N_CGRID_SCAV, CGRID_SCAV,
-     &                     L_SRFAKN )
+        N_NUMAIT = INDEXN( 'NUM_AITKEN      ', N_CGRID_SCAV, CGRID_SCAV,
+     &                     L_NUMAIT )
+        N_MASAIT = INDEXN( 'AITKEN     ', N_CGRID_SCAV, CGRID_SCAV, 
+     &                     L_MASAIT )
+        N_SRFAIT = INDEXN( 'SRF_AITKEN      ', N_CGRID_SCAV, CGRID_SCAV,
+     &                     L_SRFAIT )
 
       END IF
 
@@ -287,7 +289,15 @@ ccc          TWASH = AMAX1( TWASH, TAUCLD / 60.0 )   ! <different units?sec&min
       REMOVAC = 0.0
 
       RHOAIR = ( AIRM / CTHK1 ) * MWAIR * KGPG
- 
+
+C...initialize scavenging variables
+      ALFA0NUC = 0.0
+      ALFA2NUC = 0.0
+      ALFA3NUC = 0.0
+      ALFA0AIT = 0.0
+      ALFA2AIT = 0.0
+      ALFA3AIT = 0.0
+
 C...compute total Nucleation mode number (#/m3)
 
       NUMNUC = 0.0
@@ -334,35 +344,35 @@ C...         time, but it should be added in the future!
 
 C...compute total Aitken mode number (#/m3)
 
-      NUMAKN = 0.0
+      NUMAIT = 0.0
 
-      DO I = 1, N_NUMAKN
-        PNTR = CGRID_SCAV_MAP( L_NUMAKN( I ) )
-        NUMAKN = NUMAKN + ( POLC( PNTR ) * AIRM / CTHK1 )
+      DO I = 1, N_NUMAIT
+        PNTR = CGRID_SCAV_MAP( L_NUMAIT( I ) )
+        NUMAIT = NUMAIT + ( POLC( PNTR ) * AIRM / CTHK1 )
       END DO
 
 C...compute total Aitken mode mass (ug/m3)
 
-      MASAKN = 0.0
+      MASAIT = 0.0
 
-      DO I = 1, N_MASAKN
-        PNTR = CGRID_SCAV_MAP( L_MASAKN( I ) )
-        IF (( INDEX( CGRID_SCAV( L_MASAKN( I ) ), 'NUM' ) .EQ. 0 ) .AND.
-     &      ( INDEX( CGRID_SCAV( L_MASAKN( I ) ), 'SRF' ) .EQ. 0 ) .AND.
-     &      ( INDEX( CGRID_SCAV( L_MASAKN( I ) ), 'H2O' ) .EQ. 0 ) .AND.
-     &      ( INDEX( CGRID_SCAV( L_MASAKN( I ) ), 'TRACER' ) .EQ. 0 ) ) THEN
-          MASAKN = MASAKN + ( POLC( PNTR ) * AIRM / CTHK1
+      DO I = 1, N_MASAIT
+        PNTR = CGRID_SCAV_MAP( L_MASAIT( I ) )
+        IF (( INDEX( CGRID_SCAV( L_MASAIT( I ) ), 'NUM' ) .EQ. 0 ) .AND.
+     &      ( INDEX( CGRID_SCAV( L_MASAIT( I ) ), 'SRF' ) .EQ. 0 ) .AND.
+     &      ( INDEX( CGRID_SCAV( L_MASAIT( I ) ), 'H2O' ) .EQ. 0 ) .AND.
+     &      ( INDEX( CGRID_SCAV( L_MASAIT( I ) ), 'TRACER' ) .EQ. 0 ) ) THEN
+          MASAIT = MASAIT + ( POLC( PNTR ) * AIRM / CTHK1
      &           * AE_MOLWT( PNTR - AE_STRT + 1 ) * 1.0E6 )
         END IF
       END DO
 
 C...compute total Aitken mode surface area (m2/m3)
 
-      SRFAKN = 0.0
+      SRFAIT = 0.0
 
-      DO I = 1, N_SRFAKN
-        PNTR = CGRID_SCAV_MAP( L_SRFAKN( I ) )
-        SRFAKN = SRFAKN + ( POLC( PNTR ) * AIRM / CTHK1 )
+      DO I = 1, N_SRFAIT
+        PNTR = CGRID_SCAV_MAP( L_SRFAIT( I ) )
+        SRFAIT = SRFAIT + ( POLC( PNTR ) * AIRM / CTHK1 )
       END DO
 
 C...compute the scavenging coefficients for aitken mode aerosol mass
@@ -372,8 +382,8 @@ C...         the liquid water content, not on the total water content
 C...         therefore, no ice phase scavenging is considered at this
 C...         time, but it should be added in the future!
 
-      CALL GETALPHA ( NUMAKN, MASAKN, SRFAKN, WCBAR, TBARC, PBARC,
-     &                RHOAIR, ALFA0AKN, ALFA2AKN, ALFA3AKN )
+      CALL GETALPHA ( NUMAIT, MASAIT, SRFAIT, WCBAR, TBARC, PBARC,
+     &                RHOAIR, ALFA0AIT, ALFA2AIT, ALFA3AIT )
 
 C...gas scavenging and wet deposition
 
@@ -411,11 +421,11 @@ C...aerosol scavenging and wet deposition
           END IF 
         ELSEIF ( INDEX( CGRID_SCAV( SPC ), 'AITKEN' ) .GT. 0 ) THEN
           IF ( INDEX( CGRID_SCAV( SPC ), 'NUM' ) .GT. 0 ) THEN
-            ALFA = CGRID_SCAV_FAC( SPC ) * ALFA0AKN
+            ALFA = CGRID_SCAV_FAC( SPC ) * ALFA0AIT
           ELSE IF ( INDEX( CGRID_SCAV( SPC ), 'SRF' ) .GT. 0 ) THEN
-            ALFA = CGRID_SCAV_FAC( SPC ) * ALFA2AKN
+            ALFA = CGRID_SCAV_FAC( SPC ) * ALFA2AIT
           ELSE
-            ALFA = CGRID_SCAV_FAC( SPC ) * ALFA3AKN
+            ALFA = CGRID_SCAV_FAC( SPC ) * ALFA3AIT
           END IF
         ELSE
 csjr          IF ( INDEX( CGRID_SCAV( SPC ), 'SRF' ) .EQ. 0 ) THEN

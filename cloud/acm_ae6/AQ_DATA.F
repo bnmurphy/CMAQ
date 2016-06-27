@@ -56,7 +56,7 @@ C-----------------------------------------------------------------------
       Integer, Parameter :: mxsrg = 35  ! maximum number of species for surrogate
 
       integer, parameter :: nuc = ia_nuc     ! number for Nucleation mode
-      integer, parameter :: akn = ia_ait     ! number for Aitken mode
+      integer, parameter :: ait = ia_ait     ! number for Aitken mode
       Integer, Parameter :: acc = ia_acc     ! number for Accumulation mode
       Integer, Parameter :: cor = ia_crs     ! number for Coarse mode
 
@@ -219,10 +219,10 @@ C...Pointers for the AQCHEM array AEROSOL
       Integer :: lsrf     !  Surface area
 C...TXHG aersosols      
       Integer :: ltracer_nuc  !  Tracer aerosols (Nucleation)
-      Integer :: ltracer_akn  !  Tracer aerosols (Aitken)
+      Integer :: ltracer_ait  !  Tracer aerosols (Aitken)
       Integer :: ltracer_acc  !  Tracer aerosols (Accumulation)
       Integer :: ltracer_cor  !  Tracer aerosols (Coarse)
-      Integer :: lphg_akn     !  Mercuric aerosols (Aitken and Accumulation)
+      Integer :: lphg_ait     !  Mercuric aerosols (Aitken and Accumulation)
       Integer :: lphg_acc     !  Mercuric aerosols (Aitken and Accumulation)
       Integer :: lphg_cor     !  Mercuric aerosols (Coarse)
 
@@ -334,7 +334,7 @@ C Functions:
       Integer, External :: indexn
 
 C Local Variables:
-      Character( 100 ) :: xmsg
+      Character( 200 ) :: xmsg
       Character( 16 ), Allocatable, Save :: aename( : )
       Character( 16 ), Allocatable, Save :: cgrid2aq( : )
       Character( 10 ) :: bkground
@@ -441,7 +441,7 @@ C...Add missing optional aerosol surrogate species
 
          ! Skip H2O, H2OP, and SOIL species
          If ( var .Eq. ah2o_idx .Or. var .Eq. ah3op_idx ) Then
-              write(xmsg,'(4(A,1x))')'Skipping AQ surrogate for AEROSPC ',
+              write(xmsg,'(5(A,1x))')'Skipping AQ surrogate for AEROSPC ',
      &                               aerospc( spc )%name( 1:n_mode )
               Call m3warn( 'aq_data_init', 0, 0, xmsg )
               Cycle
@@ -623,10 +623,10 @@ C...Create the pointers for required aerosol surrogate species needed by AQCHEM
       lseasc = findSgrAer( req_seasc )   !  SEAS in Coarse mode  (AE6)    SLN 16March2011
 C...For TXHG version
       ltracer_nuc    = findSgrAer( req_tracerh  )   !  Tracer nucleation mode 
-      ltracer_akn    = findSgrAer( req_traceri  )   !  Tracer aitken mode 
+      ltracer_ait    = findSgrAer( req_traceri  )   !  Tracer aitken mode 
       ltracer_acc    = findSgrAer( req_tracerj  )   !  Tracer accumation mode 
       ltracer_cor    = findSgrAer( req_tracerk  )   !  Tracer coarse mode 
-      lphg_akn       = findSgrAer( req_phgi )       !  Mercuric aitken and accumulation modes
+      lphg_ait       = findSgrAer( req_phgi )       !  Mercuric aitken and accumulation modes
       lphg_acc       = findSgrAer( req_phgj )       !  Mercuric aitken and accumulation modes
       lphg_cor       = findSgrAer( req_phgk )       !  Mercuric coarse mode
 
@@ -672,10 +672,10 @@ C...For TXHG version
       Write( logdev,'( 5x, a, i4 )' ) 'lanthc:   ', lanthc
       Write( logdev,'( 5x, a, i4 )' ) 'lseasc:   ', lseasc
       Write( logdev,'( 5x, a, i4 )' ) 'ltracer_nuc:  ', ltracer_nuc
-      Write( logdev,'( 5x, a, i4 )' ) 'ltracer_akn:  ', ltracer_akn
+      Write( logdev,'( 5x, a, i4 )' ) 'ltracer_ait:  ', ltracer_ait
       Write( logdev,'( 5x, a, i4 )' ) 'ltracer_acc:  ', ltracer_acc
       Write( logdev,'( 5x, a, i4 )' ) 'ltracer_cor:  ', ltracer_cor
-      Write( logdev,'( 5x, a, i4 )' ) 'lphg_akn:     ', lphg_akn
+      Write( logdev,'( 5x, a, i4 )' ) 'lphg_ait:     ', lphg_ait
       Write( logdev,'( 5x, a, i4 )' ) 'lphg_acc:     ', lphg_acc
       Write( logdev,'( 5x, a, i4 )' ) 'lphg_cor:     ', lphg_cor
 #endif

@@ -111,6 +111,6 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'k_prtcl_iepox   ', 5, '1/s             ', 'IEPOX pseudo particle phase reaction rate const' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'GAMMA_IMAE      ', 5, 'na              ', 'IMAE heterogeneous uptake coefficient' ) /)
 
-        INTEGER :: A_PMDIAG_SPC_MAP (75), NUM_PMDIAG_SPC
+        INTEGER :: A_PMDIAG_SPC_MAP (72), NUM_PMDIAG_SPC
 
       END MODULE PMDIAG_DATA_MODULE

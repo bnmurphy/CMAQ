@@ -317,9 +317,9 @@ C ------------------ begin body of AERO_DRIVER -------------------------
          LOGDEV = INIT3()
 
          IF ( INDEX(MECHNAME, 'SAPRC07TIC_AE6I_AQ') .GT. 0 ) THEN
-            NUM_PMDIAG_SPC = 41
+            NUM_PMDIAG_SPC = 72
          ELSE
-            NUM_PMDIAG_SPC = 39
+            NUM_PMDIAG_SPC = 70
          END IF
 
          CALL GET_ENVLIST ( APMDIAG_BLEV_ELEV, N, V_LIST )
@@ -670,36 +670,34 @@ C     diagnostic array (lowest vertical layer only)
                      TEMP_DATA( 42:46 ) = 0.0
                   END IF
 
-                  TEMP_DATA( 52 ) = AEROMODE_DENS( 1 )    ! Nucleation Mode Density [kg m-3]
-                  TEMP_DATA( 53 ) = AEROMODE_DENS( 2 )    ! Aitken Mode Density [kg m-3]
-                  TEMP_DATA( 54 ) = AEROMODE_DENS( 3 )    ! Accumulation Mode Density [kg m-3]
-                  TEMP_DATA( 55 ) = AEROMODE_DENS( 4 )    ! Coarse Mode Density [kg m3-]
-                  TEMP_DATA( 56 ) = JDIAG( 1 )            ! Binary NPF Rate ( Vehkamaki )
-                  TEMP_DATA( 57 ) = JDIAG( 2 )            ! Ternary NPF Rate ( Napari )
-                  TEMP_DATA( 58 ) = JDIAG( 3 )            ! H2SO4-DMA NPF Rate ( Glasoe )
-                  TEMP_DATA( 59 ) = JDIAG( 4 )            ! H2SO4-Org NPF Rate ( Paasonen )
-                  TEMP_DATA( 60 ) = JDIAG( 5 )            ! Org-Org NPF Rate ( Paasonen )
-                  TEMP_DATA( 61 ) = JDIAG( 6 )            ! H2SO4-Org NPF Rate ( Riccobono )
-                  TEMP_DATA( 62 ) = JM2DIAG( 1 )          ! Binary NPF 2nd Moment Change ( Vehkamaki )
-                  TEMP_DATA( 63 ) = JM2DIAG( 2 )          ! Ternary NPF 2nd Moment Change ( Napari )
-                  TEMP_DATA( 64 ) = JM2DIAG( 3 )          ! H2SO4-DMA NPF 2nd Moment Change ( Glasoe )
-                  TEMP_DATA( 65 ) = JM2DIAG( 4 )          ! H2SO4-Org NPF 2nd Moment Change ( Paasonen )
-                  TEMP_DATA( 66 ) = JM2DIAG( 5 )          ! Org-Org NPF 2nd Moment Change ( Paasonen )
-                  TEMP_DATA( 67 ) = JM2DIAG( 6 )          ! H2SO4-Org NPF 2nd Moment Change ( Riccobono )
-                  TEMP_DATA( 68 ) = JDGASDIAG( 1 )        ! H2SO4 Binary Change [ug/m3]
-                  TEMP_DATA( 69 ) = JDGASDIAG( 2 )        ! H2SO4 Ternary Change [ug/m3]
-                  TEMP_DATA( 70 ) = JDGASDIAG( 3 )        ! H2SO4 Glasoe Change [ug/m3] 
-                  TEMP_DATA( 71 ) = JDGASDIAG( 4 )        ! H2SO4 Paasonen Change [ug/m3]
-                  TEMP_DATA( 72 ) = JDGASDIAG( 5 )        ! NH3 Ternary Change [ug/m3]
-                  TEMP_DATA( 73 ) = JDGASDIAG( 6 )        ! DMA Glasoe Change [ug/m3] 
-                  TEMP_DATA( 74 ) = JDGASDIAG( 7 )        ! MBTCA Paasonen Change [ug/m3] 
-                  TEMP_DATA( 75 ) = JDGASDIAG( 8 )        ! ELVOC Homogeneous Paasonen Change [ug/m3]
+                  TEMP_DATA( 47 ) = AEROMODE_DENS( 1 )    ! Nucleation Mode Density [kg m-3]
+                  TEMP_DATA( 48 ) = AEROMODE_DENS( 2 )    ! Aitken Mode Density [kg m-3]
+                  TEMP_DATA( 49 ) = AEROMODE_DENS( 3 )    ! Accumulation Mode Density [kg m-3]
+                  TEMP_DATA( 50 ) = AEROMODE_DENS( 4 )    ! Coarse Mode Density [kg m3-]
+                  TEMP_DATA( 51 ) = JDIAG( 1 )            ! Binary NPF Rate ( Vehkamaki )
+                  TEMP_DATA( 52 ) = JDIAG( 2 )            ! Ternary NPF Rate ( Napari )
+                  TEMP_DATA( 53 ) = JDIAG( 3 )            ! H2SO4-DMA NPF Rate ( Glasoe )
+                  TEMP_DATA( 54 ) = JDIAG( 4 )            ! H2SO4-Org NPF Rate ( Paasonen )
+                  TEMP_DATA( 55 ) = JDIAG( 5 )            ! Org-Org NPF Rate ( Paasonen )
+                  TEMP_DATA( 56 ) = JDIAG( 6 )            ! H2SO4-Org NPF Rate ( Riccobono )
+                  TEMP_DATA( 57 ) = JM2DIAG( 1 )          ! Binary NPF 2nd Moment Change ( Vehkamaki )
+                  TEMP_DATA( 58 ) = JM2DIAG( 2 )          ! Ternary NPF 2nd Moment Change ( Napari )
+                  TEMP_DATA( 69 ) = JM2DIAG( 3 )          ! H2SO4-DMA NPF 2nd Moment Change ( Glasoe )
+                  TEMP_DATA( 60 ) = JM2DIAG( 4 )          ! H2SO4-Org NPF 2nd Moment Change ( Paasonen )
+                  TEMP_DATA( 61 ) = JM2DIAG( 5 )          ! Org-Org NPF 2nd Moment Change ( Paasonen )
+                  TEMP_DATA( 62 ) = JM2DIAG( 6 )          ! H2SO4-Org NPF 2nd Moment Change ( Riccobono )
+                  TEMP_DATA( 63 ) = JDGASDIAG( 1 )        ! H2SO4 Binary Change [ug/m3]
+                  TEMP_DATA( 64 ) = JDGASDIAG( 2 )        ! H2SO4 Ternary Change [ug/m3]
+                  TEMP_DATA( 65 ) = JDGASDIAG( 3 )        ! H2SO4 Glasoe Change [ug/m3] 
+                  TEMP_DATA( 66 ) = JDGASDIAG( 4 )        ! H2SO4 Paasonen Change [ug/m3]
+                  TEMP_DATA( 67 ) = JDGASDIAG( 5 )        ! NH3 Ternary Change [ug/m3]
+                  TEMP_DATA( 68 ) = JDGASDIAG( 6 )        ! DMA Glasoe Change [ug/m3] 
+                  TEMP_DATA( 69 ) = JDGASDIAG( 7 )        ! MBTCA Paasonen Change [ug/m3] 
+                  TEMP_DATA( 70 ) = JDGASDIAG( 8 )        ! ELVOC Homogeneous Paasonen Change [ug/m3]
 
-
-
-                  IF ( NUM_PMDIAG_SPC .GT. 75 ) THEN ! AERO6i
-                     TEMP_DATA( 76 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
-                     TEMP_DATA( 77 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
+                  IF ( NUM_PMDIAG_SPC .GT. 70 ) THEN ! AERO6i
+                     TEMP_DATA( 71 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
+                     TEMP_DATA( 72 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
                   END IF
                END IF
 

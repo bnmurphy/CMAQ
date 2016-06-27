@@ -27,7 +27,7 @@ C %W% %P% %G% %U%
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE AQCHEM ( JDATE, JTIME, TEMP, PRES_PA, TAUCLD, PRCRATE,
      &                    WCAVG, WTAVG, AIRM, ALFA0NUC, ALFA2NUC, ALFA3NUC, 
-     &                    ALFA0AKN, ALFA2AKN, ALFA3AKN, GAS, AEROSOL,
+     &                    ALFA0AIT, ALFA2AIT, ALFA3AIT, GAS, AEROSOL,
      &                    GASWDEP, AERWDEP, HPWDEP, BETASO4, DARK )
 
 C-----------------------------------------------------------------------
@@ -182,9 +182,9 @@ C...........Arguments:
       REAL,      INTENT( IN )  :: ALFA0NUC  ! scav coef for nucleation aerosol number
       REAL,      INTENT( IN )  :: ALFA2NUC  ! scav coef for nucleation aerosol sfc area
       REAL,      INTENT( IN )  :: ALFA3NUC  ! scav coef for nucleation aerosol mass
-      REAL,      INTENT( IN )  :: ALFA0AKN  ! scav coef for aitken aerosol number
-      REAL,      INTENT( IN )  :: ALFA2AKN  ! scav coef for aitken aerosol sfc area
-      REAL,      INTENT( IN )  :: ALFA3AKN  ! scav coef for aitken aerosol mass
+      REAL,      INTENT( IN )  :: ALFA0AIT  ! scav coef for aitken aerosol number
+      REAL,      INTENT( IN )  :: ALFA2AIT  ! scav coef for aitken aerosol sfc area
+      REAL,      INTENT( IN )  :: ALFA3AIT  ! scav coef for aitken aerosol mass
       REAL,      INTENT( OUT ) :: HPWDEP    ! hydrogen wet deposition (mm mol/liter)
       REAL( 8 ), INTENT( OUT ) :: BETASO4
       REAL,      INTENT( IN )  :: PRCRATE   ! precip rate (mm/hr)
@@ -253,9 +253,9 @@ C...........Local Variables (scalars):
       REAL( 8 ) :: EALFA0TNUC      ! EXP( -ALFA0 * TAUCLD )
       REAL( 8 ) :: EALFA2TNUC      ! EXP( -ALFA2 * TAUCLD )
       REAL( 8 ) :: EALFA3TNUC      ! EXP( -ALFA3 * TAUCLD )
-      REAL( 8 ) :: EALFA0TAKN      ! EXP( -ALFA0 * TAUCLD )
-      REAL( 8 ) :: EALFA2TAKN      ! EXP( -ALFA2 * TAUCLD )
-      REAL( 8 ) :: EALFA3TAKN      ! EXP( -ALFA3 * TAUCLD )
+      REAL( 8 ) :: EALFA0TAIT      ! EXP( -ALFA0 * TAUCLD )
+      REAL( 8 ) :: EALFA2TAIT      ! EXP( -ALFA2 * TAUCLD )
+      REAL( 8 ) :: EALFA3TAIT      ! EXP( -ALFA3 * TAUCLD )
       REAL( 8 ) :: EC              ! elemental carbon acc+akn aerosol in cloudwater (mol/liter)
       REAL( 8 ) :: FA              ! functional value ??
       REAL( 8 ) :: FB              ! functional value ??
@@ -397,7 +397,7 @@ C...........Local Variables (scalars):
       REAL( 8 ) :: ONE_OVER_XL     ! 1.0 / XL
       REAL( 8 ) :: PRES_ATM_OVER_XL ! PRES_ATM / XL
       REAL( 8 ) :: SCAVENGED_NUC   ! nucleation scavenging factor by cloud water
-      REAL( 8 ) :: SCAVENGED_AKN   ! aitken scavenging factor by cloud water
+      REAL( 8 ) :: SCAVENGED_AIT   ! aitken scavenging factor by cloud water
       REAL( 8 ) :: XLCO2           !
       REAL( 8 ) :: XLH2O2          !
       REAL( 8 ) :: XLHCL           ! const in calc of HCL final partial pres
@@ -727,10 +727,10 @@ C...set nucleation and aitken-mode aerosol loading (mol/liter)
 C...    with scavenged aerosol mass estimated from scavwdep
 
         SCAVENGED_NUC = PRES_ATM_OVER_XL * ( 1.0D0 - EXP( -REAL( ALFA3NUC, 8 ) * TIMEW ) )
-        SCAVENGED_AKN = PRES_ATM_OVER_XL * ( 1.0D0 - EXP( -REAL( ALFA3AKN, 8 ) * TIMEW ) )
+        SCAVENGED_AIT = PRES_ATM_OVER_XL * ( 1.0D0 - EXP( -REAL( ALFA3AIT, 8 ) * TIMEW ) )
         DO ISPC = 1, NAER
           LOADING( ISPC, NUC ) = AEROSOL( ISPC, NUC ) * SCAVENGED_NUC
-          LOADING( ISPC, AKN ) = AEROSOL( ISPC, AKN ) * SCAVENGED_AKN
+          LOADING( ISPC, AIT ) = AEROSOL( ISPC, AIT ) * SCAVENGED_AIT
         END DO
 
 C...Initial gas phase partial pressures (atm)
@@ -741,15 +741,15 @@ C...   = initial partial pressure - amount deposited partial pressure
      &                   - ( WETDEP( LSO3L ) + WETDEP( LHSO3L ) + WETDEP( LSO2L ) ) * XC2
         INITGAS( LNH3 )  = GAS( LNH3  ) * PRES_ATM
      &                   + ( LOADING( LNH4, ACC ) + LOADING( LNH4, COR ) 
-     &                      +LOADING( LNH4, AKN ) + LOADING( LNH4, NUC ) ) * XL
+     &                      +LOADING( LNH4, AIT ) + LOADING( LNH4, NUC ) ) * XL
      &                   - ( WETDEP( LNH4ACCL ) + WETDEP( LNH3L ) + WETDEP( LNH4CORL ) ) * XC2
         INITGAS( LHNO3 ) = ( GAS( LHNO3 ) + 2.0 * GAS( LN2O5 ) ) * PRES_ATM
      &                   + ( LOADING( LNO3, ACC ) + LOADING( LNO3, COR ) 
-     &                      +LOADING( LNO3, AKN ) + LOADING( LNO3, NUC ) ) * XL
+     &                      +LOADING( LNO3, AIT ) + LOADING( LNO3, NUC ) ) * XL
      &                   - ( WETDEP( LNO3ACCL ) + WETDEP( LHNO3L ) + WETDEP( LNO3CORL ) ) * XC2
         INITGAS( LHCL )  = GAS(  LHCL ) * PRES_ATM
      &                   + ( LOADING( LCL, ACC ) + LOADING( LCL, COR ) 
-     &                      +LOADING( LCL, AKN ) + LOADING( LCL, NUC ) ) * XL ! new for sea salt
+     &                      +LOADING( LCL, AIT ) + LOADING( LCL, NUC ) ) * XL ! new for sea salt
      &                   - ( WETDEP( LCLACCL ) + WETDEP( LHCLL ) + WETDEP( LCLCORL ) ) * XC2
         INITGAS( LH2O2 ) = GAS( LH2O2 ) * PRES_ATM - WETDEP( LH2O2L ) * XC2
         INITGAS( LO3 )   = GAS( LO3   ) * PRES_ATM - WETDEP( LO3L   ) * XC2
@@ -791,11 +791,11 @@ C...   = Initial amount - amount deposited  (mol/liter)
         CACOR   = SEAS_CA_FAC * SEASCOR + SOIL_CA_FAC * SOILCOR + CORS_CA_FAC * ANTHCOR
         KCOR    = SEAS_K_FAC  * SEASCOR + SOIL_K_FAC  * SOILCOR + CORS_K_FAC  * ANTHCOR
 
-        TS6     = LOADING( LSO4,  AKN ) + LOADING( LSO4, ACC ) + TS6COR
+        TS6     = LOADING( LSO4,  AIT ) + LOADING( LSO4, ACC ) + TS6COR
      &          - ( WETDEP( LSO4ACCL ) + WETDEP( LHSO4ACCL ) ) * XC1
      &          - DS4( 0 )
 
-        NA      = LOADING( LNA,   ACC ) + LOADING( LNA, AKN ) + LOADING( LNA, NUC ) + NACOR
+        NA      = LOADING( LNA,   ACC ) + LOADING( LNA, AIT ) + LOADING( LNA, NUC ) + NACOR
      &          - WETDEP( LNAACCL ) * XC1
 !       CA      = LOADING( LCACO3,COR ) - WETDEP( LCAL ) * XC1
 !       MG      = LOADING( LMGCO3,COR ) - WETDEP( LMGL ) * XC1
@@ -809,9 +809,9 @@ C...   = Initial amount - amount deposited  (mol/liter)
         MN      = LOADING( LMNACC, ACC) - WETDEP( LMNACCL ) * XC1 + MNCOR
         SOA     = LOADING( LSOA,  ACC ) - WETDEP( LSOAL  ) * XC1
         ORGC    = LOADING( LORGC, ACC ) + DORGC - WETDEP( LORGCL ) * XC1             ! new in-cloud organic
-        POA     = LOADING( LPOA,  ACC ) + LOADING( LPOA,  AKN ) + LOADING( LPOA, NUC ) - WETDEP( LPOAL  ) * XC1
-        EC      = LOADING( LEC,   ACC ) + LOADING( LEC,   AKN ) + LOADING( LEC,  NUC ) - WETDEP( LECL   ) * XC1
-        PRIM    = LOADING( LPRI,  ACC ) + LOADING( LPRI,  AKN ) + LOADING( LPRI, NUC ) - WETDEP( LPRIML ) * XC1
+        POA     = LOADING( LPOA,  ACC ) + LOADING( LPOA,  AIT ) + LOADING( LPOA, NUC ) - WETDEP( LPOAL  ) * XC1
+        EC      = LOADING( LEC,   ACC ) + LOADING( LEC,   AIT ) + LOADING( LEC,  NUC ) - WETDEP( LECL   ) * XC1
+        PRIM    = LOADING( LPRI,  ACC ) + LOADING( LPRI,  AIT ) + LOADING( LPRI, NUC ) - WETDEP( LPRIML ) * XC1
 !       PRIMCOR = LOADING( LPRICOR, COR ) - WETDEP( LPRIMCORL ) * XC1
         NUMCOR  = LOADING( LNUM,  COR ) - WETDEP( LNUMCORL  ) * XC1
 !       A       = 3.0D0 * FE
@@ -859,14 +859,14 @@ C...don't allow gas concentrations to go below zero
 
 C...Aerosol specific to TXHG Versions
 
-        TRACER     = LOADING( LTRACER_ACC,  ACC ) + LOADING( LTRACER_AKN,  AKN )
+        TRACER     = LOADING( LTRACER_ACC,  ACC ) + LOADING( LTRACER_AIT,  AIT )
      &              + LOADING( LTRACER_NUC, NUC ) - WETDEP( LTRACERL ) * XC1
         TRACER    = MAX( TRACER,    0.0D0 )
         
         TRACERCOR  = LOADING( LTRACER_COR,  COR ) - WETDEP( LTRACERCORL ) * XC1
         TRACERCOR = MAX( TRACERCOR, 0.0D0 )
  
-        HGFINE    = LOADING( LPHG_ACC,  ACC ) + LOADING( LPHG_AKN,  AKN )
+        HGFINE    = LOADING( LPHG_ACC,  ACC ) + LOADING( LPHG_AIT,  AIT )
      &             - WETDEP( LPHGFINEL ) * XC1
         HGFINE    = MAX( HGFINE,    0.0D0 )
 
@@ -1434,9 +1434,9 @@ C...  scavenging aerosol number in the accumulation mode
 
       DEPSUM = ( WETDEP( LSO4ACCL ) + WETDEP( LHSO4ACCL ) ) * XC1
 
-      IF ( ( LOADING( LSO4, ACC ) + LOADING( LSO4, AKN ) 
+      IF ( ( LOADING( LSO4, ACC ) + LOADING( LSO4, AIT ) 
      &      +LOADING( LSO4, NUC ) - DS4( 0 ) ) .NE. 0.0D0 ) THEN
-        BETASO4 = DEPSUM / ( ( LOADING( LSO4, ACC ) + LOADING( LSO4, AKN ) 
+        BETASO4 = DEPSUM / ( ( LOADING( LSO4, ACC ) + LOADING( LSO4, AIT ) 
      &                        +LOADING( LSO4, NUC ) - DS4( 0 ) ) * TAUCLD )
       ELSE
         BETASO4 = 0.0D0
@@ -1446,9 +1446,9 @@ C...  scavenging aerosol number in the accumulation mode
       EALFA0TNUC   = EXP( -ALFA0NUC * TAUCLD )
       EALFA2TNUC   = EXP( -ALFA2NUC * TAUCLD )
       EALFA3TNUC   = EXP( -ALFA3NUC * TAUCLD )
-      EALFA0TAKN   = EXP( -ALFA0AKN * TAUCLD )
-      EALFA2TAKN   = EXP( -ALFA2AKN * TAUCLD )
-      EALFA3TAKN   = EXP( -ALFA3AKN * TAUCLD )
+      EALFA0TAIT   = EXP( -ALFA0AIT * TAUCLD )
+      EALFA2TAIT   = EXP( -ALFA2AIT * TAUCLD )
+      EALFA3TAIT   = EXP( -ALFA3AIT * TAUCLD )
 
 C...Compute the output concentrations and wet deposition amounts
 
@@ -1506,13 +1506,13 @@ C...  to the accumulation mode particles
 
       AERWDEP( LPOA, NUC ) = 0.0D0
       
-      AERWDEP( LSO4, AKN ) = 0.0D0
-      AERWDEP( LNH4, AKN ) = 0.0D0
-      AERWDEP( LNO3, AKN ) = 0.0D0
-      AERWDEP( LEC,  AKN ) = 0.0D0
-      AERWDEP( LPRI, AKN ) = 0.0D0
+      AERWDEP( LSO4, AIT ) = 0.0D0
+      AERWDEP( LNH4, AIT ) = 0.0D0
+      AERWDEP( LNO3, AIT ) = 0.0D0
+      AERWDEP( LEC,  AIT ) = 0.0D0
+      AERWDEP( LPRI, AIT ) = 0.0D0
 
-      AERWDEP( LPOA, AKN ) = 0.0D0
+      AERWDEP( LPOA, AIT ) = 0.0D0
 
       AERWDEP( LSO4, ACC ) = WETDEP( LSO4ACCL ) + WETDEP( LHSO4ACCL )
       AERWDEP( LNH4, ACC ) = WETDEP( LNH4ACCL )
@@ -1531,8 +1531,8 @@ C...  to the accumulation mode particles
 
       AERWDEP( LNA, NUC  ) = 0.0D0
       AERWDEP( LCL, NUC  ) = 0.0D0
-      AERWDEP( LNA, AKN  ) = 0.0D0
-      AERWDEP( LCL, AKN  ) = 0.0D0
+      AERWDEP( LNA, AIT  ) = 0.0D0
+      AERWDEP( LCL, AIT  ) = 0.0D0
       AERWDEP( LNA, ACC  ) = WETDEP( LNAACCL )
       AERWDEP( LCL, ACC  ) = WETDEP( LCLACCL )
 !     AERWDEP( LNA, COR  ) = WETDEP( LNACORL )
@@ -1553,20 +1553,20 @@ C...  to the accumulation mode particles
       AERWDEP( LFEACC, ACC ) = WETDEP( LFEACCL )  ! AE6 - SLN 22March2011
       AERWDEP( LMNACC, ACC ) = WETDEP( LMNACCL )  ! AE6 - SLN 22March2011
 
-!     AERWDEP( LNUM, AKN ) = 0.0D0
+!     AERWDEP( LNUM, AIT ) = 0.0D0
 !     AERWDEP( LNUM, ACC ) = 0.0D0
 !     AERWDEP( LNUM, COR ) = 0.0D0
-!     AERWDEP( LSRF, AKN ) = 0.0D0
+!     AERWDEP( LSRF, AIT ) = 0.0D0
 !     AERWDEP( LSRF, ACC ) = 0.0D0
 !     AERWDEP( LSRF, COR ) = 0.0D0
 
 C...Compute for Aerosol species in  TXHG Version
 
       AERWDEP( LTRACER_NUC, NUC ) = 0.0D0
-      AERWDEP( LTRACER_AKN, AKN ) = 0.0D0
+      AERWDEP( LTRACER_AIT, AIT ) = 0.0D0
       AERWDEP( LTRACER_ACC, ACC ) = WETDEP( LTRACERL )
       AERWDEP( LTRACER_COR, COR ) = WETDEP( LTRACERCORL )
-      AERWDEP( LPHG_AKN, AKN ) = 0.0D0
+      AERWDEP( LPHG_AIT, AIT ) = 0.0D0
       AERWDEP( LPHG_ACC, ACC ) = WETDEP( LPHGFINEL )
       AERWDEP( LPHG_COR, COR ) = WETDEP( LPHGCORL )
 
@@ -1579,12 +1579,12 @@ C...aerosol concentrations (mol/molV)
       AEROSOL( LPRI, NUC ) = AEROSOL( LPRI, NUC ) * EALFA3TNUC
       AEROSOL( LPOA, NUC ) = AEROSOL( LPOA, NUC ) * EALFA3TNUC
       
-      AEROSOL( LSO4, AKN ) = AEROSOL( LSO4, AKN ) * EALFA3TAKN
-      AEROSOL( LNH4, AKN ) = AEROSOL( LNH4, AKN ) * EALFA3TAKN
-      AEROSOL( LNO3, AKN ) = AEROSOL( LNO3, AKN ) * EALFA3TAKN
-      AEROSOL( LEC,  AKN ) = AEROSOL( LEC,  AKN ) * EALFA3TAKN
-      AEROSOL( LPRI, AKN ) = AEROSOL( LPRI, AKN ) * EALFA3TAKN
-      AEROSOL( LPOA, AKN ) = AEROSOL( LPOA, AKN ) * EALFA3TAKN
+      AEROSOL( LSO4, AIT ) = AEROSOL( LSO4, AIT ) * EALFA3TAIT
+      AEROSOL( LNH4, AIT ) = AEROSOL( LNH4, AIT ) * EALFA3TAIT
+      AEROSOL( LNO3, AIT ) = AEROSOL( LNO3, AIT ) * EALFA3TAIT
+      AEROSOL( LEC,  AIT ) = AEROSOL( LEC,  AIT ) * EALFA3TAIT
+      AEROSOL( LPRI, AIT ) = AEROSOL( LPRI, AIT ) * EALFA3TAIT
+      AEROSOL( LPOA, AIT ) = AEROSOL( LPOA, AIT ) * EALFA3TAIT
 
       AEROSOL( LSO4, ACC ) = TS6ACC * XL * RECIPAP1
       AEROSOL( LEC,  ACC ) = EC     * XL * RECIPAP1
@@ -1609,15 +1609,15 @@ C...aerosol concentrations (mol/molV)
 
       AEROSOL( LNA, NUC  ) = AEROSOL( LNA, NUC ) * EALFA3TNUC
       AEROSOL( LCL, NUC  ) = AEROSOL( LCL, NUC ) * EALFA3TNUC
-      AEROSOL( LNA, AKN  ) = AEROSOL( LNA, AKN ) * EALFA3TAKN
-      AEROSOL( LCL, AKN  ) = AEROSOL( LCL, AKN ) * EALFA3TAKN
+      AEROSOL( LNA, AIT  ) = AEROSOL( LNA, AIT ) * EALFA3TAIT
+      AEROSOL( LCL, AIT  ) = AEROSOL( LCL, AIT ) * EALFA3TAIT
       AEROSOL( LNA, ACC  ) = NAACC * XL * RECIPAP1
       AEROSOL( LCL, ACC  ) = CLACC * XL * RECIPAP1
 !     AEROSOL( LNA, COR  ) = NACOR * XL * RECIPAP1
       AEROSOL( LCL, COR  ) = CLCOR * XL * RECIPAP1
 
       AEROSOL( LNUM, NUC ) = AEROSOL( LNUM, NUC ) * EALFA0TNUC
-      AEROSOL( LNUM, AKN ) = AEROSOL( LNUM, AKN ) * EALFA0TAKN
+      AEROSOL( LNUM, AIT ) = AEROSOL( LNUM, AIT ) * EALFA0TAIT
       AEROSOL( LNUM, ACC ) = AEROSOL( LNUM, ACC ) * EBETASO4T
       AEROSOL( LNUM, COR ) = NUMCOR * XL * RECIPAP1
 
@@ -1633,10 +1633,10 @@ C...aerosol concentrations (mol/molV)
 C...Compute for Aerosol species in  TXHG Version
 
       AEROSOL( LTRACER_NUC, NUC ) = AEROSOL( LTRACER_NUC, NUC ) * EALFA3TNUC
-      AEROSOL( LTRACER_AKN, AKN ) = AEROSOL( LTRACER_AKN, AKN ) * EALFA3TAKN
+      AEROSOL( LTRACER_AIT, AIT ) = AEROSOL( LTRACER_AIT, AIT ) * EALFA3TAIT
       AEROSOL( LTRACER_ACC, ACC ) = TRACER    * XL * RECIPAP1
       AEROSOL( LTRACER_COR, COR ) = TRACERCOR * XL * RECIPAP1
-      AEROSOL( LPHG_AKN, AKN )    = AEROSOL( LPHG_AKN, AKN ) * EALFA3TAKN
+      AEROSOL( LPHG_AIT, AIT )    = AEROSOL( LPHG_AIT, AIT ) * EALFA3TAIT
       AEROSOL( LPHG_ACC, ACC )    = HGFINE * XL * RECIPAP1
       AEROSOL( LPHG_COR, COR )    = HGCOR * XL * RECIPAP1
 

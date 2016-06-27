@@ -94,6 +94,84 @@ C     equation 7a of B&S (1995).
       END SUBROUTINE HCOND3
  
 
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      SUBROUTINE HCOND4( AM0, AM1, AM2, DV, DP, CBAR_V, CBAR_P, 
+     &                   DIA_V, DIA_P, GF )
+
+!  SUBROUTINE HCOND4 calculates collision rate, GF,  between a vapor and
+!  and a lognormal aerosol mode. Particle size is represented by the
+!  Geometric Mean Diameter of the mode.
+!
+!  KEY SUBROUTINES/FUNCTIONS CALLED:  none
+!
+!  REVISION HISTORY:
+!     coded March 22, 2016 by Dr. Francis S. Binkowski
+!   The form is based upon HCOND3 coded November 20, 2003
+!   by Francis S. Binkowski
+
+!  REFERENCE:
+!   Nieminen, T. et al., 2010, Sub-10 nm particle growth by vapor
+!   condensation - effect of vapor molecule size and particle thermal speed,
+!      Atmospheric Chemistry and Physics, doi: 10.5194/acp-10-9773-2010.
+      
+
+      IMPLICIT NONE
+
+C *** Includes:
+
+      INCLUDE SUBST_CONST     ! physical and mathematical constants
+
+C *** Arguments:
+
+      REAL( 8 ), INTENT( IN ) :: AM0   ! zeroth moment of mode  [ #/m**3 ]
+      REAL( 8 ), INTENT( IN ) :: AM1   ! first moment of mode   [ m/m**3 ]
+      REAL( 8 ), INTENT( IN ) :: AM2   ! second moment of mode  [ m**2/m**3 ]
+      REAL( 4 ), INTENT( IN ) :: Dv    ! molecular diffusivity of the
+                                       ! condensing vapor  [ m**2/s ]
+      REAL( 4 ), INTENT( IN ) :: Dp    ! Diffusivity of particles [m2 s-1]
+      REAL( 4 ), INTENT( IN ) :: CBAR_V! kinetic velocity of condensing vapor [ m/s ]
+      REAL( 4 ), INTENT( IN ) :: CBAR_P! kinetic velocity of particles [ m/s ]
+      REAL( 4 ), INTENT( IN ) :: DIA_V ! diameter of vapor molecules [ m ]
+      REAL( 4 ), INTENT( IN ) :: DIA_P ! diameter of particles [ m ]
+
+      REAL( 8 ), INTENT( OUT ) :: GF(2)   ! Collision rate between vapor and particle
+                                       !       [ m3 m-3 s-1 ]
+
+C *** Local Variables:
+
+      REAL( 4 ) :: FAC_NC, FAC_FM
+      REAL( 8 ) :: GNC2, GNC3 ! integrals used to calculate F(1) [m^2 / m^3 s]
+      REAL( 8 ) :: GFM2, GFM3 !
+      REAL( 8 ) :: DIA_V8 ! diameter of vapor molecules [ m ]
+
+      REAL( 8 ), PARAMETER :: TWOPI = 2.0D0 * PI
+      REAL( 8 ), PARAMETER :: PI4 = 0.25D0 * PI
+
+C-----------------------------------------------------------------------
+
+      DIA_V8 = REAL( DIA_V,8 )
+
+C *** Implement equations 1 and 2 of Nieminen et al., 2010
+
+      FAC_NC = TWOPI * ( Dv + Dp )
+      FAC_FM = PI4 * SQRT( CBAR_V **2 + CBAR_P**2 )
+
+      !GNC is for the near-continuum regime
+      GNC2 = REAL( FAC_NC,8 ) * ( AM0 )
+      GNC3 = REAL( FAC_NC,8 ) * ( AM1 + AM0*DIA_V8 )
+
+      !GFM is for the free-molecular regime
+      GFM2 = REAL( FAC_FM,8 ) * ( AM1 + 2.0 * AM0 * DIA_V8 )
+      GFM3 = REAL( FAC_FM,8 ) * ( AM2 + 2.0 * AM1 * DIA_V8 + AM0 + DIA_V8 **2 )
+
+C *** Use Harmonic Mean method to account for transition from
+C     Free-molecular to continuum regimes
+      GF(1) = gnc2 * gfm2 / ( gnc2 + gfm2 )
+      GF(2) = gnc3 * gfm3 / ( gnc3 + gfm3 )
+
+      RETURN
+      END SUBROUTINE HCOND4
+ 
 
 
 

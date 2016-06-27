@@ -199,6 +199,9 @@ C Find indices of required species
       HCL_idx    = findPrecursor( req_HCL,    .true.)
       NH3_idx    = findPrecursor( req_NH3,    .true.)
       OH_idx     = findPrecursor( req_OH,     .true.)
+      DMA_idx    = findPrecursor( req_DMA,    .true.)
+      MBTCA_idx  = findPrecursor( req_MBTCA,  .true.)
+      ELVOC_idx  = findPrecursor( req_ELVOC,  .true.)
       If( aphgj_idx .gt. 0 )then
           PHGRXN_idx = findPrecursor( req_phgrxn,  .false.)
           If(   precursor_map( PHGRXN_idx ) .Lt. 1  )Then

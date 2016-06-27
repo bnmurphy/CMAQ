@@ -267,7 +267,8 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
        END IF
         
 ! Set up for calculation of NPF rate from other pathways
-      SAORGX   = A1DIFF   * MBTCA  !For Paasonen et al. (2010) J2
+      !SAORGX   = A1DIFF   * MBTCA  !For Paasonen et al. (2010) J2
+      SAORGX   = A1DIFF   * ELVOC  !For Paasonen et al. (2010) J2
       ORGYORGY = ELVOC    * ELVOC  !For Paasonen et al. (2010) J3
       SA2ORGX  = A1TOT**2 * MBTCA  !For Riccobono et al. (2014) J1_Ricco
 
@@ -317,7 +318,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       M2_PAAS2   = J3 * Dg_PAAS2sq    ![m2/m3/s]
       M2_PAAS3   = J4 * Dg_PAAS3sq    ![m2/m3/s]
       M2_RICCO   = J_RICCO * Dg_RICCOsq        ![m2/m3/s]
-      M2RATE = M2_BINARY + M2_TERNARY + M2_GLASOE + M2_PAAS2 + M2_PAAS3
+      M2RATE = M2_BINARY + M2_TERNARY + M2_AMINE + M2_PAAS2 + M2_PAAS3
 
 ! Load Diagnostic Values into Multi-Element Vectors
       JDIAG(1) = J0 * 1.0E-6  !N cm-3 s-1
