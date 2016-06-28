@@ -1309,43 +1309,44 @@ C Transfer particle-phase SOA and vapor-phase SVOCs back to CBLK
            Do im = ia_nuc,ia_acc
              aerospc_conc( indx,im ) = 
      &             aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
-           End Do
         
-           ! Check to make sure none of the modes went negative
-           If ( aerospc_conc( indx,ia_nuc ) .lt. conmin ) Then
-              aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
-     &               + aerospc_conc( indx,ia_nuc ) - conmin
-              aerospc_conc( indx,ia_nuc ) = conmin
-           End If
-           If ( aerospc_conc( indx,ia_ait ) .lt. conmin ) Then
-              aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
-     &               + aerospc_conc( indx,ia_ait ) - conmin
-              aerospc_conc( indx,ia_ait ) = conmin
-           End If
-           If ( aerospc_conc( indx,ia_acc ) .lt. conmin ) Then
-              aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
-     &               + aerospc_conc( indx,ia_acc ) - conmin
-              aerospc_conc( indx,ia_acc ) = conmin
+             ! Check to make sure none of the modes went negative
+             If ( aerospc_conc( indx,im ) .lt. 0.0 ) Then
 
-              If ( aerospc_conc( indx,ia_nuc ) .lt. conmin .and.
-     &             aerospc_conc( indx,ia_nuc ) .gt. conmin - 1.0e-15 ) Then
-                  aerospc_conc( indx,ia_nuc ) = conmin
-              End If
-              If ( aerospc_conc( indx,ia_ait ) .lt. conmin .and.
-     &             aerospc_conc( indx,ia_ait ) .gt. conmin - 1.0e-15 ) Then
-                  aerospc_conc( indx,ia_ait ) = conmin
-              End If
+               If ( im .eq. ia_nuc ) Then
+                  aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
+     &                 + aerospc_conc( indx,ia_nuc )
+                  aerospc_conc( indx,ia_nuc ) = 0.0
+               Else If ( im .eq. ia_ait ) Then
+                  aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
+     &                 + aerospc_conc( indx,ia_ait )
+                  aerospc_conc( indx,ia_ait ) = 0.0
+               Else
+                  aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
+     &               + aerospc_conc( indx,ia_acc )
+                  aerospc_conc( indx,ia_acc ) = 0.0
 
-              If ( aerospc_conc( indx,ia_nuc ) .lt. conmin .or.
-     &             aerospc_conc( indx,ia_ait ) .lt. conmin     ) Then
-                  Write( xmsg,'( A56,/,A11,I2,A9,E12.5,A9,E12.5 )' ) 
-     &                 ' *** Too Much Evaporation from Existing Organic Aerosol:',
-     &                 ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
-     &                 ' Mode 2: ',aerospc_conc( indx,ia_ait ),
-     &                 ' Mode 3: ',aerospc_conc( indx,ia_acc )
-                  Call m3exit( pname, 0, 0, xmsg, xstat3 )
-              End If
-           End If
+                  If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
+                     aerospc_conc( indx,ia_nuc ) = aerospc_conc( indx,ia_nuc )
+     &                  + aerospc_conc( indx,ia_ait )
+              
+                     If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
+                        Write( xmsg,'( A56,/,A11,I2,3(A9,E12.5))' ) 
+     &                     ' *** Too Much Evaporation from Existing Organic Aerosol:',
+     &                     ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
+     &                     ' Mode 2: ',aerospc_conc( indx,ia_ait ),
+     &                     ' Mode 3: ',aerospc_conc( indx,ia_acc )
+                        aerospc_conc( indx,ia_nuc ) = 0.0
+                        Call m3exit( pname, 0, 0, xmsg, xstat3 )
+                     Else
+                        aerospc_conc( indx,ia_nuc ) = 0.0
+                     End If
+                  End If
+                         
+               End If
+             End If
+           
+           End Do
           
         End If
       End Do

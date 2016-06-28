@@ -963,16 +963,16 @@ C *** Parameters:
       REAL         DV_DMA     ! molecular diffusivity of DMA vapor after correction for ambient conditions
       REAL         DV_MBTCA   ! molecular diffusivity of MBTCA vapor after correction for ambient conditions
       REAL         DV_ELVOC   ! molecular diffusivity of ELVOC vapor after correction for ambient conditions
-      REAL         MV_H2SO4   ! molecular volume of H2SO4 vapor after correction for ambient conditions
-      REAL         MV_DMA     ! molecular volume of DMA vapor after correction for ambient conditions
-      REAL         MV_MBTCA   ! molecular volume of MBTCA vapor after correction for ambient conditions
-      REAL         MV_ELVOC   ! molecular volume of ELVOC vapor after correction for ambient conditions
-      REAL         DM_H2SO4   ! molecular diameter of H2SO4 vapor after correction for ambient conditions
-      REAL         DM_DMA     ! molecular diameter of DMA vapor after correction for ambient conditions
-      REAL         DM_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
-      REAL         DM_ELVOC   ! molecular diameter of ELVOC vapor after correction for ambient conditions
-      REAL         RHO_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
-      REAL         RHO_ELVOC   ! molecular diameter of ELVOC vapor after correction for ambient conditions
+      REAL, SAVE ::MV_H2SO4   ! molecular volume of H2SO4 vapor after correction for ambient conditions
+      REAL, SAVE ::MV_DMA     ! molecular volume of DMA vapor after correction for ambient conditions
+      REAL, SAVE ::MV_MBTCA   ! molecular volume of MBTCA vapor after correction for ambient conditions
+      REAL, SAVE ::MV_ELVOC   ! molecular volume of ELVOC vapor after correction for ambient conditions
+      REAL, SAVE ::DM_H2SO4   ! molecular diameter of H2SO4 vapor after correction for ambient conditions
+      REAL, SAVE ::DM_DMA     ! molecular diameter of DMA vapor after correction for ambient conditions
+      REAL, SAVE ::DM_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
+      REAL, SAVE ::DM_ELVOC   ! molecular diameter of ELVOC vapor after correction for ambient conditions
+      REAL, SAVE ::RHO_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
+      REAL, SAVE ::RHO_ELVOC   ! molecular diameter of ELVOC vapor after correction for ambient conditions
 
 
 C *** Local Variables:
@@ -1211,7 +1211,7 @@ C-----------------------------------------------------------------------
 
          ! H2SO4
          MWH2SO4 = PRECURSOR_MW( SULF_IDX ) ! molecular weight for H2SO4
-         MV_H2SO4 = 1.0e-3 * MWH2SO4 / AVO / AEROSPC( ASO4_IDX )%DENSITY
+         MV_H2SO4 = 1.0e-3 * MWH2SO4 / REAL( AVO * AEROSPC( ASO4_IDX )%DENSITY,8 )
          DM_H2SO4 = MV_H2SO4 **(1./3.)
          COFCBAR_SO4 = SQRT( 8.0 * RGASUNIV / ( PI * MWH2SO4 * 1.0E-3 ) )
          SIG_SULF_13 = ( SIG_SULF ) ** ( 1./3. )
@@ -1221,7 +1221,7 @@ C-----------------------------------------------------------------------
          
          ! DMA
          MWDMA = PRECURSOR_MW( DMA_IDX ) ! molecular weight for H2SO4
-         MV_DMA = 1.0e-3 * MWDMA / AVO / AEROSPC( ADMA_IDX )%DENSITY
+         MV_DMA = 1.0e-3 * MWDMA / REAL( AVO * AEROSPC( ADMA_IDX )%DENSITY,8 )
          DM_DMA = MV_DMA **(1./3.)
          COFCBAR_DMA = SQRT( 8.0 * RGASUNIV / ( PI * MWDMA * 1.0E-3 ) )
          SIG_DMA_13 = ( SIG_DMA ) ** ( 1./3. )
@@ -1233,7 +1233,7 @@ C-----------------------------------------------------------------------
          MWELVOC = PRECURSOR_MW( ELVOC_IDX ) ! molecular weight for H2SO4
          RHO_ELVOC = 1000.0 *( 12.0 + 1.0 * H_ELVOC/C_ELVOC + 16.0 * O_ELVOC/C_ELVOC ) /
      &                       ( 7.0 + 5.0 * H_ELVOC/C_ELVOC + 4.15 * O_ELVOC/C_ELVOC )
-         MV_ELVOC  = 1.0e-3 * MWELVOC / AVO / RHO_ELVOC ! Volume of ELVOC Molecule [m**3]
+         MV_ELVOC  = 1.0e-3 * MWELVOC / REAL( AVO * RHO_ELVOC,8 ) ! Volume of ELVOC Molecule [m**3]
          DM_ELVOC  = MV_ELVOC ** ( 1./3. ) ! Diameter of ELVOC Molecule [ m ]
          COFCBAR_ELVOC = SQRT( 8.0 * RGASUNIV / ( PI * MWELVOC * 1.0E-3 ) )
          SIG_ELVOC_13 = ( SIG_ELVOC ) ** ( 1./3. )
@@ -1246,7 +1246,7 @@ C-----------------------------------------------------------------------
          MWMBTCA   = PRECURSOR_MW( MBTCA_IDX ) ! molecular weight for H2SO4
          RHO_MBTCA = 1000.0 *( 12.0 + 1.0 * H_MBTCA/C_MBTCA + 16.0 * O_MBTCA/C_MBTCA ) /
      &                       ( 7.0 + 5.0 * H_MBTCA/C_MBTCA + 4.15 * O_MBTCA/C_MBTCA )    !kg m-3
-         MV_MBTCA  = 1.0e-3 * MWMBTCA / AVO / RHO_MBTCA ! Volume of MBTCA Molecule [m**3]
+         MV_MBTCA  = 1.0e-3 * MWMBTCA / REAL( AVO * RHO_MBTCA,8 ) ! Volume of MBTCA Molecule [m**3]
          DM_MBTCA  = MV_MBTCA ** ( 1./3. ) ! Diameter of MBTCA Molecule [ m ]
          COFCBAR_MBTCA = SQRT( 8.0 * RGASUNIV / ( PI * MWMBTCA * 1.0E-3 ) )
          SIG_MBTCA_13 = ( SIG_MBTCA ) ** ( 1./3. )
@@ -1916,17 +1916,18 @@ C *** Apply modal partitioning of equilibrium aerosol mass
                 CFINAL( ISP,IMODE ) = 0.0D0
 
                 IF ( CFINAL( ISP, IA_AIT ) .LT. -1.0D-15 ) THEN
-                    CFINAL( ISP,ia_nuc ) = CFINAL( ISP,IA_NUC ) + ( CFINAL( ISP,IA_AIT ) - conmin )
-                    CFINAL( ISP,ia_ait ) = conmin
+                    CFINAL( ISP,ia_nuc ) = CFINAL( ISP,IA_NUC ) + CFINAL( ISP,IA_AIT )
+                    CFINAL( ISP,ia_ait ) = 0.0
 
                     IF ( CFINAL( ISP,IA_NUC ) .LT. -1.0D-15 ) THEN
-                    ELSE
                      !Note: this should NEVER happen because there
                      !should not be more evaporated mass than there is
                      !existing particle mass
                      XMSG = 'VOLINORG: Too much evaporation'
-                     CFINAL( ISP,1 ) = 0.0D0
+                     CFINAL( ISP,IA_NUC ) = 0.0D0
                      CALL M3EXIT( 'VOLINORG', 0, 0, XMSG, XSTAT1 ) 
+                    ELSE
+                       CFINAL( ISP,IA_NUC ) = 0.0
                     END IF
                 END IF
               END IF
