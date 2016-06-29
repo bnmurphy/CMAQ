@@ -596,7 +596,8 @@ REACTIONS[CM] =
                              + 0.250*XO2T  
                              + 0.280*FORM
                              + 1.66* PAR 
-                             + 0.470*ALDX 
+                             + 0.470*ALDX
+                             + 0.0044*ELVOC
                              + TRPRXN               # 1.5E-11 @ -449.;
 < R166a>  XO2T + NO          = NTRM                 # 2.6E-12 @ -365;
 < R166b>  XO2T + HO2         = ROOH                     # 7.5E-13 @ -700;
@@ -612,6 +613,8 @@ REACTIONS[CM] =
                              + 7.000*PAR   
                              + 0.210*ALDX 
                              + 0.390*CXO3
+                             + 0.006*MBTCA
+                             + 0.034*ELVOC
                              + TRPRXN               # 1.2E-15 @  821.;
 !  assume that the nitrate has an OH on it
 !  replace XO2N with XO2T
