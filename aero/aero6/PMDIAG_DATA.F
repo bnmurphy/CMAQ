@@ -34,7 +34,7 @@ c-----------------------------------------------------------------------
           CHARACTER (LEN = 80) :: SPC_DESC
         END TYPE PMDIAG_SPC_RECORD_TYPE
 
-        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(72) = (/
+        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(88) = (/
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVNUC        ', 5, 'na              ', 'NPF mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVATKN       ', 5, 'na              ', 'Aitken mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVACC        ', 5, 'na              ', 
@@ -108,9 +108,25 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'dDMA_SO4_DMA    ', 5, 'ug m-3          ', 'Change in DMA(g) from SO4-DMA NPF' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'dORG_ORG_ORG    ', 5, 'ug m-3          ', 'Change in Org(g) from Org-Org NPF NPF' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'dORG_RICCO      ', 5, 'ug m-3          ', 'Change in Org(g) from Riccobono Params' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_NUC_4SO4     ', 5, 's-1             ', 'NPF mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_ATKN_4SO4    ', 5, 's-1             ', 'Aitken mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_ACC_4SO4     ', 5, 's-1             ', 'Accumulation mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_COR_4SO4     ', 5, 's-1             ', 'Coarse mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_NUC_3SO4     ', 5, 's-1             ', 'NPF mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_ATKN_3SO4    ', 5, 's-1             ', 'Aitken mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_ACC_3SO4     ', 5, 's-1             ', 'Accumulation mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_COR_3SO4     ', 5, 's-1             ', 'Coarse mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_NUC_4ELV     ', 5, 's-1             ', 'NPF mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_ATKN_4ELV    ', 5, 's-1             ', 'Aitken mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_ACC_4ELV     ', 5, 's-1             ', 'Accumulation mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_COR_4ELV     ', 5, 's-1             ', 'Coarse mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_NUC_3ELV     ', 5, 's-1             ', 'NPF mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_ATKN_3ELV    ', 5, 's-1             ', 'Aitken mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_ACC_3ELV     ', 5, 's-1             ', 'Accumulation mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'CS_COR_3ELV     ', 5, 's-1             ', 'Coarse mode Cond. Sink' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'k_prtcl_iepox   ', 5, '1/s             ', 'IEPOX pseudo particle phase reaction rate const' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'GAMMA_IMAE      ', 5, 'na              ', 'IMAE heterogeneous uptake coefficient' ) /)
 
-        INTEGER :: A_PMDIAG_SPC_MAP (72), NUM_PMDIAG_SPC
+        INTEGER :: A_PMDIAG_SPC_MAP (88), NUM_PMDIAG_SPC
 
       END MODULE PMDIAG_DATA_MODULE

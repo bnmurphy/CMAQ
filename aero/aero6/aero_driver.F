@@ -317,9 +317,9 @@ C ------------------ begin body of AERO_DRIVER -------------------------
          LOGDEV = INIT3()
 
          IF ( INDEX(MECHNAME, 'SAPRC07TIC_AE6I_AQ') .GT. 0 ) THEN
-            NUM_PMDIAG_SPC = 72
+            NUM_PMDIAG_SPC = 88
          ELSE
-            NUM_PMDIAG_SPC = 70
+            NUM_PMDIAG_SPC = 86
          END IF
 
          CALL GET_ENVLIST ( APMDIAG_BLEV_ELEV, N, V_LIST )
@@ -467,6 +467,9 @@ C *** Get domain decomp info from the MET_CRO_3D file
          END IF
 #endif
 
+C *** Read Data in ACDC LookUp Tables for NPF Rate Calculation
+         CALL read_ACDC
+ 
       END IF    ! FIRSTIME
 
       MDATE  = JDATE
@@ -694,10 +697,26 @@ C     diagnostic array (lowest vertical layer only)
                   TEMP_DATA( 68 ) = JDGASDIAG( 6 )        ! DMA Glasoe Change [ug/m3] 
                   TEMP_DATA( 69 ) = JDGASDIAG( 7 )        ! MBTCA Paasonen Change [ug/m3] 
                   TEMP_DATA( 70 ) = JDGASDIAG( 8 )        ! ELVOC Homogeneous Paasonen Change [ug/m3]
+                  TEMP_DATA( 71 ) = CONDSINK4_SO4( 1 )        ! Nuc Mode Cond. Sink [s-1]
+                  TEMP_DATA( 72 ) = CONDSINK4_SO4( 2 )        ! Aitken Mode Cond. Sink [s-1]
+                  TEMP_DATA( 73 ) = CONDSINK4_SO4( 3 )        ! Accumulation Mode Cond. Sink [s-1]
+                  TEMP_DATA( 74 ) = CONDSINK4_SO4( 4 )        ! Coarse Mode Cond. Sink [s-1]
+                  TEMP_DATA( 75 ) = CONDSINK3_SO4( 1 )        ! Nuc Mode Cond. Sink [s-1]
+                  TEMP_DATA( 76 ) = CONDSINK3_SO4( 2 )        ! Aitken Mode Cond. Sink [s-1]
+                  TEMP_DATA( 77 ) = CONDSINK3_SO4( 3 )        ! Accumulation Mode Cond. Sink [s-1]
+                  TEMP_DATA( 78 ) = CONDSINK3_SO4( 4 )        ! Coarse Mode Cond. Sink [s-1]
+                  TEMP_DATA( 79 ) = CONDSINK4_ELV( 1 )        ! Nuc Mode Cond. Sink [s-1]
+                  TEMP_DATA( 80 ) = CONDSINK4_ELV( 2 )        ! Aitken Mode Cond. Sink [s-1]
+                  TEMP_DATA( 81 ) = CONDSINK4_ELV( 3 )        ! Accumulation Mode Cond. Sink [s-1]
+                  TEMP_DATA( 82 ) = CONDSINK4_ELV( 4 )        ! Coarse Mode Cond. Sink [s-1]
+                  TEMP_DATA( 83 ) = CONDSINK3_ELV( 1 )        ! Nuc Mode Cond. Sink [s-1]
+                  TEMP_DATA( 84 ) = CONDSINK3_ELV( 2 )        ! Aitken Mode Cond. Sink [s-1]
+                  TEMP_DATA( 85 ) = CONDSINK3_ELV( 3 )        ! Accumulation Mode Cond. Sink [s-1]
+                  TEMP_DATA( 86 ) = CONDSINK3_ELV( 4 )        ! Coarse Mode Cond. Sink [s-1]
 
-                  IF ( NUM_PMDIAG_SPC .GT. 70 ) THEN ! AERO6i
-                     TEMP_DATA( 71 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
-                     TEMP_DATA( 72 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
+                  IF ( NUM_PMDIAG_SPC .GT. 74 ) THEN ! AERO6i
+                     TEMP_DATA( 87 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
+                     TEMP_DATA( 88 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
                   END IF
                END IF
 

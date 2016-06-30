@@ -162,7 +162,7 @@ C *** Implement equations 1 and 2 of Nieminen et al., 2010
 
       !GFM is for the free-molecular regime
       GFM2 = REAL( FAC_FM,8 ) * ( AM1 + 2.0 * AM0 * DIA_V8 )
-      GFM3 = REAL( FAC_FM,8 ) * ( AM2 + 2.0 * AM1 * DIA_V8 + AM0 + DIA_V8 **2 )
+      GFM3 = REAL( FAC_FM,8 ) * ( AM2 + 2.0 * AM1 * DIA_V8 + AM0 * DIA_V8 **2 )
 
 C *** Use Harmonic Mean method to account for transition from
 C     Free-molecular to continuum regimes

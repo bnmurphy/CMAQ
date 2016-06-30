@@ -939,7 +939,7 @@ C *** Parameters:
       REAL( 8 ), PARAMETER :: D_TWOTHIRDS = 2.0D0 / 3.0D0
 
       REAL, PARAMETER :: CUTOFF = 0.05   ! [ug/m**3]
-      REAL, PARAMETER :: ALPHSULF = 0.1  ! Accommodation coefficient for sulfuric acid
+      REAL, PARAMETER :: ALPHSULF = 1.0  ! Accommodation coefficient for sulfuric acid
                                          ! see Capaldo et al. (2000)
       REAL, PARAMETER :: ALPHDMA = 1.0   ! Accommodation coefficient for DMA
       REAL, PARAMETER :: ALPHELVOC= 1.0  ! Accommodation coefficient for ELVOC
@@ -1016,6 +1016,7 @@ C     expressions defined in Equations A13-A14 of [Binkowski & Shankar,1995]
       REAL( 8 ) :: FCONC_SO4( N_MODE,2 )  ! All sizes 2nd and 3rd moments
       REAL( 8 ) :: FCONC_ELVOC( N_MODE,2 )! All sizes 2nd and 3rd moments
       REAL( 8 ) :: FCONC_DMA( N_MODE,2 )  ! All sizes 2nd and 3rd moments
+      REAL( 8 ) :: FCONC_OUT3( 2 )         ! Output for HCOND3, 2nd and 3rd moments
       REAL( 8 ) :: FCONC_OUT( 2 )         ! Output for HCOND3, 2nd and 3rd moments
       REAL( 8 ) :: FCONCM1_SO4            ! reciprocals of total SO4 cond rates
       REAL( 8 ) :: COND_DMA               ! Total Flux of DMA to All Sizes
@@ -1317,7 +1318,7 @@ C     N.B: these are for a "wet" size distribution
          AM2( I ) = MOMENT2_CONC( I )
        
          ! Calculate Diffusive properties of each mode
-         MASS_P = AEROMODE_DIAM( I ) ** 3 * PI6 * AEROMODE_DENS( I ) 
+         MASS_P = MOMENT3_CONC( I ) * PI6 * AEROMODE_DENS( I ) 
          CBAR_P( I ) = SQRT_TEMP * SQRT( 8.0 * BOLTZMANN / ( PI * mass_p ) ) ! [m/sec]
          Kn    = XLM / AEROMODE_DIAM( I )                         ! Knudsen number
          Cc    = 1 + Kn * ( 1.257 + 0.4 * exp( - 1.1 / Kn ) )     ! Cunningham correction
@@ -1330,19 +1331,24 @@ C     growth factor expressions for sulfate using
 C     Equations A13-A14 of Binkowski & Shankar (1995). 
        
       DO I = 1, N_MODE
-!         CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
-!     &                DV_SO4, ALPHSULF, CBAR_SO4, FCONC_OUT )
+         CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
+     &                DV_SO4, ALPHSULF, CBAR_SO4, FCONC_OUT3 )
          CALL HCOND4( AM0( I ), AM1( I ), AM2( I ),
      &                DV_SO4, DV_P( I ), CBAR_SO4, CBAR_P( I ), 
      &                DM_H2SO4, AEROMODE_DIAM( I ), FCONC_OUT )
          FCONC_SO4( I, : ) = FCONC_OUT( : )
-         
-!	     CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
-!     &                DV_ELVOC, ALPHELVOC, CBAR_ELVOC, FCONC_OUT )
+         CONDSINK4_SO4( I ) = FCONC_OUT( 2 )
+         CONDSINK3_SO4( I ) = FCONC_OUT3(2 )
+
+
+	     CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
+     &                DV_ELVOC, ALPHELVOC, CBAR_ELVOC, FCONC_OUT3 )
          CALL HCOND4( AM0( I ), AM1( I ), AM2( I ),
      &                DV_ELVOC, DV_P( I ), CBAR_ELVOC, CBAR_P( I ), 
      &                DM_ELVOC, AEROMODE_DIAM( I ), FCONC_OUT )
          FCONC_ELVOC( I, : ) = FCONC_OUT( : )
+         CONDSINK4_ELV( I ) = FCONC_OUT( 2 )
+         CONDSINK3_ELV( I ) = FCONC_OUT3(2 )
 
 
       END DO 
@@ -1395,7 +1401,7 @@ C     on Equations A21 and A23 of Binkowski & Shankar (1995).
          XH2SO4 = MAX( XH2SO4, CONMIN )
          PRECURSOR_CONC( SULF_IDX ) = REAL( XH2SO4, 8 )
 
-C *** Adjust ELVOC vapor concentration to an dequilibrium value as well
+C *** Adjust ELVOC vapor concentration to an equilibrium value as well
          TMP = 0.0
          DO I = 1,N_MODE
            TMP = TMP + FCONC_ELVOC( I,2 )

@@ -564,6 +564,10 @@ C New Particle Formation Diagnostic Variables
       REAL :: JDIAG     ( 6 ) ! Pathway resolved NPF Rates [N/cm3/s]
       REAL :: JM2DIAG   ( 6 ) ! Pathway resolved 2nd Moment Changes [m2/m3/s]
       REAL :: JDGASDIAG ( 8 ) ! Changes to each Chemical Species [ug/m3/s]
+      REAL :: CONDSINK4_SO4  ( 4 ) ! Condensation Sink term (s-1)
+      REAL :: CONDSINK3_SO4  ( 4 ) ! Condensation Sink term (s-1)
+      REAL :: CONDSINK4_ELV  ( 4 ) ! Condensation Sink term (s-1)
+      REAL :: CONDSINK3_ELV  ( 4 ) ! Condensation Sink term (s-1)
 
       Logical, Save :: V51_SOA_mechanism   = .False. !
 C Private variables for loading from and unloading to CGRID array
@@ -1355,6 +1359,141 @@ C     moment [ m**2/m**3 ]
       End Subroutine calcmoments
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      Subroutine read_ACDC
 
+!  Read the tables that store New Particle Formation rates as a function
+!  of Sulfuric Acid Conc., Base Concentration, Temperature, and Cond.
+!  Sink.
+ 
+!  Revision History:
+!     Offline version was coded bi Carlie Coats and Frank Binkowski (15 Jan 2015)
+!     Code was installed to the Aerosol Module by Ben Murphy (19 Jan 2015)
+!-----------------------------------------------------------------------
+ 
+      Implicit None
+
+      Integer IOS, L
+      Integer IAC, IDM, INH, ITK, IRH, ICS    !!Subscripts for Input Parameters
+      Real ACID, DMA, NHA, TK, RH, CS
+      Real JVAL, CS1
+      Character*99 :: fname
+      Character*10 :: header
+      Integer, Parameter :: funit = 400
+
+! Initialize NPF Rates
+      ACDC_DMA = 0.0
+      ACDC_TERN = 0.0
+ 
+! Open Amine NPF Table
+      fname = 'ACDC_H2SO4_DMA.txt'
+      open ( unit=funit, file=fname, iostat=ios )
+        if ( ios .ne. 0 ) then
+          write( logdev,* ) ' Error Opening ', fname, ' IOS = ',ios
+          stop  ! If the file doesn't open, then stop
+        endif
+
+! Read Table Entries
+      read( funit, '(A10)', iostat=ios ) header
+        if ( ios .ne. 0 ) then
+          write( logdev, '(A30,A25,I9)' ) 'Error reading header for ACDC ', 
+     &           'Amine Table. IOSTAT = ',ios
+          stop
+        endif
+     
+      Do L = 1, size( ACDC_DMA )  !Number of lines to read should equal size of
+                                  !the output array
+        read (funit,*,end=11, iostat=ios ) ACID, DMA, TK, CS, JVAL
+        if ( ios .ne. 0 ) then
+          write( logdev, '(A20,I7,2x,A40,I9)' ) 'Error reading line', L, 
+     &         ' in ACDC NPF Table. IOSTAT = ',ios
+          stop
+        endif
+ 
+        !Transform Input Parameters to Integer Indices
+        ACID = ( LOG10( ACID ) - AC0 ) / DAC
+        DMA  = ( LOG10( DMA  ) - DM0 ) / DDM
+        TK   = ( TK            - TK0 ) / DTK
+        CS   = ( LOG10( CS   ) - CS0 ) / DCS_A
+        IAC  = 1 + NINT( ACID )
+        IDM  = 1 + NINT( DMA  )
+        ITK  = 1 + NINT( TK   )
+        ICS  = 1 + NINT( CS   )
+
+        if ( flteq( CS, 2.0E-01 ) ) then
+          CS1 = ACDC_DMA( IAC, IDM, ITK, ICS-1 )
+	  !Renormalize table entry so that DCS==1.0
+          ACDC_DMA( IAC, IDM, ITK, ICS ) = CS1 + 5.0*( JVAL - CS1 )
+        else
+          ACDC_DMA( IAC, IDM, ITK, ICS ) = JVAL
+        endif
+ 
+      enddo  !Reading Table Lines
+
+11    continue
+      close( funit )
+
+! Open Ternary H2SO4-NH3-H2O NPF Table
+      fname = 'ACDC_H2SO4_NH3_RH.txt'
+      open ( unit=funit, file=fname, status='old', readonly, iostat=ios )
+        if ( ios .ne. 0 ) then
+          write( logdev,* ) ' Error Opening ', fname, ' IOS = ',ios
+          stop  ! If the file doesn't open, then stop
+        endif
+
+! Read Table Entries
+      read( funit, '(A10)',iostat=ios ) header
+        if ( ios .ne. 0 ) then
+          write( logdev, '(A30,A25,I9)' ) 'Error reading header for ACDC ', 
+     &           'Ternary Table. IOSTAT = ',ios
+          stop
+        endif
+     
+      Do L = 1, size( ACDC_TERN )  !Number of lines to read should equal size of
+                                   !the output array
+        read (funit,*,end=12, iostat=ios ) ACID, NHA, TK, RH, CS, JVAL
+        if ( ios .ne. 0 ) then
+          write( logdev, '(A20,I7,2x,A40,I9)' ) 'Error reading line', L,
+     &         ' in ACDC Ternary NPF Table. IOSTAT = ',ios
+          stop
+        endif
+        
+        !Transform Input Parameters to Integer Indices
+        ACID = ( LOG10( ACID ) - AC0 ) / DAC
+        NHA  = ( LOG10( NHA  ) - NH0 ) / DNH
+        TK   = ( TK            - TK0 ) / DTK
+        RH   = ( RH            - RH0 ) / SRH
+        CS   = ( LOG10( CS   ) - CS0 ) / DCS_T
+        IAC  = 1 + NINT( ACID )
+        INH  = 1 + NINT( NHA  )
+        ITK  = 1 + NINT( TK   )
+        IRH  = 1 + NINT( RH   )
+        ICS  = 1 + NINT( CS   )
+
+        ACDC_TERN( IAC, INH, ITK, IRH, ICS ) = JVAL
+ 
+      enddo  !Reading Table Lines
+
+12    continue
+      close( funit )
+ 
+      End Subroutine read_ACDC
+ 
+!--------------------------------------------------------------------------
+!  Function for Comparing two Double Reals
+!--------------------------------------------------------------------------
+      LOGICAL FUNCTION DBLEQ( P, Q )
+        REAL*8, INTENT( IN ) :: P, Q
+        DBLEQ = ( (P - Q)**2  .LT.  1.0D-10*( P*P + Q*Q + 1.0D-5 ) )
+      END FUNCTION DBLEQ
+
+!--------------------------------------------------------------------------
+!  Function for Comparing two Floating Point Reals
+!--------------------------------------------------------------------------
+      LOGICAL FUNCTION FLTEQ( P, Q )
+        REAL, INTENT( IN ) :: P, Q
+        FLTEQ = ( (P - Q)**2  .LT.  1.0E-9*( P*P + Q*Q + 1.0E-5 ) )
+      END FUNCTION FLTEQ
+ 
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       End Module aero_data
 
