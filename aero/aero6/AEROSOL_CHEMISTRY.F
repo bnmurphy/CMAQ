@@ -746,7 +746,7 @@ C     standard deviations, modal mass totals, and modal particle
 C     densities, based on the concentrations of M2, M0, and speciated
 C     masses.
                LIMIT_Sg = .False.
-               CALL getpar( limIT_Sg )
+               CALL GETPAR( LIMIT_Sg )
     
 C *** set up variables needed for calculating KN2O5 and YIELD_CLNO2
 

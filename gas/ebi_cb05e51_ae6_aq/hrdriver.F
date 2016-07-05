@@ -440,8 +440,8 @@ c..Update concentration array
          END DO
       END DO
 
-
-
+      !Update Aerosol Surface Area
+      CALL HETCHEM_UPDATE_AERO( CGRID )
 
 #ifdef hrstats
       AVGEBI = SUMEBI / REAL( NCOLS * NROWS * NLAYS )
