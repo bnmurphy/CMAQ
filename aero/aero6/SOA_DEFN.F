@@ -255,7 +255,7 @@ C namelist or in the NR namelist.
              g = 0
              n = index1( vaporlist( spc )%name, n_nr_n2ae, nr_n2ae )
              g = index1( vaporlist( spc )%name, n_gc_g2ae, gc_g2ae )
-             If ( n .GT. 0 .OR. g .GT. 0 ) Then
+             If ( n .Gt. 0 .Or. g .Gt. 0 ) Then
                  n_vapor = n_vapor + 1
                  vapor_to_vaporlist( n_vapor ) = spc
              End If
@@ -277,7 +277,7 @@ C Add option to have species in GC.nml (for real semivolatiles)
          vapor_mw = 0.0
          vapor_map = 0
          Do spc = 1, n_vapor
-            If( vaporspc( spc )%alpha .gt. 0.0 ) Then
+            If( vaporspc( spc )%alpha .Gt. 0.0 ) Then
                n = index1( vaporspc( spc )%name, n_nr_n2ae, nr_n2ae )
                If ( n .Ne. 0 ) Then
                   vapor_map( spc ) = nr_strt - 1 + nr_n2ae_map( n )
@@ -312,7 +312,7 @@ C Add option to have species in GC.nml (for real semivolatiles)
 C Define orgprod parent names based on mechanism dependence
 C if they differ from above declarations, and determine if 
 C gas-phase IEPOX uptake occurs for the mechanism.
-            If ( INDEX( MECHNAME, 'SAPRC07TIC_AE6I' ) .GT. 0 ) then
+            If ( INDEX( MECHNAME, 'SAPRC07TIC_AE6I' ) .Gt. 0 ) then
                orgprod( 2 )%parent = 'MXYL'
                orgprod( 3 )%parent = 'MXYL'
                orgprod( 4 )%parent = 'TOLUENE'
@@ -320,7 +320,7 @@ C gas-phase IEPOX uptake occurs for the mechanism.
                orgprod( 8 )%parent = 'NAPHTHAL'
                orgprod( 9 )%parent = 'NAPHTHAL'
                IEPOX_SOA_mechanism = .True.
-            Else If ( INDEX( MECHNAME, 'SAPRC07TB' ) .GT. 0 ) then
+            Else If ( INDEX( MECHNAME, 'SAPRC07TB' ) .Gt. 0 ) Then
                orgprod( 2 )%parent     = 'MXYL'
                orgprod( 3 )%parent     = 'MXYL'
                orgprod( 4 )%parent     = 'TOLUENE'
@@ -328,14 +328,14 @@ C gas-phase IEPOX uptake occurs for the mechanism.
                orgprod( 8 )%parent     = 'NAPHTHAL'
                orgprod( 9 )%parent     = 'NAPHTHAL'
                IEPOX_SOA_mechanism = .True.
-            Else If ( INDEX( MECHNAME, 'CRIe' ) .GT. 0 ) then
+            Else If ( INDEX( MECHNAME, 'CRIe' ) .Gt. 0 ) Then
                orgprod( 2 )%parent     = 'MXYL'
                orgprod( 3 )%parent     = 'MXYL'
                orgprod( 4 )%parent     = 'TOLUENE'
                orgprod( 5 )%parent     = 'TOLUENE'
                orgprod( 8 )%parent     = 'NAPHTHAL'
                orgprod( 9 )%parent     = 'NAPHTHAL'
-            Else If ( INDEX( MECHNAME, 'SAPRC07TC' ) .GT. 0 ) then
+            Else If ( INDEX( MECHNAME, 'SAPRC07TC' ) .Gt. 0 ) Then
                orgprod( 2 )%parent     = 'MXYL'
                orgprod( 3 )%parent     = 'MXYL'
                orgprod( 4 )%parent     = 'TOLUENE'
@@ -343,26 +343,26 @@ C gas-phase IEPOX uptake occurs for the mechanism.
                orgprod( 8 )%parent     = 'NAPHTHAL'
                orgprod( 9 )%parent     = 'NAPHTHAL'
                IEPOX_SOA_mechanism = .True.
-            Else If( INDEX(MECHNAME, 'RACM2') .GT. 0) then
+            Else If( INDEX(MECHNAME, 'RACM2') .Gt. 0) Then
 ! Changed by Golam Sarwar, 07/15/2015 for CMAQv51
                orgprod( 2 )%parent     = 'XYM'
                orgprod( 3 )%parent     = 'XYM'
                orgprod( 4 )%parent     = 'TOL'
                orgprod( 5 )%parent     = 'TOL'
                IEPOX_SOA_mechanism = .True.
-            Else If( INDEX(MECHNAME, 'CB05E51') .GT. 0) then
+            Else If( INDEX(MECHNAME, 'CB05E51') .Gt. 0) Then
                orgprod( 2 )%parent = 'XYLMN'
                orgprod( 3 )%parent = 'XYLMN'
                IEPOX_SOA_mechanism = .True.
-            Else If( INDEX(MECHNAME, 'CB6R3') .GT. 0) then
+            Else If( INDEX(MECHNAME, 'CB6R3') .Gt. 0) Then
                orgprod( 2 )%parent = 'XYLMN'
                orgprod( 3 )%parent = 'XYLMN'
                IEPOX_SOA_mechanism = .True.
-            Else If( INDEX(MECHNAME, 'CB05EH51') .GT. 0) then
+            Else If( INDEX(MECHNAME, 'CB05EH51') .Gt. 0) Then
                orgprod( 2 )%parent = 'XYLMN'
                orgprod( 3 )%parent = 'XYLMN'
                IEPOX_SOA_mechanism = .True.
-            Else If( INDEX( MECHNAME, 'CB05' ) .EQ. 0 ) then
+            Else If( INDEX( MECHNAME, 'CB05' ) .Eq. 0 ) Then
                xmsg =  'Mechanism ' // MECHNAME
      &              // ' is not supported in this version of the model'
                Call m3exit( pname, 0, 0, xmsg, xstat3 )
@@ -402,7 +402,7 @@ C that each required organic must be defined for at least one mode.
 
          ! Look for Additional Isoprene Product Species if AE6i is being
          ! used
-         If ( INDEX( MECHNAME,"SAPRC07TIC_AE6I" ) .NE. 0 ) Then
+         If ( INDEX( MECHNAME,"SAPRC07TIC_AE6I" ) .Ne. 0 ) Then
            mtno3_idx  = findVapor( req_mtno3  )
            isopnn_idx = findVapor( req_isopnn )
            amtno3_idx  = findAero( req_amtno3, .True. )
@@ -1091,7 +1091,7 @@ C gas tracer species to the array that will be multiplied by alpha
 C to give newly formed semivolatile vapors.
       totrog( : ) = 0.0
       Do i = 1, n_vapor
-         If ( drog_map( i ) .gt. 0 ) Then
+         If ( drog_map( i ) .Gt. 0 ) Then
            totrog( i ) = drog( drog_map( i ) )
          End If
       End Do
@@ -1164,7 +1164,7 @@ C hard-coded values.
       totorgsw = 0.0  
 
       ! First Sum Up POA Species if this the NON-Volatile POA Mechanism
-      If ( INDEX( MECHNAME, 'NVPOA' ) .NE. 0 ) Then
+      If ( INDEX( MECHNAME, 'NVPOA' ) .Ne. 0 ) Then
          totorgsw = sum( aerospc_conc(   apoc_idx,ia_ait:ia_acc )) / aerospc_mw( apoc_idx )
      &             +sum( aerospc_conc( apncom_idx,ia_ait:ia_acc )) / aerospc_mw( apncom_idx )
       End If
@@ -1182,7 +1182,7 @@ C hard-coded values.
       ! the vaporspc table.
       totorg = totorgsw
       Do i = 1, n_vapor
-         If( soa_aeroMap( i ) .lt. 1 )Cycle
+         If ( soa_aeroMap( i ) .lt. 1 ) Cycle
          totorg = totorg + sum ( aerospc_conc( soa_aeroMap( i ),ia_nuc:ia_acc) )
      &                      * mw_vap_m1( i )
       End Do
@@ -1190,7 +1190,7 @@ C hard-coded values.
 C Initialize ctoti as sum of vapor-phase and particle-phase SVOCs
 C Note: all of these CBLK species are in [ug/m**3]
       Do i = 1, n_vapor
-         If( soa_aeroMap( i ) .lt. 1 )Cycle
+         If ( soa_aeroMap( i ) .lt. 1 ) Cycle
          ctoti( i ) = vapor_conc( i ) + sum( aerospc_conc( soa_aeroMap( i ),ia_nuc:ia_acc) )  
          caer0( i ) = sum( aerospc_conc( soa_aeroMap( i ),ia_nuc:ia_acc ) )
       End Do
@@ -1200,7 +1200,7 @@ C Equilibrium Partitioning Calculations
 C Initial guess of caer is computed as follows:
 C    From eqn (8) of Schell et al. (2001)
 C    caer = ctotf - c0 * (caer/MW) / totorg
-C    Assuming totorg doesn't change during the timestep,
+C    Assuming totorg doesn`t change during the timestep,
 C    caer * (1 + c0/MW / totorg) = ctotf
 C    caer = ctotf / ( 1 + c0/MW / totorg )
 
@@ -1225,7 +1225,7 @@ C Check If gas/particle equilibrium can be established
       If ( ( threshold .Gt. 1.0 ) .Or. ( totorgsw .Gt. threshmin ) ) Then
 
 C Perform one of two methods for partitioning
-       If ( newtpartition ) then
+       If ( newtpartition ) Then
 
 C METHOD1
 C Calculate new SOA by partitioning. This method uses a globally convergent
@@ -1258,8 +1258,8 @@ C      of orgaic aerosol. Caer is then calculated based on that number.
 C        Solve for total number of organic moles in aerosol (hotp 7/5/11)
          lowb      = totorgsw   ! lower: moles of nonvolatile
          upb       = lowb + upb ! upper: all moles (semi and nonvolatile)
-         upb       = upb * 1.0000001 ! prevent numerical issues
-         If ( abs( upb - lowb ) .lt. threshmin ) then
+         upb       = upb * ( 1.0 + 1e-7*n_vapor ) ! prevent numerical issues
+         If ( abs( upb - lowb ) .Lt. threshmin ) Then
             ! no SOA to partition
             orgmoles = ( lowb + upb ) / 2.0D0
          Else
@@ -1323,7 +1323,7 @@ C Constrain caer to values between conmin and ctotf
            
              End Do 
            End Do
- 
+
       Else   ! threshold not exceeded; no material transferred to aerosol phase
          Do i = 1, n_vapor
             indx = soa_aeroMap( i )
@@ -1340,7 +1340,7 @@ C Update Vapor-Phase Organic Species
 
 
 C Acid-induced Isoprene SOA if IEPOX uptake is not considered mechanism reactions
-      IF( .Not. IEPOX_SOA_mechanism ) then
+      If ( .Not. IEPOX_SOA_mechanism ) Then
 
 C Particle-phase acidity is parameterized by the air concentration of hydrogen
 C ion in the particle phase (hplus).  This is computed by electroneutrality,
@@ -1351,7 +1351,7 @@ C be inherited from include or namelist files to avoid hard-coded values.
 
       hplus = 0.0
       Do i = 1, n_aerospc
-         if(  aerospc( i )%tracer )cycle
+         If ( aerospc( i )%tracer ) Cycle
          hplus = hplus - 1000.0 * aerospc( i )%charge * aerospc_conc( i,ia_acc )
      &         / aerospc_mw( i )
       End Do
@@ -2092,26 +2092,26 @@ C     abstol (absolute) amount
         End If
 
         test = fnguess * flower
-        If ( test .lt. 0.0 ) Then         ! if function changes sign b/w guess and lower, guess becomes upper
+        If ( test .Lt. 0.0 ) Then         ! if function changes sign b/w guess and lower, guess becomes upper
           upper  = nguess
           fupper = fnguess
-        Else If ( test .gt. 0.0 ) Then    ! if function does not change sign, guess becomes lowerbound
+        Else If ( test .Gt. 0.0 ) Then    ! if function does not change sign, guess becomes lowerbound
           lower  = nguess
           flower = fnguess
-        Else If ( flower .eq. 0.0 ) Then  ! if the lower bound is the root
+        Else If ( flower .Eq. 0.0 ) Then  ! if the lower bound is the root
           ea      = 0.0
           nguess  = lower
           fnguess = flower
-        Else If ( fnguess .eq. 0.0 ) Then ! guess is the root
+        Else If ( fnguess .Eq. 0.0 ) Then ! guess is the root
           ea      = 0.0
         End If
 
         ! solution found if error is less than ABSTOL/100 % or N bounded by values less than ABSTOL
-        If ( ( ea .lt. FRACTOL ) .or. ( ( upper + lower ) .lt. ABSTOL ) ) Then
+        If ( ( ea .Lt. FRACTOL ) .Or. ( ( upper + lower ) .Lt. ABSTOL ) ) Then
           nroot = nguess
           ! double check that the function is approximately zero
           fnguess = soaequation( nonvolmol, cstaratt, totsemivol, mlwt, nguess ) ! function evaluated at new guess
-          If ( Abs( fnguess ) .gt. 1.0e-03 ) Then
+          If ( Abs( fnguess ) .Gt. 1.0e-03 ) Then
 !           pfc = pfc + 1
 #ifdef verbose_soa
             nroot = soabisect_debug(lowerb, upperb, nonvolmol, cstaratt, totsemivol, mlwt)
@@ -2129,7 +2129,7 @@ C     abstol (absolute) amount
           Return
         End If
 
-        If ( iter .gt. 1000000 ) Then ! stop infinite loop
+        If ( iter .Gt. 1000000 ) Then ! stop infinite loop
 #ifdef verbose_soa
           nroot = soabisect_debug(lowerb, upperb, nonvolmol, cstaratt, totsemivol, mlwt)
           Write( xmsg,'(a,i9,1pe15.5)' )
@@ -2235,7 +2235,7 @@ C     Iterate until the number of moles changes by less than fractol
 C     (percent) or abstol (absolute) amount
       Do
 
-        If ( flower * fupper .gt. 0.0 ) Then
+        If ( flower * fupper .Gt. 0.0 ) Then
           ! function does not change sign between bounds
           xmsg = 'Error: no solution between bounds in soa bisection'
           Write( logdev,* ) xmsg
@@ -2251,7 +2251,7 @@ C     (percent) or abstol (absolute) amount
         Write( logdev,* ), 'Upper= ', upper, fupper
         Write( logdev,* ), 'Guess= ', nguess, fnguess
 
-        If ( nguess .ne. 0.0 ) Then           ! safe division
+        If ( nguess .Ne. 0.0 ) Then           ! safe division
           ea = ABS( nguess - oldn )/nguess   ! fractional diff b/w 2guesses
         Else
           xmsg = 'Error: number of organic aerosol moles going to zero in soa bisection'
@@ -2260,27 +2260,27 @@ C     (percent) or abstol (absolute) amount
 
         Write( logdev,* ) 'error', ea
         test = fnguess * flower
-        If ( test .lt. 0.0 ) Then           ! if function changes sign b/w guess and lower, guess becomes upper
+        If ( test .Lt. 0.0 ) Then           ! if function changes sign b/w guess and lower, guess becomes upper
           upper  = nguess
           fupper = fnguess
-        Else If ( test .gt. 0.0 ) Then      ! if function does not change sign, guess becomes lowerbound
+        Else If ( test .Gt. 0.0 ) Then      ! if function does not change sign, guess becomes lowerbound
           lower  = nguess
           flower = fnguess
-        Else If ( flower .eq. 0.0 ) Then    ! if the lower bound is the root
+        Else If ( flower .Eq. 0.0 ) Then    ! if the lower bound is the root
           ea      = 0.0
           nguess  = lower
           fnguess = flower
-        Else If ( fnguess .eq. 0.0 ) Then   ! guess is the root
+        Else If ( fnguess .Eq. 0.0 ) Then   ! guess is the root
           ea      = 0.0
         End If
 
         ! solution found if error is less than ABSTOL/100 % or N bounded
         ! by values less than 1e-08
-        If ( ( ea .lt. FRACTOL ) .or. ( ( upper + lower ) .lt. ABSTOL ) ) then
+        If ( ( ea .Lt. FRACTOL ) .Or. ( ( upper + lower ) .Lt. ABSTOL ) ) then
           nroot = nguess
           ! double check that the function is approximately zero
           fnguess = soaequation( nonvolmol, cstaratt, totsemivol, mlwt, nguess ) ! function evaluated at new guess
-          If ( Abs( fnguess ) .gt. 1.0e-03 ) Then
+          If ( Abs( fnguess ) .Gt. 1.0e-03 ) Then
              xmsg = 'Warning: possible false convergence in soa bisection'
              Write( logdev,* ) xmsg
           End If
@@ -2288,7 +2288,7 @@ C     (percent) or abstol (absolute) amount
           Return
         End If
 
-        If ( iter .gt. 1000000 ) Then ! stop infinite loops
+        If ( iter .Gt. 1000000 ) Then ! stop infinite loops
           !print*,'current lower, upper, and N: ',lower, upper, nguess
           xmsg = 'Error: too many iterations in soa bisection'
           Write( logdev,* ) xmsg
