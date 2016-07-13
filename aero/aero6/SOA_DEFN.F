@@ -623,7 +623,7 @@ C Local Variables:
       End Function findOrgprod
 
 C-----------------------------------------------------------------------
-      Subroutine orgaer( dt, layer, xlm, amu, sqrt_temp )
+      Subroutine orgaer( dt, layer, xlm, amu, sqrt_temp, CGR )
 
 C Updates CGRID via several pathways for secondary organic aerosol (SOA)
 C formation, as recommended by Edney et al. (2007).  These include SOA
@@ -974,6 +974,7 @@ C Variables used in equilibrium partitioning calculations
       Real drog( n_orgprod ) ! change in precursor conc [ ug/m3 ]
       Real totrog( n_vapor ) ! drog conc mapped to each SVOC [ ug/m3 ]
       Real(8) GRtmp( n_mode-1 )   ! Dummy variable for accurate treatment of growth to specific moment
+      Real(8) CGR( n_mode-1 )!Growth rate for mode merging operation later
       Real GR3( n_vapor,n_mode-1 ) ! 3rd Moment Growth for each mode and compound
       Real GR3FRAC( n_vapor,n_mode-1 ) ! Fraction of each mode growing/shrinking
       Real c0    ( n_vapor ) ! cstar at AIRTEMP [ ug/m3 ]
@@ -1395,6 +1396,11 @@ C condensation/evaporation does not affect the geometric standard deviation.
       m2wet_final( ia_ait ) = m2wet_init( ia_ait ) * ( m3wet_final( ia_ait ) / m3wet_init( ia_ait ) ) ** ( 2.0 / 3.0 )
       m2wet_final( ia_acc ) = m2wet_init( ia_acc ) * ( m3wet_final( ia_acc ) / m3wet_init( ia_acc ) ) ** ( 2.0 / 3.0 )
       moment2_conc( ia_nuc:ia_acc )  = m2wet_final( : )
+
+      !Continue Acucmulating Growth Rate
+      CGR( IA_NUC:IA_ACC ) = CGR( IA_NUC:IA_ACC ) 
+     &                      + ( M3WET_FINAL( IA_NUC:IA_ACC ) 
+     &                         -M3WET_INIT ( IA_NUC:IA_ACC ) ) / DT
 
       Return
       End Subroutine orgaer

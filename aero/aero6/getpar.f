@@ -160,8 +160,6 @@ c         In this manner, M2 is artificially increased when Sg exceeds
 c         the maximum limit.  M2 is artificially decreased when Sg falls
 c         below the minimum limit.
 
-C *** Aitken Mode:
-
       Do n = 1, n_mode
          xxm0 = Real( moment0_conc( n ), 8 )
          xxm2 = Real( moment2_conc( n ), 8 )

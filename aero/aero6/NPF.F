@@ -265,8 +265,8 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       DMA      = XDMA     * FAC0 / DMA_MW   ! total number of DMA 
       MBTCA    = XMBTCA   * FAC0 / MBTCA_MW ! total number of MBTCA
       ELVOC    = XELVOC   * FAC0 / ELVOC_MW ! total number of ELVOC
-      DIFF     = A1TOT - DMA
-      A1DIFF   = max( 0.0, DIFF )
+      !DIFF     = A1TOT - DMA
+      !A1DIFF   = max( 0.0, DIFF )
 
 ! Calculate Binary H2SO4-H2O NPF from Vehkamaki et al. 2002
       CALL NPF_BINARY ( RH, TEMP, XSA, 
@@ -305,18 +305,19 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         
 ! Set up for calculation of NPF rate from other pathways
       !SAORGX   = A1DIFF   * MBTCA  !For Paasonen et al. (2010) J2
-      SAORGX   = A1DIFF   * ELVOC  !For Paasonen et al. (2010) J2
+      SAORGX   = A1TOT   * ELVOC  !For Paasonen et al. (2010) J2
       ORGYORGY = ELVOC    * ELVOC  !For Paasonen et al. (2010) J3
       SA2ORGX  = A1TOT**2 * MBTCA  !For Riccobono et al. (2014) J1_Ricco
 
 ! Calculate NPF Number Concentration rates in [ N / m**3 / sec ]
       J3       = (1.0E6) * KPAAS_2  * SAORGX         ! For Paasonen et al. (2010) J3
-      J4       = (1.0E6) * K_KIRKBY * ELVOC ** ( E1_KIRKBY + E2_KIRKBY / ELVOC ) ! From Kirkby et al. (2016)
+      J4       = (1.0E6) * K_KIRKBY * ( ELVOC * 1.0D-7 ) ** 
+     &                    ( E1_KIRKBY + E2_KIRKBY / ( ELVOC * 1.0D-7 ) ) ! From Kirkby et al. (2016)
       J_RICCO  = (1.0E6) * K_RICCO  * SA2ORGX        ! For Riccobono et al. (2014) J1_Ricco
       J_PAAS3  = (1.0E6) * KPAAS_3  * ORGYORGY       ! For Paasonen et al. (2010) J4       
 
 ! Calculate Ion-Mediated NPF Rates
-      CALL ION_MEDIATED_NPF( A1DIFF, ELVOC, PRESS, TEMP, RH, ASURF, 
+      CALL ION_MEDIATED_NPF( A1TOT, ELVOC, PRESS, TEMP, RH, ASURF, 
      &                       J5, J6, SA_M_IMN, ELVOC_M_IMN, 
      &                       Dg_IMNSO4sq, Dg_IMNORGsq )
 
@@ -829,7 +830,7 @@ C.. Calculate Mass of Each Vapor Species Used For Particle (g/particle)
     !vapor species needed for that condensation. Assume Ammonium
     !Bisulfate (NH4-HSO4) for these particles.                                                              
       REAL, PARAMETER :: p_dens = 1.78E12   !NH4-HSO4 Density (ug m-3)                                      
-      REAL, PARAMETER :: p_mass = 4./3.*3.1415 * (RNUC*1.0E-9)**3 * p_dens  !Particle Mass (ug)             
+      REAL, PARAMETER :: p_mass = 4./3.*PI * (RNUC*1.0E-9)**3 * p_dens  !Particle Mass (ug)             
       REAL, PARAMETER :: sulf_mfrac = 0.8144  !Mass Fraction of Bisulfate                                   
       REAL, PARAMETER :: nh4_mfrac  = 0.1856  !Mass Fraction of Ammonium                                    
       REAL, PARAMETER :: MW_HSO4 = 97.06  !g mol-1                                                          
@@ -1012,7 +1013,7 @@ C.. Calculate Mass of Each Vapor Species Used For Particle (g/particle)
     !vapor species needed for that condensation. Assume Dimethylaminium
     !Bisulfate (CH3CH3NH2-HSO4) for these particles.                                                              
       REAL, PARAMETER :: p_dens = 1.47E12   !Guess at the DMAH-HSO4 Density (ug m-3) 
-      REAL, PARAMETER :: p_mass = 4./3.*3.1415 * (RNUC*1.0E-9)**3 * p_dens  !Particle Mass (ug)             
+      REAL, PARAMETER :: p_mass = 4./3.*PI * (RNUC*1.0E-9)**3 * p_dens  !Particle Mass (ug)             
 
 C.. Temporary Variables for Interpolating LookUp Table to Model Conditions
       INTEGER :: IAC, INH, ITK, ICS
@@ -1131,8 +1132,8 @@ C..Inputs:
       REAL,    INTENT(IN)  :: TEMPin          ! Ambient temperature [ K ]
       REAL,    INTENT(IN)  :: PRESSin         ! Ambient Pressure [Pa]
       REAL,    INTENT(IN)  :: RHin            ! Fractional Relative Humidity
-      REAL,    INTENT(IN)  :: H2SO4in         ! sulfuric acid concentration [ molec/cm**3 ]
-      REAL,    INTENT(IN)  :: ELVOCin         ! organic concentration [ molec/cm**3 ]
+      REAL(8), INTENT(IN)  :: H2SO4in         ! sulfuric acid concentration [ molec/cm**3 ]
+      REAL(8), INTENT(IN)  :: ELVOCin         ! organic concentration [ molec/cm**3 ]
 
 C.. Outputs:
       REAL(8), INTENT( OUT ) :: J5         ! ION-H2SO4 particle number production rate [ m-3 s-1 ]
@@ -1224,15 +1225,16 @@ C.. Calculate Ion-H2SO4 Formation Rate
 C.. Calculate Ion-ELVOC Formation Rate
       ION_RATE = ION_RATE_LAND * DBLE( 1.0 - LSURF ) + ION_RATE_WATER * DBLE( LSURF ) 
       J6 = 2.D0 * ION_RATE
-     &          * K_KIRKBY * ELVOC ** ( E1_KIRKBY + E2_KIRKBY / ELVOC )
+     &          * K_KIRKBY * ( ELVOC *1.0D-7 ) ** 
+     &            ( E1_KIRKBY + E2_KIRKBY / ( ELVOC * 1.0D-7 ) )
 
 C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] 
       J5 = J5 * 1.0D06  ! (1/(m**3 s))
       J6 = J6 * 1.0D06  ! (1/(m**3 s))
       J5_2m = 1.0D-18 * J5_R ** 2  !New particle diameter squared
       J6_2m = 1.0D-18 * J6_R_KIRKBY ** 2  !New particle diameter squared
-      sulfmass  = 4./3.*3.1415 * ( J5_R * 1.0D-9 )** 3 * J5_dens  !Particle Mass (ug)             
-      elvocmass = 4./3.*3.1415 * ( J6_R_KIRKBY * 1.0D-9 )** 3 * J6_dens  !Particle Mass (ug)             
+      sulfmass  = 4.D0/3.D0*PI * ( J5_R * 1.0D-9 )** 3 * J5_dens  !Particle Mass (ug)             
+      elvocmass = 4.D0/3.D0*PI * ( J6_R_KIRKBY * 1.0D-9 )** 3 * J6_dens  !Particle Mass (ug)             
 
       RETURN    
       END SUBROUTINE ION_MEDIATED_NPF 

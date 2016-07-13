@@ -326,6 +326,9 @@ C *** Set minimums for coarse mode
       MOMENT0_CONC( N_MODE ) = MAX( AEROMODE_MINNUM( N_MODE ),
      &                              MOMENT0_CONC( N_MODE ) )
 
+C *** Initialize Growth Rates
+
+
 C *** Secondary Organics
 C     Update the secondary organic aerosol (SOA) mass concentrations
 C     and the SVOC mass concentrations by equilibrium absorptive
@@ -333,7 +336,7 @@ C     partitioning between the particle and vapor phases.  Assume all
 C     SOA resides in the accumulation mode.
 C
 C     Aerosol is wet when it enters orgaer
-      CALL ORGAER( DT, LAYER, XLM, AMU, SQRT_TEMP )
+      CALL ORGAER( DT, LAYER, XLM, AMU, SQRT_TEMP, CGR )
 
 C *** Secondary Inorganics
 C     The VOLINORG subroutine includes the treatment of new particle
@@ -359,15 +362,15 @@ C *** calculate term used in Equation A6 of Binkowski & Shankar (1995)
       KNC      = TWOTHIRDS * BOLTZMANN *  AIRTEMP / AMU
 
 C *** calculate terms used in Equation A5 of Binkowski & Shankar (1995)
-      KFMNU    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( ia_nuc ) )
-      KFMAT    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( ia_ait ) )
-      KFMAC    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( ia_acc ) )
+      KFMNU    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( IA_NUC ) )
+      KFMAT    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( IA_AIT ) )
+      KFMAC    = SQRT( 3.0 * BOLTZMANN * AIRTEMP / AEROMODE_DENS( IA_ACC ) )
       KFMNUAT  = SQRT( 6.0 * BOLTZMANN * AIRTEMP
-     &         / ( AEROMODE_DENS( ia_nuc ) + AEROMODE_DENS( ia_ait ) ) )
+     &         / ( AEROMODE_DENS( IA_NUC ) + AEROMODE_DENS( IA_AIT ) ) )
       KFMNUAC  = SQRT( 6.0 * BOLTZMANN * AIRTEMP
-     &         / ( AEROMODE_DENS( ia_nuc ) + AEROMODE_DENS( ia_acc ) ) )
+     &         / ( AEROMODE_DENS( IA_NUC ) + AEROMODE_DENS( IA_ACC ) ) )
       KFMATAC  = SQRT( 6.0 * BOLTZMANN * AIRTEMP
-     &         / ( AEROMODE_DENS( ia_ait ) + AEROMODE_DENS( ia_acc ) ) )
+     &         / ( AEROMODE_DENS( IA_AIT ) + AEROMODE_DENS( IA_ACC ) ) )
 
 C *** transfer of number to accumulation mode from Aitken mode is zero
       BATNU( 1 ) = 0.0
@@ -666,9 +669,9 @@ C     intermodal coagulation.
          IF ( AERO_MISSING( SPC, IA_NUC ) ) CYCLE
  
          TMASS = AEROSPC_CONC( SPC,IA_NUC ) + AEROSPC_CONC( SPC,IA_AIT )
-         AEROSPC_CONC( SPC,ia_nuc ) = MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
+         AEROSPC_CONC( SPC,IA_NUC ) = MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
      &                                REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAT ) )
-         AEROSPC_CONC( SPC,ia_ait ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_AIT ),
+         AEROSPC_CONC( SPC,IA_AIT ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_AIT ),
      &                                TMASS - AEROSPC_CONC( SPC,IA_NUC ) )
          
          TMASS = AEROSPC_CONC( SPC,IA_NUC ) + AEROSPC_CONC( SPC,IA_ACC )
@@ -1160,6 +1163,7 @@ C *** Local Saved Variables
       REAL( 8 ), SAVE :: M3FAC_ANH4
       REAL( 8 ), SAVE :: M3FAC_ANO3
       REAL( 8 ), SAVE :: M3FAC_ACL
+      REAL( 8 ), SAVE :: M3FAC_ADMA
       REAL( 8 ), SAVE :: M3FAC_H2O
 
       logical, save :: write1 = .true.
@@ -1192,6 +1196,7 @@ C-----------------------------------------------------------------------
          M3FAC_ANH4 = 1.0D-9 * F6DPI / REAL( AEROSPC( ANH4_IDX )%DENSITY, 8 )
          M3FAC_ANO3 = 1.0D-9 * F6DPI / REAL( AEROSPC( ANO3_IDX )%DENSITY, 8 )
          M3FAC_ACL  = 1.0D-9 * F6DPI / REAL( AEROSPC( ACL_IDX )%DENSITY, 8 )
+         M3FAC_ADMA = 1.0D-9 * F6DPI / REAL( AEROSPC( ADMA_IDX )%DENSITY, 8 )
          M3FAC_H2O  = 1.0D-9 * F6DPI / REAL( AEROSPC( AH2O_IDX )%DENSITY, 8 )
          SOILFAC = 1.0D-9 * F6DPI / REAL( AEROSPC( ASOIL_IDX )%DENSITY, 8 )
          ANTHFAC = 1.0D-9 * F6DPI / REAL( AEROSPC( ACORS_IDX )%DENSITY, 8 )
@@ -1488,9 +1493,9 @@ C     to avoid mass conservation violations arising from numerical error.
       OMEGA_AC_SO4 = FCONCM1_SO4 * FCONC_SO4( IA_ACC,2 )
 
 C *** Growth values for mode merge condition
-      CGR( IA_NUC ) = M3FAC_ASO4 * SCONDRATE * OMEGA_NU_SO4
-      CGR( IA_AIT ) = M3FAC_ASO4 * SCONDRATE * OMEGA_AT_SO4
-      CGR( IA_ACC ) = M3FAC_ASO4 * SCONDRATE * OMEGA_AC_SO4
+      CGR( IA_NUC ) = CGR( IA_NUC ) + M3FAC_ASO4 * SCONDRATE * OMEGA_NU_SO4
+      CGR( IA_AIT ) = CGR( IA_AIT ) + M3FAC_ASO4 * SCONDRATE * OMEGA_AT_SO4
+      CGR( IA_ACC ) = CGR( IA_ACC ) + M3FAC_ASO4 * SCONDRATE * OMEGA_AC_SO4
 
       CONDSO4( IA_NUC ) = OMEGA_NU_SO4 * SCONDRATE      
       CONDSO4( IA_AIT ) = OMEGA_AT_SO4 * SCONDRATE      
@@ -1528,7 +1533,7 @@ C     (Yu and Luo, ACP, 14, pp12455-12464, 2014).
         !Apply Fluxes (corrected in case the flux exceeds the vapor conc)
         !to Each Size Mode. Also adjust Second Moment for Condensation of
         !Amines
-        DO IMODE = 1, N_MODE
+        DO IMODE = 1, N_MODE-1
           AM3 = 0.0
           DO IAER = 1,N_AEROSPC
             FACTOR = 1.0E-9 * f6pi / AEROSPC( IAER )%density
@@ -1542,6 +1547,9 @@ C     (Yu and Luo, ACP, 14, pp12455-12464, 2014).
      &      (( AM3 + DMA_MODE*1.0D-9*f6pi/AEROSPC(ADMA_IDX)%density )/ AM3)**(2.0/3.0)
 
           AEROSPC_CONC( ADMA_IDX, IMODE ) = AEROSPC_CONC( ADMA_IDX, IMODE ) + REAL( DMA_MODE,4 )
+
+          !Continue Accumulating Growth Rate
+          CGR( IMODE ) = CGR( IMODE ) + M3FAC_ADMA * DMA_MODE / DELT
         ENDDO
 
 
@@ -1925,8 +1933,8 @@ C *** Apply modal partitioning of equilibrium aerosol mass
                 CFINAL( ISP,IMODE ) = 0.0D0
 
                 IF ( CFINAL( ISP, IA_AIT ) .LT. -1.0D-15 ) THEN
-                    CFINAL( ISP,ia_nuc ) = CFINAL( ISP,IA_NUC ) + CFINAL( ISP,IA_AIT )
-                    CFINAL( ISP,ia_ait ) = 0.0
+                    CFINAL( ISP,IA_NUC ) = CFINAL( ISP,IA_NUC ) + CFINAL( ISP,IA_AIT )
+                    CFINAL( ISP,IA_AIT ) = 0.0
 
                     IF ( CFINAL( ISP,IA_NUC ) .LT. -1.0D-15 ) THEN
                      !Note: this should NEVER happen because there
@@ -2012,13 +2020,18 @@ C     net change in dry 2nd moment is production or loss
             Y = M2DRY_INIT( IMODE ) + DDRYM2DT * DELT
          END IF
          moment2_conc( IMODE ) = MAX( REAL( AEROMODE_MINM2( IMODE ), 8 ), Y )
-
+      
       END DO
 
 C *** Add water and SOA to 2nd moment while preserving standard deviation
       call calcmoments( .true. )
       M3WET_FINAL = moment3_conc
       M2WET_FINAL = moment2_conc
+
+      !Continue Accumulating Growth Rate
+      CGR( IA_NUC:IA_ACC ) = CGR( IA_NUC:IA_ACC ) 
+     &                        + ( M3WET_FINAL( IA_NUC:IA_ACC ) 
+     &                           -M3WET_INIT( IA_NUC:IA_ACC ) ) / DELT
 
 C *** Assign H+ Concentration to each Mode
       HPLUS = 0.0

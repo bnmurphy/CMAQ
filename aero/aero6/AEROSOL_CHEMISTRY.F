@@ -843,9 +843,9 @@ C *** If only a small amount of water is present on aerosol, keep YIELD_CLNO2 ze
  
                END DO ! End each mode 
 
-c *** compute yield from lumped Aitken and Accumulations concentrations
-               AH2O = aerospc_conc( AH2O_IDX,1 ) + aerospc_conc( AH2O_IDX,2 )
-               ACL  = aerospc_conc( ACL_IDX,1 )  + aerospc_conc( ACL_IDX,2 )
+c *** compute yield from lumped Ultrafine and Fine concentrations
+               AH2O = sum( aerospc_conc( AH2O_IDX,IA_NUC:IA_ACC ) )
+               ACL  = sum( aerospc_conc( ACL_IDX,IA_NUC:IA_ACC ) )
                IF ( AH2O .GT. 5.0E-01 .AND. ACL .GT. 1.0E-04 ) THEN
                   IF ( MWH2OCL * ACL .GT. 1.0E-4 * AH2O ) THEN 
                      YIELDIJ = 1.0D0 / ( 1.0D0 + ( 1.0D0 / 483.0D0 )
@@ -855,7 +855,7 @@ c *** compute yield from lumped Aitken and Accumulations concentrations
               
                KN2O5 = CBAR * DPI * KN2O5
 C *** calculate aerosol surface area
-               TOTSURFA = ( WET_M2( IA_NUC ) + WET_M2( IA_AIT ) + WET_M2( IA_ACC ) ) * DPI
+               TOTSURFA = SUM( WET_M2( IA_NUC:IA_ACC ) ) * DPI
 
 C *** set up variables needed for calculating K_BRONO2
                CBAR_BRONO2 = CBAR_COEFF * INV_SQRT_MWBRONO2
@@ -875,13 +875,13 @@ C *** Calculate IEPOX and MAE uptake information for accumulation mode
      &                   / ( RADIUS * INV_DIFFUSIVITY +  4.0D0 / ( CBARIEPOX * GAMMAIEPOX) )
                   If ( AIETET_IDX .gt. 0 ) Then
                      TETROL_PPM  = PPM_FACTOR
-     &                       * REAL( aerospc_conc( AIETET_IDX,2 ), 8 ) * INV_MWIETET
+     &                       * REAL( aerospc_conc( AIETET_IDX,IA_ACC ), 8 ) * INV_MWIETET
                   Else
                      TETROL_PPM = 0.0D0
                   End If 
                   If ( AIEOS_IDX .GT. 0 ) Then
                      IEPOXOS_PPM = PPM_FACTOR
-     &                     * REAL( aerospc_conc( AIEOS_IDX,2 ), 8 ) * INV_MWIEOS
+     &                     * REAL( aerospc_conc( AIEOS_IDX,IA_ACC ), 8 ) * INV_MWIEOS
                   Else
                      IEPOXOS_PPM = 0.0D0
                   End If
@@ -1040,32 +1040,32 @@ C ***            Isoprene epoxide uptake
                      KHETERO( IRATE, C,R,L ) = 60.0D0 * AQUEOUS_FREQUENCY * FOS(2)
 
                  CASE( IA_NO3 )
-                     KHETERO( IRATE, C,R,L ) = 60.0D0 * ( KNO3( 1 ) + KNO3( 2 ) ) ! min-1
+                     KHETERO( IRATE, C,R,L ) = 60.0D0 * ( KNO3( IA_AIT ) + KNO3( IA_ACC ) ) ! min-1
 
                  CASE( IA_GLY )
-                     KHETERO( IRATE, C,R,L ) = 60.0D0 * (  KGLY( 2 ) ) ! min-1
+                     KHETERO( IRATE, C,R,L ) = 60.0D0 * (  KGLY( IA_ACC ) ) ! min-1
 
                  CASE( IA_MGLY )
-                     KHETERO( IRATE, C,R,L ) = 60.0D0 * (  KMGLY( 2 ) ) ! min-1
+                     KHETERO( IRATE, C,R,L ) = 60.0D0 * (  KMGLY( IA_ACC ) ) ! min-1
 
                  CASE( IA_NTR2 )
 C *** calculate gas-particle partitioning of NTR2
                     CON_TOA = 0.0
                     IF ( INDEX( MECHNAME, 'NVPOA' ) .NE. 0 ) THEN
-                      CON_TOA = aerospc_conc(   apoc_idx,IA_AIT ) + aerospc_conc(   apoc_idx,IA_ACC )
-     &                        + aerospc_conc( apncom_idx,IA_AIT ) + aerospc_conc( apncom_idx,IA_ACC )
+                      CON_TOA = sum( aerospc_conc(   apoc_idx,IA_AIT:IA_ACC ) )
+     &                        + sum( aerospc_conc( apncom_idx,IA_AIT:IA_ACC ) ) 
                     END IF
 
                     DO I = 1, n_aerospc
-                       IF ( aerospc( i )%nonVol_soa ) THEN
-                           IF ( aerospc( i )%tracer ) CYCLE
-                           CON_TOA = CON_TOA + aerospc_conc( I,IA_ACC )
+                       IF ( aerospc( I )%nonVol_soa ) THEN
+                           IF ( aerospc( I )%tracer ) CYCLE
+                           CON_TOA = CON_TOA + sum( aerospc_conc( I,IA_NUC:IA_ACC ) )
                        END IF
                     END DO
                     DO I = 1, n_vapor
-                      N = soa_aeroMap( i )
+                      N = soa_aeroMap( I )
                       IF ( aerospc( n )%tracer ) CYCLE
-                      CON_TOA = CON_TOA + aerospc_conc( N,IA_ACC )
+                      CON_TOA = CON_TOA + sum( aerospc_conc( N,IA_NUC:IA_ACC ) )
                     END DO
 
                     F_PART_NTR2 = 0.0
@@ -2140,7 +2140,6 @@ C *** J-mode particle volume [L/m**3 air]
       Do i = 1, n_aerospc 
          If ( aerospc( i )%tracer ) Cycle
          If ( aero_missing( i,IA_ACC ) ) Cycle
-!        If ( aerospc( i )%no_M2Wet ) Cycle
          inv_volume = inv_volume + Real( aerospc_conc( i, IA_ACC ) / aerospc(i)%density, 8 ) !  * 1.0d-6
       End Do
       inv_volume = 1.0d6 / inv_volume
