@@ -731,7 +731,8 @@ C     the Aitken mode mass is merged into the accumulation mode during
 C     any given time step.  This criterion is described in Paragraph 26
 C     of Binkowski and Roselle (2003).
          XXM3 = 3.0 * AEROMODE_LNSG( IA_NUC ) / SQRT2
-         XNUM = MAX( AAA, XXM3 )
+         !XNUM = MAX( AAA, XXM3 )
+         XNUM = MAX( AAA, 0.0 )
 
 C *** Factors used in error function calls for M2 and M3 mode merging
          XXM2 = TWOTHIRDS * XXM3
@@ -753,14 +754,18 @@ C     distributions with diameters less than the intersection diameter.
 C *** Update accumulation-mode moment concentrations using
 C     Equations 11a - 11c of Binkowski and Roselle (2003).
          MOMENT0_CONC( IA_AIT ) = MOMENT0_CONC( IA_AIT ) + MOMENT0_CONC( IA_NUC ) * FNUM
-         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) + MOMENT2_CONC( IA_NUC ) * FM2
-         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) + MOMENT3_CONC( IA_NUC ) * FM3
+         !MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) + MOMENT2_CONC( IA_NUC ) * FM2
+         !MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) + MOMENT3_CONC( IA_NUC ) * FM3
+         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) + MOMENT2_CONC( IA_NUC ) * FNUM
+         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) + MOMENT3_CONC( IA_NUC ) * FNUM
 
 C *** Update Aitken-mode moment concentrations using
 C     Equations 11d - 11f of Binkowski and Roselle (2003).
          MOMENT0_CONC( IA_NUC ) = MOMENT0_CONC( IA_NUC ) * PHNUM
-         MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHM2
-         MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHM3
+         !MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHM2
+         !MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHM3
+         MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHNUM
+         MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHNUM
  
 C *** Rename masses of each species from Aitken mode to acumulation mode
 C     using Equation 11b of Binkowski and Roselle (2003). Do this for
@@ -769,7 +774,8 @@ C     all species, even the aerosol water.
             IF ( AERO_MISSING( SPC,IA_NUC ) ) CYCLE
 
             AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) + AEROSPC_CONC( SPC,IA_NUC ) * FM3
-            AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) * PHM3
+            !AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) * PHM3
+            AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) * PHNUM
          END DO
 
       END IF ! end check on necessity for merging
@@ -827,14 +833,18 @@ C     distributions with diameters less than the intersection diameter.
 C *** Update accumulation-mode moment concentrations using
 C     Equations 11a - 11c of Binkowski and Roselle (2003).
          MOMENT0_CONC( IA_ACC ) = MOMENT0_CONC( IA_ACC ) + MOMENT0_CONC( IA_AIT ) * FNUM
-         MOMENT2_CONC( IA_ACC ) = MOMENT2_CONC( IA_ACC ) + MOMENT2_CONC( IA_AIT ) * FM2
-         MOMENT3_CONC( IA_ACC ) = MOMENT3_CONC( IA_ACC ) + MOMENT3_CONC( IA_AIT ) * FM3
+         !MOMENT2_CONC( IA_ACC ) = MOMENT2_CONC( IA_ACC ) + MOMENT2_CONC( IA_AIT ) * FM2
+         !MOMENT3_CONC( IA_ACC ) = MOMENT3_CONC( IA_ACC ) + MOMENT3_CONC( IA_AIT ) * FM3
+         MOMENT2_CONC( IA_ACC ) = MOMENT2_CONC( IA_ACC ) + MOMENT2_CONC( IA_AIT ) * FNUM
+         MOMENT3_CONC( IA_ACC ) = MOMENT3_CONC( IA_ACC ) + MOMENT3_CONC( IA_AIT ) * FNUM
 
 C *** Update Aitken-mode moment concentrations using
 C     Equations 11d - 11f of Binkowski and Roselle (2003).
          MOMENT0_CONC( IA_AIT ) = MOMENT0_CONC( IA_AIT ) * PHNUM
-         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) * PHM2
-         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) * PHM3
+         !MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) * PHM2
+         !MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) * PHM3
+         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) * PHNUM
+         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) * PHNUM
  
 C *** Rename masses of each species from Aitken mode to acumulation mode
 C     using Equation 11b of Binkowski and Roselle (2003). Do this for
@@ -843,7 +853,8 @@ C     all species, even the aerosol water.
             IF ( AERO_MISSING( SPC,IA_AIT ) ) CYCLE
 
             AEROSPC_CONC( SPC,IA_ACC ) = AEROSPC_CONC( SPC,IA_ACC ) + AEROSPC_CONC( SPC,IA_AIT ) * FM3
-            AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) * PHM3
+            !AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) * PHM3
+            AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) * PHNUM
          END DO
 
       END IF ! end check on necessity for merging
@@ -1493,9 +1504,9 @@ C     to avoid mass conservation violations arising from numerical error.
       OMEGA_AC_SO4 = FCONCM1_SO4 * FCONC_SO4( IA_ACC,2 )
 
 C *** Growth values for mode merge condition
-      CGR( IA_NUC ) = CGR( IA_NUC ) + M3FAC_ASO4 * SCONDRATE * OMEGA_NU_SO4
-      CGR( IA_AIT ) = CGR( IA_AIT ) + M3FAC_ASO4 * SCONDRATE * OMEGA_AT_SO4
-      CGR( IA_ACC ) = CGR( IA_ACC ) + M3FAC_ASO4 * SCONDRATE * OMEGA_AC_SO4
+      !CGR( IA_NUC ) = CGR( IA_NUC ) + M3FAC_ASO4 * SCONDRATE * OMEGA_NU_SO4
+      !CGR( IA_AIT ) = CGR( IA_AIT ) + M3FAC_ASO4 * SCONDRATE * OMEGA_AT_SO4
+      !CGR( IA_ACC ) = CGR( IA_ACC ) + M3FAC_ASO4 * SCONDRATE * OMEGA_AC_SO4
 
       CONDSO4( IA_NUC ) = OMEGA_NU_SO4 * SCONDRATE      
       CONDSO4( IA_AIT ) = OMEGA_AT_SO4 * SCONDRATE      

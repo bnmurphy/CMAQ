@@ -986,7 +986,7 @@ C  Nucleation mode
                      EIM = MIN( EIM, 1.0 )
                      RD3NU = 1.0 / ( UTSCALE * ( SC3NU ** ( -TWO3 ) + EIM ) )
 
-                     VDEPJ( J,C,R,VDMATK ) = VGHAT3NU
+                     VDEPJ( J,C,R,VDMNUC ) = VGHAT3NU
      &                       / ( 1.0 - EXP(-VGHAT3NU * ( Mosaic_Data%RA( C,R,J ) + RD3NU ) ) )
  
 C  Aitken mode

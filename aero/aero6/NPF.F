@@ -381,8 +381,8 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       JDIAG(3) = J2 * 1.0E-6  !N cm-3 s-1
       JDIAG(4) = J3 * 1.0E-6  !N cm-3 s-1
       JDIAG(5) = J4 * 1.0E-6  !N cm-3 s-1
-      JDIAG(6) = J4 * 1.0E-6  !N cm-3 s-1
-      JDIAG(7) = J4 * 1.0E-6  !N cm-3 s-1
+      JDIAG(6) = J5 * 1.0E-6  !N cm-3 s-1
+      JDIAG(7) = J6 * 1.0E-6  !N cm-3 s-1
       JDIAG(8) = J_RICCO * 1.0E-6  !N cm-3 s-1
       JDIAG(9) = J_PAAS3 * 1.0E-6  !N cm-3 s-1
       JM2DIAG(1) = M2_BINARY
