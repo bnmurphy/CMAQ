@@ -1074,7 +1074,7 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
      &                dv_org, DV_P( IM ), cbar_org, CBAR_P( IM ), 
      &                dm_org, AEROMODE_DIAM( IM ), GRtmp )
          
-          If ( GRtmp( 2 ) .lt. 1.e-40 ) GRtmp(2) = 0.0
+          If ( GRtmp( 2 ) .lt. 1.e-35 ) GRtmp(2) = 0.0
           GR3( i,im ) = GRtmp( 2 )
         End Do
       End Do

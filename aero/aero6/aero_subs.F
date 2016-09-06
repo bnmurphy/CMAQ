@@ -274,13 +274,13 @@ C *** variables for advancing concentrations one time step
       REAL( 8 ) :: A, B
       REAL( 8 ) :: Y0, Y
       REAL( 8 ) :: EXPDT
+      REAL( 4 ) :: PTNU
       REAL( 4 ) :: PTNUAT
       REAL( 4 ) :: PTNUAC
       REAL( 4 ) :: PTATAC
-      REAL( 8 ) :: EXPDTNUAT
-      REAL( 8 ) :: EXPDTNUAC
+      REAL( 8 ) :: EXPDTNU
       REAL( 8 ) :: EXPDTATAC
-      REAL( 8 ) :: LOSS, PROD, POL
+      REAL( 8 ) :: LOSS, LOSS1, LOSS2, PROD, POL
       REAL         TMASS
       REAL         FACTRANS ! special factor to compute mass transfer
       REAL         M20      ! for initial condidtions in time stepping
@@ -644,20 +644,16 @@ C     loss rate due to intermodal coagulation, MASSn is the mass
 C     concentration of species n, and M3 is the 3rd moment
 C     concentration.
  
-C *** Transfer Nucleation Mode Mass to Aitken Mode
-      LOSS = C30NUAT / MOMENT3_CONC( IA_NUC )
+C *** Transfer Nucleation Mode Mass to Aitken Mode (s-1)
+      LOSS1 = C30NUAT / MOMENT3_CONC( IA_NUC )
+
+C *** Transfer Nucleation Mode Mass to Accumulation Mode (s-1)
+      LOSS2 = C30NUAC / MOMENT3_CONC( IA_NUC )
 
 C *** Set up extra variables to solve for Aitken mode mass concentrations
-      FACTRANS = LOSS * DT
-      EXPDTNUAT = EXP( -FACTRANS )
- 
-C *** Transfer Nucleation Mode Mass to Accumulation Mode
-      LOSS = C30NUAC / MOMENT3_CONC( IA_NUC )
+      FACTRANS = ( LOSS1 + LOSS2 ) * DT
+      EXPDTNU = EXP( -FACTRANS )
 
-C *** Set up extra variables to solve for Aitken mode mass concentrations
-      FACTRANS = LOSS * DT
-      EXPDTNUAC = EXP( -FACTRANS )
- 
 C *** Transfer Aitken Mode Mass to Accumulation Mode
       LOSS = C30ATAC / MOMENT3_CONC( IA_AIT )
 
@@ -674,10 +670,12 @@ C     intermodal coagulation.
          PTATAC = 0.0
          IF ( .NOT. AERO_MISSING( SPC, IA_NUC ) ) THEN
  
-           PTNUAT= MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
-     &                      REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAT ) )
-           PTNUAC= MAX( AEROSPC( SPC )%MIN_CONC( IA_NUC ),
-     &                      REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAC ) )
+           PTNU  = MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
+     &                      REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNU ) )
+
+           PTNUAT = LOSS1 / ( LOSS1 + LOSS2 ) * PTNU
+           PTNUAC = LOSS2 / ( LOSS1 + LOSS2 ) * PTNU
+ 
          END IF
 
          IF ( .NOT. AERO_MISSING( SPC, IA_AIT ) ) THEN
