@@ -1005,14 +1005,15 @@ C Variables for updating 2nd and 3rd moments
 C Added for new SOA bisection (hotp 7/6/11)
       Real               :: lowb, upb, orgmoles      ! lower bound, upper bound, total aerosol moles
       Logical, Parameter :: newtpartition = .False.   ! true to use original method, false to use new bisection
+      Real               :: faer
 
 C Variables needed for Growth Calculations
-      Real    dm_org  ! Diameter of an organic vapor molecule
-      Real    Kn
-      Real    Cc
-      Real    Cbar_p ( n_mode ) !Velocity of a particle
-      Real    Dv_p( n_mode )    !Diffusivity of Particle
-      Real    mass_p            !Mass of individual particle [ kg ]
+      Real,Save :: dm_org  ! Diameter of an organic vapor molecule
+      Real         Kn
+      Real         Cc
+      Real         Cbar_p ( n_mode ) !Velocity of a particle
+      Real         Dv_p( n_mode )    !Diffusivity of Particle
+      Real         mass_p            !Mass of individual particle [ kg ]
 
 C-----------------------------------------------------------------------
 
@@ -1073,6 +1074,7 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
      &                dv_org, DV_P( IM ), cbar_org, CBAR_P( IM ), 
      &                dm_org, AEROMODE_DIAM( IM ), GRtmp )
          
+          If ( GRtmp( 2 ) .lt. 1.e-40 ) GRtmp(2) = 0.0
           GR3( i,im ) = GRtmp( 2 )
         End Do
       End Do

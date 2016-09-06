@@ -274,6 +274,9 @@ C *** variables for advancing concentrations one time step
       REAL( 8 ) :: A, B
       REAL( 8 ) :: Y0, Y
       REAL( 8 ) :: EXPDT
+      REAL( 4 ) :: PTNUAT
+      REAL( 4 ) :: PTNUAC
+      REAL( 4 ) :: PTATAC
       REAL( 8 ) :: EXPDTNUAT
       REAL( 8 ) :: EXPDTNUAC
       REAL( 8 ) :: EXPDTATAC
@@ -666,28 +669,26 @@ C *** Transfer mass from Aitken to accumulation mode, resulting from
 C     intermodal coagulation.
 
       DO SPC = 1, N_AEROSPC
-         IF ( AERO_MISSING( SPC, IA_NUC ) ) CYCLE
+         PTNUAT = 0.0
+         PTNUAC = 0.0
+         PTATAC = 0.0
+         IF ( .NOT. AERO_MISSING( SPC, IA_NUC ) ) THEN
  
-         TMASS = AEROSPC_CONC( SPC,IA_NUC ) + AEROSPC_CONC( SPC,IA_AIT )
-         AEROSPC_CONC( SPC,IA_NUC ) = MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
-     &                                REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAT ) )
-         AEROSPC_CONC( SPC,IA_AIT ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_AIT ),
-     &                                TMASS - AEROSPC_CONC( SPC,IA_NUC ) )
-         
-         TMASS = AEROSPC_CONC( SPC,IA_NUC ) + AEROSPC_CONC( SPC,IA_ACC )
-         AEROSPC_CONC( SPC,IA_NUC ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_NUC ),
-     &                                REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAC ) )
-         AEROSPC_CONC( SPC,IA_ACC ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_ACC ),
-     &                                TMASS - AEROSPC_CONC( SPC,IA_NUC ) )
-      END DO
+           PTNUAT= MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
+     &                      REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAT ) )
+           PTNUAC= MAX( AEROSPC( SPC )%MIN_CONC( IA_NUC ),
+     &                      REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNUAC ) )
+         END IF
 
-      DO SPC = 1,N_AEROSPC
-         IF ( AERO_MISSING( SPC, IA_AIT ) ) CYCLE
-         TMASS = AEROSPC_CONC( SPC,IA_AIT ) + AEROSPC_CONC( SPC,IA_ACC )
-         AEROSPC_CONC( SPC,IA_AIT ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_AIT ),
-     &                                REAL( AEROSPC_CONC( SPC,IA_AIT ) * EXPDTATAC ) )
-         AEROSPC_CONC( SPC,IA_ACC ) = MAX( AEROSPC( SPC )%MIN_CONC( IA_ACC ),
-     &                                TMASS - AEROSPC_CONC( SPC,IA_AIT ) )
+         IF ( .NOT. AERO_MISSING( SPC, IA_AIT ) ) THEN
+           PTATAC= MAX( AEROSPC( SPC )%MIN_CONC(IA_AIT ),
+     &                        REAL( AEROSPC_CONC( SPC,IA_AIT ) * EXPDTATAC ) )
+         END IF
+
+         AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) - PTNUAT - PTNUAC
+         AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) + PTNUAT - PTATAC
+         AEROSPC_CONC( SPC,IA_ACC ) = AEROSPC_CONC( SPC,IA_ACC ) + PTATAC + PTNUAC
+
       END DO
 
 C *** end of update for species mass concentrations
@@ -731,8 +732,8 @@ C     the Aitken mode mass is merged into the accumulation mode during
 C     any given time step.  This criterion is described in Paragraph 26
 C     of Binkowski and Roselle (2003).
          XXM3 = 3.0 * AEROMODE_LNSG( IA_NUC ) / SQRT2
-         !XNUM = MAX( AAA, XXM3 )
-         XNUM = MAX( AAA, 0.0 )
+         XNUM = MAX( AAA, XXM3 )
+         !XNUM = MAX( AAA, 0.0 )
 
 C *** Factors used in error function calls for M2 and M3 mode merging
          XXM2 = TWOTHIRDS * XXM3
@@ -754,18 +755,18 @@ C     distributions with diameters less than the intersection diameter.
 C *** Update accumulation-mode moment concentrations using
 C     Equations 11a - 11c of Binkowski and Roselle (2003).
          MOMENT0_CONC( IA_AIT ) = MOMENT0_CONC( IA_AIT ) + MOMENT0_CONC( IA_NUC ) * FNUM
-         !MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) + MOMENT2_CONC( IA_NUC ) * FM2
-         !MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) + MOMENT3_CONC( IA_NUC ) * FM3
-         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) + MOMENT2_CONC( IA_NUC ) * FNUM
-         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) + MOMENT3_CONC( IA_NUC ) * FNUM
+         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) + MOMENT2_CONC( IA_NUC ) * FM2
+         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) + MOMENT3_CONC( IA_NUC ) * FM3
+         !MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) + MOMENT2_CONC( IA_NUC ) * FNUM
+         !MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) + MOMENT3_CONC( IA_NUC ) * FNUM
 
 C *** Update Aitken-mode moment concentrations using
 C     Equations 11d - 11f of Binkowski and Roselle (2003).
          MOMENT0_CONC( IA_NUC ) = MOMENT0_CONC( IA_NUC ) * PHNUM
-         !MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHM2
-         !MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHM3
-         MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHNUM
-         MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHNUM
+         MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHM2
+         MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHM3
+         !MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHNUM
+         !MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHNUM
  
 C *** Rename masses of each species from Aitken mode to acumulation mode
 C     using Equation 11b of Binkowski and Roselle (2003). Do this for
@@ -774,8 +775,8 @@ C     all species, even the aerosol water.
             IF ( AERO_MISSING( SPC,IA_NUC ) ) CYCLE
 
             AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) + AEROSPC_CONC( SPC,IA_NUC ) * FM3
-            !AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) * PHM3
-            AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) * PHNUM
+            AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) * PHM3
+            !AEROSPC_CONC( SPC,IA_NUC ) = AEROSPC_CONC( SPC,IA_NUC ) * PHNUM
          END DO
 
       END IF ! end check on necessity for merging
@@ -833,18 +834,18 @@ C     distributions with diameters less than the intersection diameter.
 C *** Update accumulation-mode moment concentrations using
 C     Equations 11a - 11c of Binkowski and Roselle (2003).
          MOMENT0_CONC( IA_ACC ) = MOMENT0_CONC( IA_ACC ) + MOMENT0_CONC( IA_AIT ) * FNUM
-         !MOMENT2_CONC( IA_ACC ) = MOMENT2_CONC( IA_ACC ) + MOMENT2_CONC( IA_AIT ) * FM2
-         !MOMENT3_CONC( IA_ACC ) = MOMENT3_CONC( IA_ACC ) + MOMENT3_CONC( IA_AIT ) * FM3
-         MOMENT2_CONC( IA_ACC ) = MOMENT2_CONC( IA_ACC ) + MOMENT2_CONC( IA_AIT ) * FNUM
-         MOMENT3_CONC( IA_ACC ) = MOMENT3_CONC( IA_ACC ) + MOMENT3_CONC( IA_AIT ) * FNUM
+         MOMENT2_CONC( IA_ACC ) = MOMENT2_CONC( IA_ACC ) + MOMENT2_CONC( IA_AIT ) * FM2
+         MOMENT3_CONC( IA_ACC ) = MOMENT3_CONC( IA_ACC ) + MOMENT3_CONC( IA_AIT ) * FM3
+         !MOMENT2_CONC( IA_ACC ) = MOMENT2_CONC( IA_ACC ) + MOMENT2_CONC( IA_AIT ) * FNUM
+         !MOMENT3_CONC( IA_ACC ) = MOMENT3_CONC( IA_ACC ) + MOMENT3_CONC( IA_AIT ) * FNUM
 
 C *** Update Aitken-mode moment concentrations using
 C     Equations 11d - 11f of Binkowski and Roselle (2003).
          MOMENT0_CONC( IA_AIT ) = MOMENT0_CONC( IA_AIT ) * PHNUM
-         !MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) * PHM2
-         !MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) * PHM3
-         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) * PHNUM
-         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) * PHNUM
+         MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) * PHM2
+         MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) * PHM3
+         !MOMENT2_CONC( IA_AIT ) = MOMENT2_CONC( IA_AIT ) * PHNUM
+         !MOMENT3_CONC( IA_AIT ) = MOMENT3_CONC( IA_AIT ) * PHNUM
  
 C *** Rename masses of each species from Aitken mode to acumulation mode
 C     using Equation 11b of Binkowski and Roselle (2003). Do this for
@@ -853,8 +854,8 @@ C     all species, even the aerosol water.
             IF ( AERO_MISSING( SPC,IA_AIT ) ) CYCLE
 
             AEROSPC_CONC( SPC,IA_ACC ) = AEROSPC_CONC( SPC,IA_ACC ) + AEROSPC_CONC( SPC,IA_AIT ) * FM3
-            !AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) * PHM3
-            AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) * PHNUM
+            AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) * PHM3
+            !AEROSPC_CONC( SPC,IA_AIT ) = AEROSPC_CONC( SPC,IA_AIT ) * PHNUM
          END DO
 
       END IF ! end check on necessity for merging
