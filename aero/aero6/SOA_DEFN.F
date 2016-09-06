@@ -312,7 +312,7 @@ C Add option to have species in GC.nml (for real semivolatiles)
 C Define orgprod parent names based on mechanism dependence
 C if they differ from above declarations, and determine if 
 C gas-phase IEPOX uptake occurs for the mechanism.
-            If ( INDEX( MECHNAME, 'SAPRC07TIC_AE6I' ) .Gt. 0 ) then
+            If ( INDEX( MECHNAME, 'SAPRC07TIC_AE6I' ) .Gt. 0 ) Then
                orgprod( 2 )%parent = 'MXYL'
                orgprod( 3 )%parent = 'MXYL'
                orgprod( 4 )%parent = 'TOLUENE'
@@ -1280,52 +1280,68 @@ C End SOA paritioning solver METHOD selection
 
 C Constrain caer to values between conmin and ctotf
          Do i = 1, n_vapor
-           If ( soa_aeroMap( i ) .ge. 1 ) Then
-             indx = soa_aeroMap( i )
+           If ( soa_aeroMap( i ) .Lt. 1 ) Cycle
+           indx = soa_aeroMap( i )
 
-             ! Transfer the semivolatile mass
-             Do im = ia_nuc,ia_acc
-               aerospc_conc( indx,im ) = 
-     &             aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
+           If ( caer( i ) .Lt. 0.0 ) Then
+                  Write( logdev,* ) 'caer negative at i: ', i, caer( i ),
+     &                              ' reset to evapmin'
+           End If
+           caer( i ) = max( caer(i), evapmin )
+
+           If ( caer( i ) - ctotf( i ) .Gt. ctolmin ) Then
+               Write( logdev,* ) 'caer-ctotf exceeds ctolmin at i = ', i
+               Write( logdev,* ) 'caer: ', caer( i ), ' ctotf: ', ctotf( i )
+               Write( logdev,* ) 'caer reset to ctotf'
+               caer( i ) = ctotf( i )
+           End If
+
+           dcaer( i ) = caer( i ) - caer0( i )   ! Change in each species conc.
+    
+           ! Transfer the semivolatile mass
+           Do im = ia_nuc,ia_acc
+             If ( aero_missing( soa_aeroMap( i ),im ) ) Cycle
+             aerospc_conc( indx,im ) = 
+     &           aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
         
-               ! Check to make sure none of the modes went negative
-               If ( aerospc_conc( indx,im ) .lt. 0.0 ) Then
+             ! Check to make sure none of the modes went negative
+             If ( aerospc_conc( indx,im ) .lt. 0.0 ) Then
 
-                 If ( im .eq. ia_nuc ) Then
-                   aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
-     &                 + aerospc_conc( indx,ia_nuc )
-                   aerospc_conc( indx,ia_nuc ) = 0.0
-                 Else If ( im .eq. ia_ait ) Then
-                   aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
-     &                  + aerospc_conc( indx,ia_ait )
-                   aerospc_conc( indx,ia_ait ) = 0.0
-                 Else
-                   aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
-     &               + aerospc_conc( indx,ia_acc )
-                   aerospc_conc( indx,ia_acc ) = 0.0
+               If ( im .eq. ia_nuc ) Then
+                 aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
+     &               + aerospc_conc( indx,ia_nuc )
+                 aerospc_conc( indx,ia_nuc ) = 0.0
+               Else If ( im .eq. ia_ait ) Then
+                 aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
+     &                + aerospc_conc( indx,ia_ait )
+                 aerospc_conc( indx,ia_ait ) = 0.0
+               Else
+                 aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
+     &             + aerospc_conc( indx,ia_acc )
+                 aerospc_conc( indx,ia_acc ) = 0.0
 
+                 If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
+                    aerospc_conc( indx,ia_nuc ) = aerospc_conc( indx,ia_nuc )
+     &                + aerospc_conc( indx,ia_ait )
+            
                    If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
-                      aerospc_conc( indx,ia_nuc ) = aerospc_conc( indx,ia_nuc )
-     &                  + aerospc_conc( indx,ia_ait )
-              
-                     If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
-                        Write( xmsg,'( A56,/,A11,I2,3(A9,E12.5))' ) 
-     &                     ' *** Too Much Evaporation from Existing Organic Aerosol:',
-     &                     ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
-     &                     ' Mode 2: ',aerospc_conc( indx,ia_ait ),
-     &                     ' Mode 3: ',aerospc_conc( indx,ia_acc )
-                        aerospc_conc( indx,ia_nuc ) = 0.0
-                        Call m3exit( pname, 0, 0, xmsg, xstat3 )
-                     Else
-                        aerospc_conc( indx,ia_nuc ) = 0.0
-                     End If
+                      Write( xmsg,'( A56,/,A11,I2,3(A9,E12.5))' ) 
+     &                   ' *** Too Much Evaporation from Existing Organic Aerosol:',
+     &                   ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
+     &                   ' Mode 2: ',aerospc_conc( indx,ia_ait ),
+     &                   ' Mode 3: ',aerospc_conc( indx,ia_acc )
+                      aerospc_conc( indx,ia_nuc ) = 0.0
+                      Call m3exit( pname, 0, 0, xmsg, xstat3 )
+                   Else
+                      aerospc_conc( indx,ia_nuc ) = 0.0
                    End If
-                         
                  End If
+                       
                End If
+             End If
            
-             End Do 
-           End Do
+           End Do 
+         End Do
 
       Else   ! threshold not exceeded; no material transferred to aerosol phase
          Do i = 1, n_vapor
