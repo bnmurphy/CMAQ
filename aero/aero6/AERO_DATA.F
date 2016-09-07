@@ -253,19 +253,19 @@ C                  --------- --------- --------- ---------  --------- ------- + 
      & spcs_type((/'ALVPO1H','ALVPO1I ','ALVPO1J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','POC   ',es_ufin),
      & spcs_type((/'       ','ASVPO1I ','ASVPO1J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','POC   ',es_fin),
      & spcs_type((/'       ','ASVPO2I ','ASVPO2J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','POC   ',es_fin),
-     & spcs_type((/'       ','        ','ASVPO3J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','POC   ',es_fin),
-     & spcs_type((/'       ','        ','AIVPO1J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','POC   ',es_fin),   
-     & spcs_type((/'ALVOO1H','ALVOO1I ','ALVOO1J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),     !60
-     & spcs_type((/'ALVOO2H','ALVOO2I ','ALVOO2J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'       ','ASVOO1I ','ASVOO1J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'       ','ASVOO2I ','ASVOO2J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'       ','        ','ASVPO3J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','POC   ',es_acc),
+     & spcs_type((/'       ','        ','AIVPO1J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','POC   ',es_acc),   
+     & spcs_type((/'ALVOO1H','ALVOO1I ','ALVOO1J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_ufin),     !60
+     & spcs_type((/'ALVOO2H','ALVOO2I ','ALVOO2J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_ufin),
+     & spcs_type((/'       ','ASVOO1I ','ASVOO1J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_fin),
+     & spcs_type((/'       ','ASVOO2I ','ASVOO2J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_fin),
      & spcs_type((/'       ','        ','ASVOO3J ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
        ! pcSOA                                                                          
-     & spcs_type((/'APCSOH ','APCSOI  ','APCSOJ  ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'APCSOH ','APCSOI  ','APCSOJ  ','     '/), cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_ufin),
        ! Organics for ultrafine particle formation                                                                          
-     & spcs_type((/'ADMAH  ','ADMAI   ','ADMAJ   ','      '/),cm_set,  670.0, F, F, F,  1,  4.0, 0.0,F, 'SOLUTE','      ',es_0),
-     & spcs_type((/'AMBTCAH','AMBTCAI ','AMBTCAJ ','      '/),cm_set, 1250.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'AELVO1H','AELVO1I ','AELVO1J ','      '/),cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'ADMAH  ','ADMAI   ','ADMAJ   ','      '/),cm_set,  670.0, F, F, F,  1,  4.0, 0.0,F, 'SOLUTE','      ',es_ufin),
+     & spcs_type((/'AMBTCAH','AMBTCAI ','AMBTCAJ ','      '/),cm_set, 1250.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_ufin),
+     & spcs_type((/'AELVO1H','AELVO1I ','AELVO1J ','      '/),cm_set, 1400.0, F, F, F,  0,  4.0, 6.1,T, 'DUST  ','      ',es_ufin),
 
        ! The following species are associated with the Multi-Pollutant code
      & spcs_type((/'','ANII     ','ANIJ     ','         '/), cm_set, 2200.0, F,F,T, 0,0.0, 0.0,F,'DUST  ','NICKEL_F     ',es_fin),   

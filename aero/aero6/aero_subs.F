@@ -330,7 +330,7 @@ C *** Set minimums for coarse mode
      &                              MOMENT0_CONC( N_MODE ) )
 
 C *** Initialize Growth Rates
-
+      CGR = 0.D0
 
 C *** Secondary Organics
 C     Update the secondary organic aerosol (SOA) mass concentrations
@@ -670,16 +670,16 @@ C     intermodal coagulation.
          PTATAC = 0.0
          IF ( .NOT. AERO_MISSING( SPC, IA_NUC ) ) THEN
  
-           PTNU  = MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
+           PTNU  = AEROSPC_CONC( SPC,IA_NUC ) - MAX( AEROSPC( SPC )%MIN_CONC(IA_NUC ),
      &                      REAL( AEROSPC_CONC( SPC,IA_NUC ) * EXPDTNU ) )
 
-           PTNUAT = LOSS1 / ( LOSS1 + LOSS2 ) * PTNU
-           PTNUAC = LOSS2 / ( LOSS1 + LOSS2 ) * PTNU
+           PTNUAT = REAL( LOSS1 / ( LOSS1 + LOSS2 ) ) * PTNU 
+           PTNUAC = REAL( LOSS2 / ( LOSS1 + LOSS2 ) ) * PTNU 
  
          END IF
 
          IF ( .NOT. AERO_MISSING( SPC, IA_AIT ) ) THEN
-           PTATAC= MAX( AEROSPC( SPC )%MIN_CONC(IA_AIT ),
+           PTATAC= AEROSPC_CONC( SPC,IA_AIT ) - MAX( AEROSPC( SPC )%MIN_CONC(IA_AIT ),
      &                        REAL( AEROSPC_CONC( SPC,IA_AIT ) * EXPDTATAC ) )
          END IF
 
@@ -1275,7 +1275,7 @@ C-----------------------------------------------------------------------
       END IF
 
 C *** Determine if Hybrid
-      TMP = 0.0
+      TMP = 0.0D0
 #ifdef noiso
       hybrid = .false.
 #else
@@ -1408,7 +1408,7 @@ C *** Adjust sulfuric acid vapor concentration to a value in
 C     equilibrium with the production of new particles and the
 C     condensation of sulfuric acid vapor on existing particles, based 
 C     on Equations A21 and A23 of Binkowski & Shankar (1995).
-         TMP = 0.0
+         TMP = 0.0D0
          DO I = 1, N_MODE
             TMP = TMP + FCONC_SO4( I,2 )
          END DO
@@ -1418,7 +1418,7 @@ C     on Equations A21 and A23 of Binkowski & Shankar (1995).
          PRECURSOR_CONC( SULF_IDX ) = REAL( XH2SO4, 8 )
 
 C *** Adjust ELVOC vapor concentration to an equilibrium value as well
-         TMP = 0.0
+         TMP = 0.0D0
          DO I = 1,N_MODE
            TMP = TMP + FCONC_ELVOC( I,2 )
          END DO
@@ -1492,7 +1492,7 @@ C     calculated using Equation A17 of Binkowski & Shankar (1995). The
 C     condensation rate for accumulation mode (fine-equilibrium scheme) or 
 C     coarse mode (hybrid and dynamic schemes) is computed by difference, 
 C     to avoid mass conservation violations arising from numerical error.
-      TMP = 0.0
+      TMP = 0.0D0
       DO I = 1, N_MODE
          TMP = TMP + FCONC_SO4( I,2 )
       END DO
@@ -1512,9 +1512,11 @@ C *** Growth values for mode merge condition
       
       IF ( HYBRID ) THEN 
          CONDSO4( IA_ACC ) = OMEGA_AC_SO4 * SCONDRATE      
-         CONDSO4( IA_CRS ) = SCONDRATE - ( CONDSO4( IA_AIT ) + CONDSO4( IA_ACC ) ) 
+         CONDSO4( IA_CRS ) = SCONDRATE - ( CONDSO4( IA_NUC ) +         
+     &                        CONDSO4( IA_AIT ) + CONDSO4( IA_ACC ) ) 
       ELSE                                  ! fine equilibrium
-         CONDSO4( IA_ACC ) = SCONDRATE - CONDSO4( IA_AIT )
+         CONDSO4( IA_ACC ) = SCONDRATE - 
+     &                         ( CONDSO4( IA_AIT ) + CONDSO4( IA_NUC ) )
          CONDSO4( IA_CRS ) = 0.0D0               ! no coarse mode chemistry
       END IF
 
@@ -1544,7 +1546,7 @@ C     (Yu and Luo, ACP, 14, pp12455-12464, 2014).
         !to Each Size Mode. Also adjust Second Moment for Condensation of
         !Amines
         DO IMODE = 1, N_MODE-1
-          AM3 = 0.0
+          AM3 = 0.0D0
           DO IAER = 1,N_AEROSPC
             FACTOR = 1.0E-9 * f6pi / AEROSPC( IAER )%density
             AM3 = AM3 + AEROSPC_CONC( IAER, IMODE ) * FACTOR
@@ -1554,7 +1556,7 @@ C     (Yu and Luo, ACP, 14, pp12455-12464, 2014).
           DMA_MODE = COND_DMA * FCONC_DMA( IMODE,2 ) / SUM(FCONC_DMA( :,2 ))
 
           MOMENT2_CONC( IMODE ) = MOMENT2_CONC( IMODE ) *
-     &      (( AM3 + DMA_MODE*1.0D-9*f6pi/AEROSPC(ADMA_IDX)%density )/ AM3)**(2.0/3.0)
+     &      (( AM3 + DMA_MODE*1.0D-9*f6pi/AEROSPC(ADMA_IDX)%density )/ AM3)**(REAL(2.0/3.0, 8))
 
           AEROSPC_CONC( ADMA_IDX, IMODE ) = AEROSPC_CONC( ADMA_IDX, IMODE ) + REAL( DMA_MODE,4 )
 
@@ -1944,7 +1946,7 @@ C *** Apply modal partitioning of equilibrium aerosol mass
 
                 IF ( CFINAL( ISP, IA_AIT ) .LT. -1.0D-15 ) THEN
                     CFINAL( ISP,IA_NUC ) = CFINAL( ISP,IA_NUC ) + CFINAL( ISP,IA_AIT )
-                    CFINAL( ISP,IA_AIT ) = 0.0
+                    CFINAL( ISP,IA_AIT ) = 0.0D0
 
                     IF ( CFINAL( ISP,IA_NUC ) .LT. -1.0D-15 ) THEN
                      !Note: this should NEVER happen because there
@@ -1954,7 +1956,7 @@ C *** Apply modal partitioning of equilibrium aerosol mass
                      CFINAL( ISP,IA_NUC ) = 0.0D0
                      CALL M3EXIT( 'VOLINORG', 0, 0, XMSG, XSTAT1 ) 
                     ELSE
-                       CFINAL( ISP,IA_NUC ) = 0.0
+                       CFINAL( ISP,IA_NUC ) = MAX( CFINAL( ISP,IA_NUC ), 0.0D0 )
                     END IF
                 END IF
               END IF

@@ -171,7 +171,8 @@ C     Free-molecular to continuum regimes
 
       RETURN
       END SUBROUTINE HCOND4
- 
+
+#ifdef AERO_NUC_GROWTH
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE GHCOND( AM0, DIA_P, DV, DP, CBAR_V, CBAR_P, 
      &                   DIA_V, GF )
@@ -344,7 +345,7 @@ C-----------------------------------------------------------------------
 
       RETURN
       END SUBROUTINE GHCOND
- 
+#endif 
 
 
 

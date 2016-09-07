@@ -989,7 +989,6 @@ C Variables used in equilibrium partitioning calculations
       Real totorgsw          ! POA + non-volatile SOA [ umole/m3 ]
       Real totorg            ! SOA + POA before time step [ umole/m3 ]
       Real threshold         ! criterion for establishing gas/part equil.
-      Real faer              ! fraction of total in aerosol, intermediate value
       Logical check          ! flag to indicate if NEWT subroutine
                              ! converged to a spurious root
 
@@ -1050,12 +1049,12 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
       m2wet_init( : ) = moment2_conc( ia_nuc:ia_acc )
         
       GR3( :,: ) = 0.0
-      m0_init( : )    = moment0_conc( ia_nuc:ia_acc )
+      m0_init( : )     = DBLE( moment0_conc( ia_nuc:ia_acc ) )
       m2wet_initD( : ) = DBLE( m2wet_init( ia_nuc:ia_acc ) )
 
       Do im = ia_nuc,ia_acc
-        m1wet_init( im ) = m0_init( im ) * aeromode_diam( im ) * 
-     &                         exp( 0.5 * aeromode_lnsg( im ) ** 2 )
+        m1wet_init( im ) = DBLE( m0_init( im ) * aeromode_diam( im ) * 
+     &                           exp( 0.5 * aeromode_lnsg( im ) ** 2 ) )
         
         ! Calculate Diffusive properties of each mode
         mass_p = aeromode_diam( im ) ** 3 * pi6 * aeromode_dens( im ) 
@@ -1070,12 +1069,12 @@ C Compute 3rd moment, 2nd moment. moment_conc arrays are wet
           
 !          Call HCOND3( m0_init( im ), m1wet_init( im ),
 !     &                 m2wet_initD( im ), Dv_org, alphorg, cbar_org(i), GRtmp )
-          CALL HCOND4( m0_init( im ), m1wet_init( im ), m2wet_init( im ),
+          CALL HCOND4( m0_init( im ), m1wet_init( im ), m2wet_initD( im ),
      &                dv_org, DV_P( IM ), cbar_org, CBAR_P( IM ), 
      &                dm_org, AEROMODE_DIAM( IM ), GRtmp )
          
-          If ( GRtmp( 2 ) .lt. 1.e-35 ) GRtmp(2) = 0.0
-          GR3( i,im ) = GRtmp( 2 )
+          If ( GRtmp( 2 ) .lt. 1.0D-35 ) GRtmp(2) = 0.0D0
+          GR3( i,im ) = Real( GRtmp( 2 ), 4 )
         End Do
       End Do
       
@@ -1280,6 +1279,7 @@ C End SOA paritioning solver METHOD selection
 
 C Constrain caer to values between conmin and ctotf
          Do i = 1, n_vapor
+           ! Check for overshoot in any of the specific modes
            If ( soa_aeroMap( i ) .Lt. 1 ) Cycle
            indx = soa_aeroMap( i )
 
@@ -1296,15 +1296,18 @@ C Constrain caer to values between conmin and ctotf
                caer( i ) = ctotf( i )
            End If
 
+           ! Calculate total change in Vapor Species
            dcaer( i ) = caer( i ) - caer0( i )   ! Change in each species conc.
-    
+ 
            ! Transfer the semivolatile mass
            Do im = ia_nuc,ia_acc
              If ( aero_missing( soa_aeroMap( i ),im ) ) Cycle
              aerospc_conc( indx,im ) = 
-     &           aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
-        
-             ! Check to make sure none of the modes went negative
+     &            aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
+           End Do
+
+           ! Check to make sure none of the modes went negative
+           Do im = ia_nuc,ia_acc
              If ( aerospc_conc( indx,im ) .lt. 0.0 ) Then
 
                If ( im .eq. ia_nuc ) Then
@@ -1341,13 +1344,37 @@ C Constrain caer to values between conmin and ctotf
              End If
            
            End Do 
+=======
+                 If ( aerospc_conc( indx,ia_ait ) .lt. 0.0 ) Then
+                   aerospc_conc( indx,ia_nuc ) = aerospc_conc( indx,ia_nuc )
+     &                + aerospc_conc( indx,ia_ait )
+                   aerospc_conc( indx,ia_ait ) = 0.0
+           
+                   If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
+                      Write( xmsg,'( A56,/,A11,I2,3(A9,E12.5))' ) 
+     &                  ' *** Too Much Evaporation from Existing Organic Aerosol:',
+     &                  ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
+     &                  ' Mode 2: ',aerospc_conc( indx,ia_ait ),
+     &                  ' Mode 3: ',aerospc_conc( indx,ia_acc )
+                      aerospc_conc( indx,ia_nuc ) = 0.0
+                      Call m3exit( pname, 0, 0, xmsg, xstat3 )
+                   Else
+                      aerospc_conc( indx,ia_nuc ) = max( aerospc_conc( indx,ia_nuc ),0.0 )
+                   End If
+                 End If
+                   
+               End If
+             End If
+           End Do
+          
+>>>>>>> 25f1e6d... Fix strange blocks by initializing CGR variable used for mode merging
          End Do
 
       Else   ! threshold not exceeded; no material transferred to aerosol phase
          Do i = 1, n_vapor
             indx = soa_aeroMap( i )
             Do im = ia_nuc,ia_acc
-               If ( .NOT. aero_missing( indx,im ) ) aerospc_conc( indx,im ) = conmin   ! array assignment
+              If ( .Not. aero_missing( indx,im ) ) aerospc_conc( indx,im ) = conmin   ! array assignment
             End Do
          End Do
          caer( i ) = sum( aerospc_conc( indx,: ) )
