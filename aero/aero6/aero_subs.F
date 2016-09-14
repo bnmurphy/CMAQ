@@ -2019,18 +2019,25 @@ C     change to the second moment due to dry inorganic condensation
      &              + ( SO4                  - CINORG( KSO4,IMODE ) ) * M3FAC_ASO4 ) 
      &              / DELT 
 
+C *** Simplify Condensation affect on 2nd moment: instead of integrating
+C     the 2nd moment change in time, just assume constant width across
+C     the time step. This is equivalent to current assumptions in the OA 
+C     module as of 2017/09/07. --B Murphy
+         Y = M2DRY_INIT( IMODE ) * ( DDRYM3DT / M3DRY_INIT( IMODE ) ) ** ( 2.D0/3.D0 )
+
 C *** Compute net change in 2nd moment due to dry inorganic mass transfer
 C     (including nucleation) using equation A7 of Binkowski & Shankar (1995)
-         DDRYM2DT = D_TWOTHIRDS * GRFAC1( IMODE ) / GRFAC2( IMODE ) * DDRYM3DT
+         !DDRYM2DT = D_TWOTHIRDS * GRFAC1( IMODE ) / GRFAC2( IMODE ) * DDRYM3DT
 
 C *** Update dry 2nd moment for condensation/evaporation based on whether
 C     net change in dry 2nd moment is production or loss
-         IF ( DDRYM2DT .LT. 0.0D0 ) THEN
-            LOSS = DDRYM2DT / M2DRY_INIT( IMODE )
-            Y = M2DRY_INIT( IMODE ) * EXP( LOSS * DELT )
-         ELSE
-            Y = M2DRY_INIT( IMODE ) + DDRYM2DT * DELT
-         END IF
+         !IF ( DDRYM2DT .LT. 0.0D0 ) THEN
+         !   LOSS = DDRYM2DT / M2DRY_INIT( IMODE )
+         !   Y = M2DRY_INIT( IMODE ) * EXP( LOSS * DELT )
+         !ELSE
+         !   Y = M2DRY_INIT( IMODE ) + DDRYM2DT * DELT
+         !END IF
+         
          moment2_conc( IMODE ) = MAX( REAL( AEROMODE_MINM2( IMODE ), 8 ), Y )
       
       END DO

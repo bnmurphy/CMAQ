@@ -144,8 +144,6 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL(8) :: ION_RATE  ! Ionization Rate (ion-pairs/cm3)
            
 ! Define internal variables. See usage.       
-      REAL(8)            :: Dg_BINARYsq, Dg_TERNARYsq, Dg_AMINEsq
-      REAL(8)            :: Dg_IMNSO4sq, Dg_IMNORGsq
       REAL(8)            :: DMDT_SO4_BINARY, DMDT_SO4_TERNARY, DMDT_SO4_AMINE
       REAL(8)            :: DMDT_SO4_GLASOE, DMDT_SO4_PAAS2, DMDT_SO4_IMN
       REAL(8)            :: DMDT_DMA, DMDT_XORG, DMDT_YORG
@@ -163,6 +161,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL(8)            :: DMA_M_AMINE, DMA_M_GLASOE, XORG_M_PAAS2, YORG_M_PAAS3
       REAL(8)            :: MBTCA_M_PAAS2, ELVOC_M_PAAS2, ELVOC_M_ORG, ELVOC_M_IMN
       REAL(8)            :: NH3_M_TERNARY
+      REAL(8)            :: M20_BINARY, M20_TERNARY, M20_AMINE, M20_IMNSO4, M20_IMNORG
       REAL(8)            :: M2_BINARY, M2_TERNARY, M2_AMINE, M2_GLASOE, M2_PAAS3
       REAL(8)            :: M2_PAAS2, M2_ORG, M2_RICCO, M2_IMN_SO4, M2_IMN_ORG
       REAL(8)            :: MWtot_GLASOE, MWtot_PAAS2, MWtot_PAAS3, MWtot_RICCO, MWtot_ORG
@@ -270,20 +269,20 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ! Calculate Binary H2SO4-H2O NPF from Vehkamaki et al. 2002
       CALL NPF_BINARY ( RH, TEMP, XSA, 
-     &                   J0, SA_M_BINARY, Dg_BINARYsq)
+     &                   J0, SA_M_BINARY, M20_BINARY)
  
 ! Calculate Ternary H2SO4-H2O-NH3 NPF 
       IF (L_NAPARI) THEN
         !Use Napari et al. 2004 Parameterization derived from theory
         CALL NPF_NAPARI ( PRESS, RH, TEMP, XSA, XNH3, 
      &                    J1, SA_M_TERNARY, NH3_M_TERNARY,
-     &                    Dg_TERNARYsq)
+     &                    M20_TERNARY)
       ELSE IF (L_ACDC_TERNARY) THEN
         !Use Look-Up table from Atmospheric Cluster Dynamics Code
 	!which solves the birth-death equations
         CALL ACDC_TERNARY ( CS, RH, TEMP, XSA, XNH3, 
      &                     J1, SA_M_TERNARY, NH3_M_TERNARY,
-     &                     Dg_TERNARYsq)
+     &                     M20_TERNARY)
       END IF   
 
 ! Calculate H2SO4-Amine NPF
@@ -293,14 +292,14 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         J2       = (1.0E6) * K_GLASOE * A1TOT**2 * DMA   ! For Glasoe et al. (2014)   J1_Glasoe
         SA_M_AMINE  = SA_M_GLASOE
         DMA_M_AMINE = DMA_M_GLASOE
-        Dg_AMINEsq  = Dg_GLASOEsq
+        M20_AMINE  = Dg_GLASOEsq * exp( 2.D0 * ( log( Sg_GLASOE  )**2 ) )  ![m2/particle]
       ELSE IF (L_ACDC_DMA) THEN
         !Use Look-Up table from Atmospheric Cluster Dynamics Code
         !which solves the birth-death equations. Particles are 
         !brought into CMAQ at Dp = 1.2 nm
         CALL ACDC_AMINE ( CS, TEMP, XSA, XDMA, 
      &                    J2, SA_M_AMINE, DMA_M_AMINE,
-     &                    Dg_AMINEsq)
+     &                    M20_AMINE)
        END IF
         
 ! Set up for calculation of NPF rate from other pathways
@@ -319,7 +318,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ! Calculate Ion-Mediated NPF Rates
       CALL ION_MEDIATED_NPF( A1TOT, ELVOC, PRESS, TEMP, RH, ASURF, 
      &                       J5, J6, SA_M_IMN, ELVOC_M_IMN, 
-     &                       Dg_IMNSO4sq, Dg_IMNORGsq )
+     &                       M20_IMNSO4, M20_IMNORG )
 
 ! Calculate Sulfate Mass Change to Each Chemical Species [ ug / m3 / s ]
       DMDT_SO4_BINARY  = J0 * SA_M_BINARY
@@ -360,16 +359,17 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ! Calculate combined rate
       JRATE    = J0 + J1 + J2  + J3 + J4 + J5 + J6 ![ N/m**3/s ]
 
-! Calculate NPF Second Moment Rates
-      M2_BINARY  = J0 * Dg_BINARYsq     ![m2/m3/s]
-      M2_TERNARY = J1 * Dg_TERNARYsq    ![m2/m3/s]
-      M2_AMINE   = J2 * Dg_AMINEsq      ![m2/m3/s]
-      M2_PAAS2   = J3 * Dg_PAAS2sq      ![m2/m3/s]
-      M2_ORG     = J4 * Dg_ORGsq        ![m2/m3/s]
-      M2_IMN_SO4 = J4 * Dg_IMNSO4sq     ![m2/m3/s]
-      M2_IMN_ORG = J4 * Dg_IMNORGsq     ![m2/m3/s]
-      M2_RICCO   = J_RICCO * Dg_RICCOsq ![m2/m3/s]
-      M2_PAAS3   = J_PAAS3 * Dg_PAAS3sq ![m2/m3/s]
+! Calculate NPF M2 Changes
+      M2_BINARY  = J0 * M20_BINARY      ![m2/m3/s]  J0 ** (5.D0/9.D0) * Dg_BINARY ** (2.D0/3.D0) * M3_BINARY ** (4.D0/9.D0) ![m2/m3/s]
+      M2_TERNARY = J1 * M20_TERNARY     ![m2/m3/s]
+      M2_AMINE   = J2 * M20_AMINE       ![m2/m3/s]
+      M2_PAAS2   = J3 * Dg_PAAS2sq * exp( 2.D0 * ( log( Sg_PAAS2  )**2 ) )  ![m2/m3/s]
+      M2_ORG     = J4 * Dg_ORGsq * exp( 2.D0 * ( log( Sg_ORG  )**2 ) )    ![m2/m3/s]
+      M2_IMN_SO4 = J5 * M20_IMNSO4      ![m2/m3/s]
+      M2_IMN_ORG = J6 * M20_IMNORG      ![m2/m3/s]
+
+      M2_RICCO   = J_RICCO * Dg_RICCOsq * exp( 2.D0 * ( log( Sg_RICCO  )**2 ) ) ![m2/m3/s]
+      M2_PAAS3   = J_PAAS3 * Dg_PAAS3sq * exp( 2.D0 * ( log( Sg_PAAS3  )**2 ) ) ![m2/m3/s]
 
       M2RATE   = M2_BINARY + M2_TERNARY 
      &         + M2_AMINE  + M2_PAAS2 + M2_ORG
@@ -408,7 +408,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       END SUBROUTINE NPF_MULTI
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      SUBROUTINE NPF_BINARY ( RH, T, XH2SO4, DNDT, sulfmass, m2_20 )
+      SUBROUTINE NPF_BINARY ( RH, T, XH2SO4, DNDT, sulfmass, m20 )
 
       USE AERO_DATA
       USE AEROMET_DATA   ! Includes CONST.EXT
@@ -436,16 +436,19 @@ C..Inputs:
 C.. Outputs:
       REAL(8), INTENT( OUT ) :: DNDT       ! particle number production rate [ m^-3/s ]
       REAL(8), INTENT( OUT ) :: sulfmass   ! mass of a new particle [ug]
-      REAL(8), INTENT( OUT ) :: m2_20      !new-particle diameter squared [m**2]
+      REAL(8), INTENT( OUT ) :: m20        ! second-moment normalized by NPF rate [m**2]
 
 C.. Parameters
       CHARACTER( 16 ), PARAMETER :: PNAME = 'NPF_BIN'                 
 
 C.. Particle size parameters:
-      REAL(8), PARAMETER :: d20 = 3.6E-07           ! diameter of a new particle [cm]
-      REAL(8), PARAMETER :: d20sq = d20 * d20       ! new-particle diameter squared [cm**2]
-      REAL(8), PARAMETER :: d20cu = d20 * d20sq     ! diameter of a new particle cubed [cm**3]
+      REAL(8), PARAMETER :: d20 = 3.6E-09           ! diameter of a new particle [m]
+      REAL(8), PARAMETER :: d20sq = d20 * d20       ! new-particle diameter squared [m**2]
+      REAL(8), PARAMETER :: d20cu = d20 * d20sq     ! diameter of a new particle cubed [m**3]
       REAL(8), PARAMETER :: sg  = 1.28              ! Standard Dev of new particle distirbution
+      REAL(8), PARAMETER :: m3  = 6.13767D-26       ! M3 per particle [m**3]
+      REAL(8), PARAMETER :: m2  = 1.46399D-17       ! M2 per particle [m**2]
+
       
       REAL(8)       :: sulfmass1                    ! inverse of sulfmass [ug**-1]
 
@@ -471,7 +474,6 @@ C.. Set constants and local variables for Vehkamaki et al. (2002) scheme
       REAL(8) :: TEMP2, TEMP3    ! TEMP**2, TEMP**3
       REAL(8) :: XFAC       ! exponential term for the nucleation rate  
       REAL(8) :: Jnuc       ! nucleation rate [ #/cm**3 s ]
-      REAL(8) :: m3         ! 3rd moment of 1 particle [ cm3/particle ]
       REAL(8) :: R0         ! particle density [ kg/m3 ]
       
       REAL(8) :: A, B, C, D, E, F, G, H, I, J
@@ -485,7 +487,6 @@ C.. Set constants and local variables for Vehkamaki et al. (2002) scheme
 
 C.. Initialize variables
       DNDT   = 0.0
-      m2_20  = 1.0E-4 * d20sq       ! new-particle diameter squared [m**2]
       TEMP = T
 
 C.. Calculate molecular weight of H2SO4 [ g / mole ] 
@@ -496,7 +497,7 @@ C.. Calculate density of sulfuric acid [ kg / m**3 ]
       DENSITY_H2O   = 1000.0           
 
 C.. Calculate mass of a new particle [m3/particle]
-      m3  = d20cu  * exp( 9./2. * ( log( sg  )**2 ) )
+      m20 = m2
 
 C.. Calculate inverse of sulfmass [ug**-1]      
       !sulfmass1 = 1.0 / sulfmass   
@@ -589,7 +590,7 @@ C.. Calculate the Mass of Sulfuric Acid in the Particle
  
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE NPF_NAPARI ( PRESS, RHin, T, XH2SO4, XNH3, DNDT, 
-     &                         sulfmass, nh4mass, m2_20 )
+     &                         sulfmass, nh4mass, m20 )
 
       USE AERO_DATA
       USE AEROMET_DATA   ! Includes CONST.EXT
@@ -619,7 +620,7 @@ C.. Outputs:
       REAL(8), INTENT( OUT ) :: DNDT       ! particle number production rate [ m^-3/s ]
       REAL(8), INTENT( OUT ) :: sulfmass   ! mass of sulfuric acid in new particle [ug]
       REAL(8), INTENT( OUT ) :: nh4mass    ! mass of ammonium in new particle [ug]
-      REAL(8), INTENT( OUT ) :: m2_20      !new-particle diameter squared [m**2]
+      REAL(8), INTENT( OUT ) :: m20        ! second moment normalized to NPF rate [m**2]
 
 C.. Parameters
       CHARACTER( 16 ), PARAMETER :: PNAME = 'NPF_TERN'                 
@@ -627,7 +628,7 @@ C.. Parameters
 C.. Particle size parameters:
       REAL(8) :: RNUC           ! radius of a new particle [nm]
       REAL(8) :: FNL            ! Natural Logarithm of Formation Rate
-      REAL(8) :: d20            ! diameter of a new particle [cm]
+      REAL(8) :: d20            ! diameter of a new particle [nm]
       REAL(8) :: sg  = 1.28     ! Standard Dev of new particle distirbution
       
       REAL(8) :: TEMP       ! ambient temperature
@@ -758,7 +759,7 @@ C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] by multiplyi
 
 C.. Calculate Size of New Particles
       d20 = rnuc * 2.           !New Particle Diamter [nm]
-      m2_20  = 1.0E-18 * d20**2 ! new-particle diameter squared [m**2]
+      m20 = 1.0D-18 * d20**2 * exp( 2.D0 * ( log( sg ) )**2 ) ! second moment [m**2]
 
 C.. Calculate Mass of Each Species In Particle (g/particle)
     !Use the molecular weight of the gas-phase species since
@@ -773,7 +774,7 @@ C.. Calculate Mass of Each Species In Particle (g/particle)
  
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE ACDC_TERNARY ( CSin, RHin, TEMPin, XH2SO4, XNH3, DNDT, 
-     &                         sulfmass, nh3mass, m2_20 )
+     &                         sulfmass, nh3mass, m20 )
 
       USE AERO_DATA
       USE AEROMET_DATA   ! Includes CONST.EXT
@@ -801,7 +802,7 @@ C.. Outputs:
       REAL(8), INTENT( OUT ) :: DNDT       ! particle number production rate [ m-3 s-1 ]
       REAL(8), INTENT( OUT ) :: sulfmass   ! mass of sulfuric acid used to make new particle [ug]
       REAL(8), INTENT( OUT ) :: nh3mass    ! mass of ammonia used to make new particle [ug]
-      REAL(8), INTENT( OUT ) :: m2_20      ! new-particle diameter squared [m**2]
+      REAL(8), INTENT( OUT ) :: m20        ! second moment normalized to NPF rate [m**2]
 
 C.. Parameters
       CHARACTER( 16 ), PARAMETER :: PNAME = 'NPF_ACDC_TERN'                 
@@ -813,6 +814,7 @@ C.. Particle size parameters:
       REAL :: H2SO4      ! Molecule Concentration of Sulfuric Acid [molec cm-3]
       REAL :: NH3        ! Mixing Ration of NH3 [PPTV]
       REAL :: JNUC       ! nucleation rate [particles cm-3 s-1]
+      REAL(8) :: DMDT    ! nucleation mass rate [ug m-3 s-1]
       
       REAL :: MW_H2SO4        ! MW of H2SO4 in [ g / mole ]        
       REAL :: MW_NH3          ! MW of NH3 in [ g / mole ]       
@@ -821,20 +823,25 @@ C.. Particle size parameters:
       REAL, PARAMETER :: MUG2G = 1.0E-6        ! [ ug  ] -> [ g ]                 
 
 C.. Assert Size of New Particles
-      REAL, PARAMETER :: RNUC = 0.6      ! radius of a new particle [nm]
-      REAL, PARAMETER :: d20 = RNUC * 2. ! New Particle Diamter [nm]
+      REAL, PARAMETER :: RNUC = 0.6       ! radius of a new particle [nm]
+      REAL, PARAMETER :: d20  = RNUC * 2. ! New Particle Diamter [nm]
+      REAL, PARAMETER :: sg   = 1.3       ! Assumption
 
 C.. Calculate Mass of Each Vapor Species Used For Particle (g/particle)
     !First compute the mass of the condensed species in the particle
     !for its size, using bulk density. Then convert to the mass of the
     !vapor species needed for that condensation. Assume Ammonium
-    !Bisulfate (NH4-HSO4) for these particles.                                                              
+    !Bisulfate (NH4-HSO4) for these particles.                                                             
+      REAL, PARAMETER :: m3 = (d20*1.E-9 ) ** 3 * exp( 9./2. * (log( sg ))**2 )
       REAL, PARAMETER :: p_dens = 1.78E12   !NH4-HSO4 Density (ug m-3)                                      
-      REAL, PARAMETER :: p_mass = 4./3.*PI * (RNUC*1.0E-9)**3 * p_dens  !Particle Mass (ug)             
+      REAL, PARAMETER :: p_mass = m3 * PI6 * p_dens  !Particle Mass (ug)             
       REAL, PARAMETER :: sulf_mfrac = 0.8144  !Mass Fraction of Bisulfate                                   
       REAL, PARAMETER :: nh4_mfrac  = 0.1856  !Mass Fraction of Ammonium                                    
       REAL, PARAMETER :: MW_HSO4 = 97.06  !g mol-1                                                          
-      REAL, PARAMETER :: MW_NH4  = 18.03  !g mol-1                                                          
+      REAL, PARAMETER :: MW_NH4  = 18.03  !g mol-1
+      REAL(8), PARAMETER :: fiveninths = 5.D0/9.D0
+      REAL(8), PARAMETER :: fourninths = 4.D0/9.D0
+      REAL(8), PARAMETER :: twothirds  = 2.D0/3.D0
       
 C.. Temporary Variables for Interpolating LookUp Table to Model Conditions
       INTEGER :: IAC, INH, ITK, IRH, ICS
@@ -845,6 +852,7 @@ C.. Temporary Variables for Interpolating LookUp Table to Model Conditions
 
 C.. Initialize variables                                                                                    
       DNDT   = 0.0                                                                                          
+      DMDT   = 0.0                                                                                          
                                                                                                             
 C.. Fetch molecular weight of precursors [ g / mole ]                                                       
       MW_H2SO4 = PRECURSOR_MW( SULF_IDX )                                                                   
@@ -853,7 +861,6 @@ C.. Fetch molecular weight of precursors [ g / mole ]
 C.. Calculate Mass of Precursors Used to Make One Particle                                                  
       sulfmass = sulf_mfrac * p_mass / MW_HSO4 * MW_H2SO4  !H2SO4 Mass (ug m-3 s-1)                         
       nh3mass  = nh4_mfrac  * p_mass / MW_NH4  * MW_NH3    !NH3 Mass (ug m-3 s-1                            
-      m2_20  = 1.0D-18 * d20**2 ! new-particle diameter squared [m**2]
                                                                                                             
 C.. Calculate sulfuric acid concentration in molecules cm-3                                                  
       H2SO4 = XH2SO4 * MUG2G * AVO * SCALEFAC / MW_H2SO4                                                    
@@ -952,13 +959,16 @@ C.. Calculate New Particle Formation Rate
 C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] by multiplying it by 1.0E6  
       DNDT = DBLE(JNUC) * 1.0D06  ! (1/(m**3 s))
 
+C.. Calculate NPF second moment [m2]
+      m20  = ( 1.D-9*REAL(d20,8) ) ** 2 * exp( 2.D0 * ( log( sg ))**2 )
+
       RETURN    
       END SUBROUTINE ACDC_TERNARY 
 
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE ACDC_AMINE  ( CSin, TEMPin, XH2SO4, XDMA, DNDT, 
-     &                         sulfmass, dmamass, m2_20 )
+     &                         sulfmass, dmamass, m20 )
 
       USE AERO_DATA
       USE AEROMET_DATA   ! Includes CONST.EXT
@@ -985,7 +995,7 @@ C.. Outputs:
       REAL(8), INTENT( OUT ) :: DNDT       ! particle number production rate [ m-3 s-1 ]
       REAL(8), INTENT( OUT ) :: sulfmass   ! mass of sulfuric acid used to make new particle [ug]
       REAL(8), INTENT( OUT ) :: dmamass    ! mass of ammonia used to make new particle [ug]
-      REAL(8), INTENT( OUT ) :: m2_20      ! new-particle diameter squared [m**2]
+      REAL(8), INTENT( OUT ) :: m20        ! second moment normalized to NPF rate [m**2]
 
 C.. Parameters
       CHARACTER( 16 ), PARAMETER :: PNAME = 'NPF_ACDC_AMINE'                 
@@ -1006,14 +1016,16 @@ C.. Particle size parameters:
 C.. Assert Size of New Particles
       REAL, PARAMETER :: RNUC = 0.6      ! radius of a new particle [nm]
       REAL, PARAMETER :: d20 = RNUC * 2. ! New Particle Diamter [nm]
+      REAL, PARAMETER :: sg = 1.3        ! mode width, assumption
 
 C.. Calculate Mass of Each Vapor Species Used For Particle (g/particle)
     !First compute the mass of the condensed species in the particle
     !for its size, using bulk density. Then convert to the mass of the
     !vapor species needed for that condensation. Assume Dimethylaminium
     !Bisulfate (CH3CH3NH2-HSO4) for these particles.                                                              
+      REAL, PARAMETER :: m3 = ( 1.0E-9 * d20 ) ** 3 * exp( 9./2. * (log(sg))**2 )
       REAL, PARAMETER :: p_dens = 1.47E12   !Guess at the DMAH-HSO4 Density (ug m-3) 
-      REAL, PARAMETER :: p_mass = 4./3.*PI * (RNUC*1.0E-9)**3 * p_dens  !Particle Mass (ug)             
+      REAL, PARAMETER :: p_mass = m3 * PI6 * p_dens  !Particle Mass (ug)             
 
 C.. Temporary Variables for Interpolating LookUp Table to Model Conditions
       INTEGER :: IAC, INH, ITK, ICS
@@ -1028,7 +1040,7 @@ C.. Initialize variables
 C.. Calculate Output Particle Properties
       sulfmass = 0.685 * p_mass  !Mass of Sulfuric Acid (ug ptcl-1)
       dmamass  = 0.315 * p_mass  !Mass of DMA (ug ptcl-1)
-      m2_20  = 1.0D-18 * d20**2 ! new-particle diameter squared [m**2]
+      m20 = ( 1.0D-9 * REAL( d20,8 ) ) ** 2 * exp( 2.D0 * (log(sg))**2 )
 
 C.. Fetch molecular weight of precursors [ g / mole ]                                                       
       MW_H2SO4 = PRECURSOR_MW( SULF_IDX )                                                                   
@@ -1159,7 +1171,8 @@ C.. Sub-Module Input Parameters
       REAL :: MW_ELVOC        ! MW of DMA in [ g / mole ]       
       REAL, PARAMETER :: R = 8.314             ! m3 Pa K-1 mol-1                 
       REAL, PARAMETER :: SCALEFAC = 1.0E-06    ! for [ 1 / m**3 ] ->  [ 1 / cm**3 ]
-      REAL, PARAMETER :: MUG2G = 1.0E-6        ! [ ug  ] -> [ g ]                 
+      REAL, PARAMETER :: MUG2G = 1.0E-6        ! [ ug  ] -> [ g ]      
+      REAL, PARAMETER :: sg = 1.3  !Width of new modes, assumption
 
 C.. Ion-Pair Formation Rates
       REAL(8) :: ION_RATE  ! Ion-Pair formation Rate [ ions/cm3 ]
@@ -1231,10 +1244,10 @@ C.. Calculate Ion-ELVOC Formation Rate
 C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] 
       J5 = J5 * 1.0D06  ! (1/(m**3 s))
       J6 = J6 * 1.0D06  ! (1/(m**3 s))
-      J5_2m = 1.0D-18 * J5_R ** 2  !New particle diameter squared
-      J6_2m = 1.0D-18 * J6_R_KIRKBY ** 2  !New particle diameter squared
-      sulfmass  = 4.D0/3.D0*PI * ( J5_R * 1.0D-9 )** 3 * J5_dens  !Particle Mass (ug)             
-      elvocmass = 4.D0/3.D0*PI * ( J6_R_KIRKBY * 1.0D-9 )** 3 * J6_dens  !Particle Mass (ug)             
+      J5_2m = ( 1.0D-9 * J5_R ) ** 2 * exp( 2.D0 * (log(sg))**2 ) !Normalized Second Moment
+      J6_2m = ( 1.0D-9 * J6_R_KIRKBY ) ** 2 * exp( 2.D0 * (log(sg))**2 ) !Normalized Second Moment
+      sulfmass  = ( J5_R * 1.0D-9 )** 3 * exp( 9.D0/2.D0 * (log(sg))**2) * PI6 * J5_dens   !Particle Mass (ug)             
+      elvocmass = ( J6_R_KIRKBY * 1.0D-9 )** 3 * exp( 9.D0/2.D0 * (log(sg))**2) * PI6 * J6_dens  !Particle Mass (ug)             
 
       RETURN    
       END SUBROUTINE ION_MEDIATED_NPF 
