@@ -1034,6 +1034,7 @@ C *** Variables for new particle formation:
       REAL XDMA               ! DMA concentration [ ug/m**3 s ]     
       REAL XMBTCA             ! MBTCA concentration [ ug/m**3 s ]     
       REAL XELVOC             ! ELVOC concentration [ ug/m**3 s ]     
+      REAL( 8 ) :: ASURF      ! Aerosol Surfae Area [ m2/m3 ]
       REAL( 8 ) :: CS         ! Sulfuric Acid Condensation Sink [ s-1 ]
       REAL( 8 ) :: JSO4RATE   ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JNH3RATE   ! particle mass production rate [ ug/m**3 s ]
@@ -1421,11 +1422,13 @@ C       Organic-Organic
          XNH3 = PRECURSOR_CONC( NH3_IDX )
          XDMA = PRECURSOR_CONC( DMA_IDX )
          XMBTCA = PRECURSOR_CONC( MBTCA_IDX )
+         ASURF = SUM( MOMENT2_CONC( : ) ) * DPI 
 
-         CALL NPF_MULTI ( REAL(CS), AIRRH, AIRPRES, AIRTEMP, XH2SO4, SO4RATE,
-     &                   XNH3, XDMA, XMBTCA, XELVOC, JRATE, JM2RATE,
-     &                   JSO4RATE, JNH3RATE, JDMARATE, JMBTCARATE,
-     &                   JELVOCRATE )
+         CALL NPF_MULTI ( REAL(CS), REAL( ASURF ), AIRRH, AIRPRES, 
+     &                    AIRTEMP, XH2SO4, SO4RATE,
+     &                    XNH3, XDMA, XMBTCA, XELVOC, JRATE, JM2RATE,
+     &                    JSO4RATE, JNH3RATE, JDMARATE, JMBTCARATE,
+     &                    JELVOCRATE )
          
 C *** Calculate sulfate condensation rate as the gas-phase production 
 C     rate minus the new particle production rate, following Equation
@@ -1456,7 +1459,7 @@ C     New Particle Formation Rates that took Place
          AEROSPC_CONC( AMBTCA_IDX,IA_NUC ) = AEROSPC_CONC( AMBTCA_IDX, IA_NUC ) + JMBTCARATE*DELT
          AEROSPC_CONC( AELVO1_IDX,IA_NUC ) = AEROSPC_CONC( AELVO1_IDX, IA_NUC ) + JELVOCRATE*DELT
 
-         ! The ELVOC and MBTCA have Already Been COndensed in ORGAER.
+         ! The ELVOC and MBTCA have Already Been Condensed in ORGAER.
          ! Take Their Mass from the Accumulation Mode.
          AEROSPC_CONC( AMBTCA_IDX,IA_ACC ) = AEROSPC_CONC( AMBTCA_IDX, IA_ACC ) - JMBTCARATE*DELT
          AEROSPC_CONC( AELVO1_IDX,IA_ACC ) = AEROSPC_CONC( AELVO1_IDX, IA_ACC ) - JELVOCRATE*DELT

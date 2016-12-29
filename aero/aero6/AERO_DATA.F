@@ -558,10 +558,10 @@ C results of the Atmospheric Cluster Dynamics Code
       Real, Parameter :: DCS_T = 0.5  !Cond Sink log10-scale Slope for TERNARY Look-Up Table
       Real, Save :: ACDC_DMA( 12, 11, 15, 6 )      !! subscripted ( IAC, IDM, ITK, ICS )
       Real, Save :: ACDC_TERN( 12, 11, 15, 21, 9 ) !! subscripted ( IAC, IDM, ITK, IRH, ICS )
- 
+
 C New Particle Formation Diagnostic Variables
-      REAL :: JDIAG     ( 6 ) ! Pathway resolved NPF Rates [N/cm3/s]
-      REAL :: JM2DIAG   ( 6 ) ! Pathway resolved 2nd Moment Changes [m2/m3/s]
+      REAL :: JDIAG     ( 9 ) ! Pathway resolved NPF Rates [N/cm3/s]
+      REAL :: JM2DIAG   ( 9 ) ! Pathway resolved 2nd Moment Changes [m2/m3/s]
       REAL :: JDGASDIAG ( 8 ) ! Changes to each Chemical Species [ug/m3/s]
       REAL :: CONDSINK4_SO4  ( 4 ) ! Condensation Sink term (s-1)
       REAL :: CONDSINK3_SO4  ( 4 ) ! Condensation Sink term (s-1)

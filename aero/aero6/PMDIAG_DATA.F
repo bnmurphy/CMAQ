@@ -34,7 +34,7 @@ c-----------------------------------------------------------------------
           CHARACTER (LEN = 80) :: SPC_DESC
         END TYPE PMDIAG_SPC_RECORD_TYPE
 
-        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(88) = (/
+        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(94) = (/
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVNUC        ', 5, 'na              ', 'NPF mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVATKN       ', 5, 'na              ', 'Aitken mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVACC        ', 5, 'na              ', 
@@ -93,13 +93,19 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'NPF_SO4_DMA     ', 5, 'N cm-3 s-1      ', 'NPF Rate from DMA-H2SO4 Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'NPF_SO4_ORG     ', 5, 'N cm-3 s-1      ', 'NPF Rate from Org-H2SO4 Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'NPF_ORG_ORG     ', 5, 'N cm-3 s-1      ', 'NPF Rate from Org-Org Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_ION_SO4     ', 5, 'N cm-3 s-1      ', 'NPF Rate from Ion-Mediated SO4 Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_ION_ORG     ', 5, 'N cm-3 s-1      ', 'NPF Rate from Ion-Mediated Org Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'NPF_RICCO       ', 5, 'N cm-3 s-1      ', 'NPF Rate from H2SO4-Org (Riccobono) Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'NPF_PAAS3       ', 5, 'N cm-3 s-1      ', 'NPF Rate from Org-Org Production (Paasonen)' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_BINARY       ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Binary Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_TERNARY      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Ternary Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_SO4_DMA      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from DMA-H2SO4 Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_SO4_ORG      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Org-H2SO4 Production' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_ORG_ORG      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Org-Org Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_ION_SO4      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Ion-Mediated SO4 Production' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_ION_ORG      ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Ion-Mediated Organic Prod' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'M2_RICCO        ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from H2SO4-Org (Riccobono) Prod' ), 
+     &    PMDIAG_SPC_RECORD_TYPE( 'M2_PAAS3        ', 5, 'm2 m-3 s-1      ', '2nd Moment Change from Org-Org Prod (Paasonen)' ), 
      &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_Binary   ', 5, 'ug m-3          ', 'Change in H2SO4(g) from Binary NPF' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_Ternary  ', 5, 'ug m-3          ', 'Change in H2SO4(g) from Ternary NPF' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'dH2SO4_SO4_DMA  ', 5, 'ug m-3          ', 'Change in H2SO4(g) from DMA NPF' ),
@@ -127,6 +133,6 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'k_prtcl_iepox   ', 5, '1/s             ', 'IEPOX pseudo particle phase reaction rate const' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'GAMMA_IMAE      ', 5, 'na              ', 'IMAE heterogeneous uptake coefficient' ) /)
 
-        INTEGER :: A_PMDIAG_SPC_MAP (88), NUM_PMDIAG_SPC
+        INTEGER :: A_PMDIAG_SPC_MAP (94), NUM_PMDIAG_SPC
 
       END MODULE PMDIAG_DATA_MODULE

@@ -57,4 +57,10 @@ C Meteorological variables (data from MET_CRO_3D file)
       Real :: H2OsatVP     ! saturation water vapor pressure [ Pa ]
       Real :: H2OVP        ! ambient water vapor pressure [ Pa ]
 
+C Variables for Ion-Mediated NPF
+      REAL :: LSURF      ! Surface Fraction made of Water, Ice and Snow
+      REAL :: SURFPRESS  ! Pressure at the Surface [ Pa ]
+      REAL :: XLON       ! Longitude
+      REAL :: XLAT       ! Latitude
+ 
       End Module aeromet_data

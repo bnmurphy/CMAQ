@@ -27,7 +27,7 @@ C routines for aerosol new particle formation
 
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      SUBROUTINE NPF_MULTI ( CS, RH, PRESS, TEMP, XSA, SO4RATE,
+      SUBROUTINE NPF_MULTI ( CS, ASURF, RH, PRESS, TEMP, XSA, SO4RATE,
      &                       XNH3, XDMA, XMBTCA, XELVOC,
      &                       JRATE, M2RATE, DMDT_SO4_TOT, DMDT_NH3_TOT,
      &                       DMDT_DMA_TOT, DMDT_MBTCA_TOT, DMDT_ELVOC_TOT)
@@ -64,6 +64,18 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !     nucleation of atmospheric particles, Science,doi:
 !     10.1126/science.1243527
 !
+!     Yu, F., Ion-mediated nucleation in the atmosphere: Key controlling parameters,
+!     implications, and look-up table, J. Geophy. Res., 115, D03206, 
+!     doi:10.1029/2009JD012630, 2010.
+!
+!     Yu, F., From molecular clusters to nanoparticles: Second-generation ion-mediated
+!     nucleation model, Atmos. Chem. Phys.,6, 5193-5211, 2006.
+!
+!     Yu, F. and R. P. Turco, From molecular clusters to nanoparticles: The role of 
+!     ambient ionization in tropospheric aerosol formation, J. Geophy. Res., 106, 
+!     4797-4814, 2001.
+!
+!
 !  REVISION HISTORY:
 !  2015/09/15 Installed by Ben Murphy. In this first version,
 !             only H2SO4 is passed in to the routine. The other
@@ -73,6 +85,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL, INTENT(IN)  :: PRESS     ! ambient pressure [PA]
       REAL, INTENT(IN)  :: TEMP      ! ambient temperature [K]
       REAL, INTENT(IN)  :: CS        ! condensation sink [s-1]
+      REAL, INTENT(IN)  :: ASURF     ! aerosol surface area [m2 m-3]
       REAL, INTENT(IN)  :: RH        ! ambient Relative Humidity
       REAL, INTENT(IN)  :: XSA       ! H2SO4 volume concentration [ug/m3]
       REAL, INTENT(IN)  :: XNH3      ! NH3 volume concentration [ug/m3]
@@ -110,6 +123,15 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL(8), PARAMETER   ::  Sg_PAAS3 = 1.28 ! New Particle Standard Dev
       REAL(8), PARAMETER   ::  Dg_PAAS3sq = Dg_PAAS3 * Dg_PAAS3  !Diameter Squared [m^2/Particle]
       REAL(8), PARAMETER   ::  Dg_PAAS3cu = Dg_PAAS3 * Dg_PAAS3sq !New Particle Volume Cubed [m3]
+
+! Coefficients from Kirkby et al (2016)
+      REAL(8), PARAMETER   ::  Dg_ORG   = 1.70d-9 ! New Particle Diam (m)
+      REAL(8), PARAMETER   ::  Sg_ORG   = 1.28 ! New Particle Standard Dev
+      REAL(8), PARAMETER   ::  Dg_ORGsq = Dg_ORG * Dg_ORG  !Diameter Squared [m^2/Particle]
+      REAL(8), PARAMETER   ::  Dg_ORGcu = Dg_ORG * Dg_ORGsq !New Particle Volume Cubed [m3]
+      REAL(8), PARAMETER   ::  K_KIRKBY  = 0.04001  ! [ cm-3 s-1 ]
+      REAL(8), PARAMETER   ::  E1_KIRKBY = 1.848    ! Exponential Term
+      REAL(8), PARAMETER   ::  E2_KIRKBY = 0.1863   ! Exponential Term
       
 ! Coefficient from Riccobono et al. (2014)
       REAL(8), PARAMETER   ::  K_RICCO = 3.27d-21     ! (SA)*(SA) * (XORG) 
@@ -117,29 +139,37 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL(8), PARAMETER   ::  Sg_RICCO = 1.28 ! New Particle Standard Dev
       REAL(8), PARAMETER   ::  Dg_RICCOsq = Dg_RICCO * Dg_RICCO  !Diameter Squared [m^2/Particle]
       REAL(8), PARAMETER   ::  Dg_RICCOcu = Dg_RICCO * Dg_RICCOsq !Particle Volume Cubed [m3]
+
+! Variables for Ion-Mediated Calculations
+      REAL(8) :: ION_RATE  ! Ionization Rate (ion-pairs/cm3)
            
 ! Define internal variables. See usage.       
       REAL(8)            :: Dg_BINARYsq, Dg_TERNARYsq, Dg_AMINEsq
+      REAL(8)            :: Dg_IMNSO4sq, Dg_IMNORGsq
       REAL(8)            :: DMDT_SO4_BINARY, DMDT_SO4_TERNARY, DMDT_SO4_AMINE
-      REAL(8)            :: DMDT_SO4_GLASOE, DMDT_SO4_PAAS2
+      REAL(8)            :: DMDT_SO4_GLASOE, DMDT_SO4_PAAS2, DMDT_SO4_IMN
       REAL(8)            :: DMDT_DMA, DMDT_XORG, DMDT_YORG
       REAL(8)            :: DMDT_NH3, DMDT_MBTCA, DMDT_ELVOC
       REAL(8)            :: SA_RO, DMA_RO, XORG_RO, YORG_RO
       REAL(8)            :: SA_MW, DMA_MW, XORG_MW, YORG_MW
       REAL(8)            :: NH3_MW, MBTCA_MW, ELVOC_MW
-      REAL(8)            :: M_GLASOE, M_PAAS2, M_PAAS3, M_RICCO
+      REAL(8)            :: M_GLASOE, M_PAAS2, M_PAAS3, M_RICCO, M_ORG
       REAL(8)            :: M3_GLASOE, M3_PAAS2, M3_PAAS3, M3_RICCO
+      REAL(8)            :: M3_ORG
       REAL(8)            :: RO_GLASOE, RO_PAAS2, RO_PAAS3, RO_RICCO
+      REAL(8)            :: RO_ORG
       REAL(8)            :: SA_M_BINARY, SA_M_TERNARY, SA_M_AMINE, SA_M_GLASOE, SA_M_PAAS2
+      REAL(8)            :: SA_M_IMN
       REAL(8)            :: DMA_M_AMINE, DMA_M_GLASOE, XORG_M_PAAS2, YORG_M_PAAS3
-      REAL(8)            :: MBTCA_M_PAAS2, ELVOC_M_PAAS3, NH3_M_TERNARY
-      REAL(8)            :: M2_BINARY, M2_TERNARY, M2_AMINE, M2_GLASOE
-      REAL(8)            :: M2_PAAS2, M2_PAAS3, M2_RICCO
-      REAL(8)            :: MWtot_GLASOE, MWtot_PAAS2, MWtot_PAAS3, MWtot_RICCO
+      REAL(8)            :: MBTCA_M_PAAS2, ELVOC_M_PAAS2, ELVOC_M_ORG, ELVOC_M_IMN
+      REAL(8)            :: NH3_M_TERNARY
+      REAL(8)            :: M2_BINARY, M2_TERNARY, M2_AMINE, M2_GLASOE, M2_PAAS3
+      REAL(8)            :: M2_PAAS2, M2_ORG, M2_RICCO, M2_IMN_SO4, M2_IMN_ORG
+      REAL(8)            :: MWtot_GLASOE, MWtot_PAAS2, MWtot_PAAS3, MWtot_RICCO, MWtot_ORG
       REAL(8)            :: FAC0, FAC, FAC1, A1TOT
       REAL(8)            :: DMA, XORG, YORG, NH3, MBTCA, ELVOC
       REAL(8)            :: SASQRD, SAORGX, SA2ORGX, ORGYORGY
-      REAL(8)            :: J0, J1, J2, J3, J4, J_RICCO, J_CGS, J_MKS
+      REAL(8)            :: J0, J1, J2, J3, J4, J5, J6, J_PAAS3, J_RICCO, J_CGS, J_MKS
       REAL(8)            :: DIFF, A1DIFF, NORM_SO4
       LOGICAL            :: L_NAPARI, L_ACDC_TERNARY
       LOGICAL            :: L_GLASOE, L_ACDC_DMA
@@ -158,6 +188,16 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       JDIAG        = 0.0
       JM2DIAG      = 0.0
       JDGASDIAG    = 0.0
+
+! Initialize NPF Rates
+      J0 = 0.0
+      J1 = 0.0
+      J2 = 0.0
+      J3 = 0.0
+      J4 = 0.0
+      J5 = 0.0
+      J6 = 0.0
+      DMDT_MBTCA_TOT = 0.0
 
 ! Set key variable FAC0 to convert from ug/m3 to number/cm**3
       FAC0     = AVO * 1.0E-9 * 1.0E-6 
@@ -185,42 +225,39 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ! ideal mixing of the component species. (the mixtures are probably NOT
 ! ideal)  [= kg / m3 ]
       MWtot_GLASOE = 2.0*SA_MW + DMA_MW
-      RO_GLASOE   = ( 2.0*SA_MW*SA_RO + 1.0*DMA_MW*DMA_RO ) / MWtot_GLASOE
-      MWtot_PAAS2  = SA_MW + MBTCA_MW
-      RO_PAAS2    = ( 1.0*SA_MW*SA_RO + 1.0*MBTCA_MW*XORG_RO ) / MWtot_PAAS2
+      RO_GLASOE    = ( 2.0*SA_MW*SA_RO + 1.0*DMA_MW*DMA_RO ) / MWtot_GLASOE
+      !MWtot_PAAS2  = SA_MW + MBTCA_MW
+      !RO_PAAS2    = ( 1.0*SA_MW*SA_RO + 1.0*MBTCA_MW*XORG_RO ) / MWtot_PAAS2
+      MWtot_PAAS2  = SA_MW + ELVOC_MW
+      RO_PAAS2     = ( 1.0*SA_MW*SA_RO + 1.0*ELVOC_MW*XORG_RO ) / MWtot_PAAS2
       !MWtot_PAAS3  = 2.0 * YORG_MW
       MWtot_PAAS3  = 2.0 * ELVOC_MW
-      RO_PAAS3    = YORG_RO
+      MWtot_ORG    = ELVOC_MW
+      RO_ORG       = YORG_RO
       MWtot_RICCO  = 2.0*SA_MW + MBTCA_MW
-      RO_RICCO    = ( 2.0*SA_MW*SA_RO + 1.0*MBTCA_MW*XORG_RO ) / MWtot_RICCO
+      RO_RICCO     = ( 2.0*SA_MW*SA_RO + 1.0*MBTCA_MW*XORG_RO ) / MWtot_RICCO
 
 ! Calculate the mass of each new particle and the mass of each species
 ! per particle
       M3_GLASOE = Dg_GLASOEcu * exp( 9./2. * ( log( Sg_GLASOE )**2 ) )
       M3_PAAS2  = Dg_PAAS2cu  * exp( 9./2. * ( log( Sg_PAAS2  )**2 ) )
       M3_PAAS3  = Dg_PAAS3cu  * exp( 9./2. * ( log( Sg_PAAS3  )**2 ) )
+      M3_ORG    = Dg_ORGcu    * exp( 9./2. * ( log( Sg_ORG    )**2 ) )
       M3_RICCO  = Dg_RICCOcu  * exp( 9./2. * ( log( Sg_RICCO  )**2 ) )
 
       M_GLASOE = M3_GLASOE * PI/6. * RO_GLASOE * 1.0E9  ![ug/particle]
-      M_PAAS2  = M3_PAAS2  * PI/6. * RO_PAAS2 * 1.0E9   ![ug/particle]
-      M_PAAS3  = M3_PAAS3  * PI/6. * RO_PAAS3 * 1.0E9   ![ug/particle]
-      M_RICCO  = M3_RICCO  * PI/6. * RO_RICCO * 1.0E9   ![ug/particle]
+      M_PAAS2  = M3_PAAS2  * PI/6. * RO_PAAS2  * 1.0E9  ![ug/particle]
+      M_PAAS3  = M3_PAAS3  * PI/6. * RO_ORG    * 1.0E9  ![ug/particle]
+      M_ORG    = M3_ORG    * PI/6. * RO_ORG    * 1.0E9  ![ug/particle]
+      M_RICCO  = M3_RICCO  * PI/6. * RO_RICCO  * 1.0E9  ![ug/particle]
 
       SA_M_GLASOE  = SA_MW *  2.0/MWtot_GLASOE * M_GLASOE 
-      SA_M_PAAS2   = SA_MW *  1.0/MWtot_PAAS2  * M_PAAS2    ![ug/particle]
-      DMA_M_GLASOE = DMA_MW*  1.0/MWtot_GLASOE * M_GLASOE   ![ug/particle]
-      MBTCA_M_PAAS2 = MBTCA_MW* 1.0/MWtot_PAAS2  * M_PAAS2    ![ug/particle]
-      ELVOC_M_PAAS3 = ELVOC_MW* 2.0/MWtot_PAAS3  * M_PAAS3    ![ug/particle]
-
-! Initialize DMA and Organics with Moderate Values from Offline Unit
-! Tests. THIS MUST BE UPDATED WITH PROGNOSTIC VALUES AS THESE PRECURSORS 
-! ARE INSTALLED INTO THE MAIN TRANSPORT MODEL!
-      !DMA_ppmv  = 3.0E-6
-      !XORG_ppmv = 1.0E-4
-      !YORG_ppmv = 1.0E-5
-      !DMA      = FAC1     * DMA_ppmv  ! total number of DMA 
-      !XORG     = FAC1     * XORG_ppmv ! total number of XORG
-      !YORG     = FAC1     * YORG_ppmv ! total number of YORG
+      SA_M_PAAS2   = SA_MW *  1.0/MWtot_PAAS2  * M_PAAS2   ![ug/particle]
+      DMA_M_GLASOE = DMA_MW*  1.0/MWtot_GLASOE * M_GLASOE  ![ug/particle]
+      !MBTCA_M_PAAS2 = MBTCA_MW* 1.0/MWtot_PAAS2  * M_PAAS2    ![ug/particle]
+      ELVOC_M_PAAS2= ELVOC_MW* 1.0/MWtot_PAAS2 * M_PAAS2   ![ug/particle]
+      !ELVOC_M_PAAS3= ELVOC_MW* 2.0/MWtot_PAAS3 * M_PAAS3   ![ug/particle]
+      ELVOC_M_ORG  = ELVOC_MW* 1.0/MWtot_ORG   * M_ORG     ![ug/particle]
 
 ! Calculate number concentrations in [molecules / cm**3]      
       A1TOT    = XSA      * FAC0 / SA_MW    ! total number of SA 
@@ -273,20 +310,28 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SA2ORGX  = A1TOT**2 * MBTCA  !For Riccobono et al. (2014) J1_Ricco
 
 ! Calculate NPF Number Concentration rates in [ N / m**3 / sec ]
-      J3       = (1.0E6) * KPAAS_2  * SAORGX         ! For Paasonen et al. (2010) J2       
-      J4       = (1.0E6) * KPAAS_3  * ORGYORGY       ! For Paasonen et al. (2010) J3       
+      J3       = (1.0E6) * KPAAS_2  * SAORGX         ! For Paasonen et al. (2010) J3
+      J4       = (1.0E6) * K_KIRKBY * ELVOC ** ( E1_KIRKBY + E2_KIRKBY / ELVOC ) ! From Kirkby et al. (2016)
       J_RICCO  = (1.0E6) * K_RICCO  * SA2ORGX        ! For Riccobono et al. (2014) J1_Ricco
+      J_PAAS3  = (1.0E6) * KPAAS_3  * ORGYORGY       ! For Paasonen et al. (2010) J4       
 
-! Calculate Mass Change to Each Chemical Species [ ug / m3 / s ]
+! Calculate Ion-Mediated NPF Rates
+      CALL ION_MEDIATED_NPF( A1DIFF, ELVOC, PRESS, TEMP, RH, ASURF, 
+     &                       J5, J6, SA_M_IMN, ELVOC_M_IMN, 
+     &                       Dg_IMNSO4sq, Dg_IMNORGsq )
+
+! Calculate Sulfate Mass Change to Each Chemical Species [ ug / m3 / s ]
       DMDT_SO4_BINARY  = J0 * SA_M_BINARY
       DMDT_SO4_TERNARY = J1 * SA_M_TERNARY
       DMDT_SO4_AMINE   = J2 * SA_M_AMINE 
       DMDT_SO4_PAAS2   = J3 * SA_M_PAAS2     ![ug/m3/s]
+      DMDT_SO4_IMN     = J5 * SA_M_IMN       ![ug/m3/s]
       
 ! Compare Total SO4 Removal with SO4 Production Rate and Normalize NPF
 ! Rates if Necessary
       DMDT_SO4_TOT = DMDT_SO4_BINARY + DMDT_SO4_TERNARY + 
-     &               DMDT_SO4_AMINE  + DMDT_SO4_PAAS2
+     &               DMDT_SO4_AMINE  + DMDT_SO4_PAAS2   +
+     &               DMDT_SO4_IMN
 
       IF ( DMDT_SO4_TOT .GT. SO4RATE ) THEN
          NORM_SO4 = SO4RATE / DMDT_SO4_TOT
@@ -294,31 +339,40 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
          DMDT_SO4_TERNARY = DMDT_SO4_TERNARY * NORM_SO4
          DMDT_SO4_AMINE   = DMDT_SO4_AMINE   * NORM_SO4
          DMDT_SO4_PAAS2   = DMDT_SO4_PAAS2   * NORM_SO4
+         DMDT_SO4_IMN     = DMDT_SO4_IMN     * NORM_SO4
          DMDT_SO4_TOT = SO4RATE
 
          J0 = DMDT_SO4_BINARY  / SA_M_BINARY
          J1 = DMDT_SO4_TERNARY / SA_M_TERNARY
          J2 = DMDT_SO4_AMINE   / SA_M_AMINE
          J3 = DMDT_SO4_PAAS2   / SA_M_PAAS2
+         J5 = DMDT_SO4_IMN     / SA_M_IMN
       END IF
  
 ! Calculate the Mass Change for the other Species Involved
       DMDT_NH3_TOT   = J1 * NH3_M_TERNARY  ![ug/m3/s]
       DMDT_DMA_TOT   = J2 * DMA_M_AMINE    ![ug/m3/s]
-      DMDT_MBTCA_TOT = J3 * MBTCA_M_PAAS2  ![ug/m3/s]
-      DMDT_ELVOC_TOT = J4 * ELVOC_M_PAAS3  ![ug/m3/s]
+      !DMDT_MBTCA_TOT = J3 * MBTCA_M_PAAS2 ![ug/m3/s]
+      DMDT_ELVOC_TOT = J3 * ELVOC_M_PAAS2 + J4 * ELVOC_M_ORG 
+     &               + J6 * ELVOC_M_IMN    ![ug/m3/s]
 
 ! Calculate combined rate
-      JRATE    = J0 + J1 + J2  + J3 + J4 ![ N/m**3/s ]
+      JRATE    = J0 + J1 + J2  + J3 + J4 + J5 + J6 ![ N/m**3/s ]
 
 ! Calculate NPF Second Moment Rates
-      M2_BINARY  = J0 * Dg_BINARYsq   ![m2/m3/s]
-      M2_TERNARY = J1 * Dg_TERNARYsq  ![m2/m3/s]
-      M2_AMINE   = J2 * Dg_AMINEsq   ![m2/m3/s]
-      M2_PAAS2   = J3 * Dg_PAAS2sq    ![m2/m3/s]
-      M2_PAAS3   = J4 * Dg_PAAS3sq    ![m2/m3/s]
-      M2_RICCO   = J_RICCO * Dg_RICCOsq        ![m2/m3/s]
-      M2RATE = M2_BINARY + M2_TERNARY + M2_AMINE + M2_PAAS2 + M2_PAAS3
+      M2_BINARY  = J0 * Dg_BINARYsq     ![m2/m3/s]
+      M2_TERNARY = J1 * Dg_TERNARYsq    ![m2/m3/s]
+      M2_AMINE   = J2 * Dg_AMINEsq      ![m2/m3/s]
+      M2_PAAS2   = J3 * Dg_PAAS2sq      ![m2/m3/s]
+      M2_ORG     = J4 * Dg_ORGsq        ![m2/m3/s]
+      M2_IMN_SO4 = J4 * Dg_IMNSO4sq     ![m2/m3/s]
+      M2_IMN_ORG = J4 * Dg_IMNORGsq     ![m2/m3/s]
+      M2_RICCO   = J_RICCO * Dg_RICCOsq ![m2/m3/s]
+      M2_PAAS3   = J_PAAS3 * Dg_PAAS3sq ![m2/m3/s]
+
+      M2RATE   = M2_BINARY + M2_TERNARY 
+     &         + M2_AMINE  + M2_PAAS2 + M2_ORG
+     &         + M2_IMN_SO4 + M2_IMN_ORG
 
 ! Load Diagnostic Values into Multi-Element Vectors
       JDIAG(1) = J0 * 1.0E-6  !N cm-3 s-1
@@ -326,13 +380,19 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       JDIAG(3) = J2 * 1.0E-6  !N cm-3 s-1
       JDIAG(4) = J3 * 1.0E-6  !N cm-3 s-1
       JDIAG(5) = J4 * 1.0E-6  !N cm-3 s-1
-      JDIAG(6) = J_RICCO * 1.0E-6  !N cm-3 s-1
+      JDIAG(6) = J4 * 1.0E-6  !N cm-3 s-1
+      JDIAG(7) = J4 * 1.0E-6  !N cm-3 s-1
+      JDIAG(8) = J_RICCO * 1.0E-6  !N cm-3 s-1
+      JDIAG(9) = J_PAAS3 * 1.0E-6  !N cm-3 s-1
       JM2DIAG(1) = M2_BINARY
       JM2DIAG(2) = M2_TERNARY
       JM2DIAG(3) = M2_AMINE
       JM2DIAG(4) = M2_PAAS2
-      JM2DIAG(5) = M2_PAAS3
-      JM2DIAG(6) = M2_RICCO
+      JM2DIAG(5) = M2_ORG
+      JM2DIAG(6) = M2_IMN_SO4
+      JM2DIAG(7) = M2_IMN_ORG
+      JM2DIAG(8) = M2_RICCO
+      JM2DIAG(9) = M2_PAAS3
       JDGASDIAG(1) = DMDT_SO4_BINARY
       JDGASDIAG(2) = DMDT_SO4_TERNARY
       JDGASDIAG(3) = DMDT_SO4_AMINE
@@ -1046,5 +1106,135 @@ C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s]
 
       RETURN    
       END SUBROUTINE ACDC_AMINE 
+ 
+
+C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      SUBROUTINE ION_MEDIATED_NPF (  H2SO4in, ELVOCin, PRESSin, TEMPin, RHin, ASURFin, 
+     &                       J5, J6, sulfmass, elvocmass, J5_2m, J6_2m )
+
+      USE AEROMET_DATA   ! Includes CONST.EXT
+      USE PRECURSOR_DATA, ONLY : PRECURSOR_MW, SULF_IDX, DMA_IDX 
+      USE APM_NUCL_MOD
+
+      IMPLICIT NONE
+
+C   REVISION HISTORY:
+C     Added by Ben Murphy to capture New Particle Formation via
+C     H2SO4 and ion interactions. These rates are brought in from
+C     a look-up table informed by the work of Yu et al.
+
+C.. References:
+C
+
+C..Inputs: 
+      REAL,    INTENT(IN ) :: ASURFin         ! Condesation Sink (s-1)      
+      REAL,    INTENT(IN)  :: TEMPin          ! Ambient temperature [ K ]
+      REAL,    INTENT(IN)  :: PRESSin         ! Ambient Pressure [Pa]
+      REAL,    INTENT(IN)  :: RHin            ! Fractional Relative Humidity
+      REAL,    INTENT(IN)  :: H2SO4in         ! sulfuric acid concentration [ molec/cm**3 ]
+      REAL,    INTENT(IN)  :: ELVOCin         ! organic concentration [ molec/cm**3 ]
+
+C.. Outputs:
+      REAL(8), INTENT( OUT ) :: J5         ! ION-H2SO4 particle number production rate [ m-3 s-1 ]
+      REAL(8), INTENT( OUT ) :: J6         ! ION-ELVOC particle number production rate [ m-3 s-1 ]
+      REAL(8), INTENT( OUT ) :: sulfmass   ! mass of sulfuric acid used to make new particle [ug]
+      REAL(8), INTENT( OUT ) :: elvocmass  ! mass of elvoc used to make new particle [ug]
+      REAL(8), INTENT( OUT ) :: J5_2m      ! new-particle diameter squared [m**2]
+      REAL(8), INTENT( OUT ) :: J6_2m      ! new-particle diameter squared [m**2]
+
+C.. Parameters
+      CHARACTER( 16 ), PARAMETER :: PNAME = 'NPF_IMN'                 
+
+C.. Sub-Module Input Parameters
+      REAL(8) :: H2SO4      ! Molecule Concentration of Sulfuric Acid [molec cm-3]
+      REAL(8) :: ELVOC      ! Conc. of ELVOC [molec cm-3]
+      REAL(8) :: TEMP       ! Temperature
+      REAL(8) :: ASURF      ! Internal Condensation Sink
+      REAL(8) :: PRESS      ! Pressure [ mb ]
+      REAL(8) :: PSURF      ! Surface Pressure [ mb ]
+      REAL(8) :: RH         ! Relative Humidity in Percent
+      
+      REAL :: MW_H2SO4        ! MW of H2SO4 in [ g / mole ]        
+      REAL :: MW_ELVOC        ! MW of DMA in [ g / mole ]       
+      REAL, PARAMETER :: R = 8.314             ! m3 Pa K-1 mol-1                 
+      REAL, PARAMETER :: SCALEFAC = 1.0E-06    ! for [ 1 / m**3 ] ->  [ 1 / cm**3 ]
+      REAL, PARAMETER :: MUG2G = 1.0E-6        ! [ ug  ] -> [ g ]                 
+
+C.. Ion-Pair Formation Rates
+      REAL(8) :: ION_RATE  ! Ion-Pair formation Rate [ ions/cm3 ]
+      REAL(8) :: ION_RATE_WATER  ! Ion-Pair formation Rate [ ions/cm3 ]
+      REAL(8) :: ION_RATE_LAND  ! Ion-Pair formation Rate [ ions/cm3 ]
+
+C.. Parameters for Kirkby Ion-Org Parameterization
+      REAL(8), PARAMETER :: K_KIRKBY  = 0.001366D0
+      REAL(8), PARAMETER :: E1_KIRKBY = 1.566D0
+      REAL(8), PARAMETER :: E2_KIRKBY = 0.1863D0
+      REAL(8), PARAMETER :: J6_R_KIRKBY = 0.85D0
+
+C.. Size of New Particles
+      REAL(8) :: J5_R      ! radius of a new Ion_H2SO4 particle [nm]
+      REAL(8) :: J5_R_WATER! radius of a new Ion_H2SO4 particle [nm]
+      REAL(8) :: J5_R_LAND ! radius of a new Ion_H2SO4 particle [nm]
+      REAL(8) :: J5_WATER  ! radius of a new Ion_H2SO4 particle [nm]
+      REAL(8) :: J5_LAND   ! radius of a new Ion_H2SO4 particle [nm]
+      REAL(8) :: J5_d20    ! New Particle Diamter [nm]
+      REAL(8) :: J6_d20    ! New Particle Diamter [nm]
+
+C.. Calculate Mass of Each Vapor Species Used For Particle (g/particle)
+      !First compute the mass of the condensed species in the particle
+      !for its size, using bulk density. Then convert to the mass of the
+      !vapor species needed for that condensation. Assume Dimethylaminium
+      REAL, PARAMETER :: J5_dens = 2.00E12   !Guess at the HSO4 Density (ug m-3) 
+      REAL, PARAMETER :: J6_dens = 1.40E12   !Guess at ELVOA Density (ug m-3)
+
+C.. Initialize variables                                                                                    
+      J5   = 0.0                                                                                          
+      J6   = 0.0                                                                                          
+      
+C.. The parameterization is valid at sulfuric acid conc. of 1.0E4 - 3.16E9 molec cm-3          
+      H2SO4  = REAL( MIN( MAX (H2SO4in, 5.0E5), 5.0E8), 8 )
+                                                                                                            
+C.. The parameterization is valid at DMA conc. of 1.00e4 - 1.00E9 molec cm-3
+      ELVOC  = REAL( MIN( MAX (ELVOCin, 1.00E4), 1.00E9), 8 )
+
+C.. The parameterization is valid at temperatures of 180.00-320.0 K
+      TEMP = REAL( MIN( MAX (TEMPin, 190.0), 302.0), 8 )
+
+C.. The parameterization is valid at pressures in mb
+      PRESS = REAL( MIN( MAX( PRESSin, 5.0), 1015.0), 8 ) * 0.01D0
+      PSURF = REAL( SURFPRESS, 8 ) * 0.01D0
+
+C.. The parameterization is valid at Aerosol Surface Area from 1-1000 um2/m3
+      ASURF = REAL( MIN( MAX (ASURFin * 1.0E12, 1.0), 1.0E3), 8 )
+
+C.. The parameterization is valid at RH of 0% to 100%
+      RH = REAL( MIN( MAX (RHin*100.0, 0.5), 99.5), 8 )
+
+C.. Look up Ion Pair Formation Rate from Internal Table
+      CALL IONRATE( 1, PSURF, DBLE(XLON), DBLE(XLAT), PRESS, ION_RATE_LAND)
+      CALL IONRATE( 0, PSURF, DBLE(XLON), DBLE(XLAT), PRESS, ION_RATE_WATER)
+
+C.. Calculate Ion-H2SO4 Formation Rate
+      CALL YUJIMN( H2SO4, RH, TEMP, ION_RATE_LAND,  ASURF, J5_LAND,  J5_R_LAND )
+      CALL YUJIMN( H2SO4, RH, TEMP, ION_RATE_WATER, ASURF, J5_WATER, J5_R_WATER )
+
+      J5   = J5_LAND   * DBLE( 1.0 - LSURF ) + J5_WATER   * DBLE( LSURF )
+      J5_R = J5_R_LAND * DBLE( 1.0 - LSURF ) + J5_R_WATER * DBLE( LSURF )
+
+C.. Calculate Ion-ELVOC Formation Rate
+      ION_RATE = ION_RATE_LAND * DBLE( 1.0 - LSURF ) + ION_RATE_WATER * DBLE( LSURF ) 
+      J6 = 2.D0 * ION_RATE
+     &          * K_KIRKBY * ELVOC ** ( E1_KIRKBY + E2_KIRKBY / ELVOC )
+
+C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] 
+      J5 = J5 * 1.0D06  ! (1/(m**3 s))
+      J6 = J6 * 1.0D06  ! (1/(m**3 s))
+      J5_2m = 1.0D-18 * J5_R ** 2  !New particle diameter squared
+      J6_2m = 1.0D-18 * J6_R_KIRKBY ** 2  !New particle diameter squared
+      sulfmass  = 4./3.*3.1415 * ( J5_R * 1.0D-9 )** 3 * J5_dens  !Particle Mass (ug)             
+      elvocmass = 4./3.*3.1415 * ( J6_R_KIRKBY * 1.0D-9 )** 3 * J6_dens  !Particle Mass (ug)             
+
+      RETURN    
+      END SUBROUTINE ION_MEDIATED_NPF 
  
  
