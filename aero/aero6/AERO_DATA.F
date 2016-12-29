@@ -68,6 +68,13 @@ C JY  02/17/16 Created named constants for speciation and other factors for AERO
 C              DUST_EMIS, aero_subs:VOLINORG, and aqchem
 C CGN 04/14/16 Changed AMGJ speciation factor from 0.0 to 0.019 following Upadhyay et al.
 C HOTP,BM  5/20/16 Updated to work with all ae6 mechs (6, 6i, 6mp)
+C PL 05/15/16 Update visual_idx, and add visual_idx_large in spcs_type, due to ammonium sulfate, nitrate and OM
+C             are splitted into small and large modes.
+C             visual_idx for ammominm is zero, because it will be treated together with sulfate and nitrate
+C             see Pitchford et al., Journal of the Air & Waste Management Association (57)(2007), pp 1326
+C PL 05/15/16 Add "om" in spcs_type, to flag organic aerosols, which
+C             will be used to calculate total mass of organic aerosls for estimating
+C             aerosol extinction efficiency
 
 C References:
 C 1. Eddingsaas, N. C., Vandervelde, D. G., Wennberg, P. O., "Kinetics and
@@ -100,14 +107,6 @@ C Also note...
 C In the Fortran user-derived spcs_type, below, visual_idx is an optimal dry mass
 C extinction efficiency [m^2/g], see White, Atmos.Env., 294(10)(1990), pp 2673-1672
 C and Malm, et al., JGR, 99(D1)(1994), pp 1347-1370
-
-C PL 05/15/16 Update visual_idx, and add visual_idx_large in spcs_type, due to ammonium sulfate, nitrate and OM
-C             are splitted into small and large modes.
-C             visual_idx for ammominm is zero, because it will be treated together with sulfate and nitrate
-C             see Pitchford et al., Journal of the Air & Waste Management Association (57)(2007), pp 1326
-C PL 05/15/16 Add "om" in spcs_type, to flag organic aerosols, which
-C             will be used to calculate total mass of organic aerosls for estimating
-C             aerosol extinction efficiency
 C----------------------------------------------------------------------
 
       Implicit None
@@ -296,8 +295,8 @@ C                  --------- --------- --------- ---------  --------- ------- + 
  
 C Primary Organic Aerosol Volatility Distributions
       Integer, Parameter :: n_vbs_bin = 5
-      Character( 10 ) :: poa_name( n_vbs_bin ) = (/'LVPO1','SVPO1','SVPO2','SVPO3','IVPO1'/)
-      Real, Parameter :: poa_op_vf( n_vbs_bin ) = (/0.09,  0.09,   0.14,   0.18,   0.5/)  ! Aggregated
+      Character( 10 ) :: poa_name( n_vbs_bin ) = (/ 'LVPO1', 'SVPO1', 'SVPO2', 'SVPO3', 'IVPO1' /)
+      Real, Parameter :: poa_op_vf( n_vbs_bin ) = (/ 0.09,  0.09,  0.14,  0.18,  0.5 /)  ! Aggregated
 
 ! The Following Volatility Distributions are alternative options
 ! but at this point can only be implemented indivdually for the
@@ -313,7 +312,7 @@ C Primary Organic Aerosol Volatility Distributions
 ! gas and particle BEFORE the aerosol size distribution is applied.
 ! This helps prevent numerical issues with shrinking the particles
 ! instantaneously.
-      Real, Parameter :: poa_amf( n_vbs_bin ) = (/1.0, 0.5, 0.0, 0.0, 0.0/)
+      Real, Parameter :: poa_amf( n_vbs_bin ) = (/ 1.0, 0.5, 0.0, 0.0, 0.0 /)
  
 C number of lognormal modes in windblown dust aerosol = n_mode
 C - but only accumulation and coarse modes used
