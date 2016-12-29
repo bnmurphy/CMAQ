@@ -520,7 +520,7 @@ C Calculate modal average dust particle densities (accum and coarse modes) [ kg/
 C The following works because the dust_spc`s are a fixed split of the total emitted
 C mass.
          dustmode_dens( 1 ) = 0.0
-         do n = 2, n_mode
+         do n = ia_acc, n_mode
             sumsplit = 0.0; sumfrac = 0.0
             do i = 1, ndust_spc
                sumsplit = sumsplit + dust_spc( i )%spcfac( n ) ! should = 1.0
@@ -703,6 +703,7 @@ C Parameters:
          real       :: rlay1hgt         ! reciprocal of layer-1 height [1/m]
          real       :: m3j              ! 3rd moment accumulation (J) mode emis rates [m3/m3/s]
          real       :: m3k              ! 3rd moment coarse mode (K) emis rates [m3/m3/s]
+         real       :: fruf2            ! Surface roughness factor squared
 
          character( 16 ), save :: rc_name, rn_name    ! new names: RC -> RCA, RN -> RNA
          logical, save :: firstime = .true.
@@ -1092,11 +1093,16 @@ C---Calculate friction velocity (U*) at the surafce applicable to dust emission
 
 C---Roughness effect on U*t (Drag partitioning)
 C   Xi and Sokolik [JGR,2015]
-                        fruf( c,r,m ) = sqrt( ( 1.0 - sigv_mv  * lambdav )
-     &                                  *     ( 1.0 + betav_mv * lambdav )
-     &                                  *     ( 1.0 - sigb_mb  * lambdab( n ) / vegfree ) 
-     &                                  *     ( 1.0 + betab_mb * lambdab( n ) / vegfree ) )
-                        fruf( c,r,m ) = max( fruf( c,r,m ), 1.0 )
+                        fruf2 =   ( 1.0 - sigv_mv  * lambdav )
+     &                          * ( 1.0 + betav_mv * lambdav )
+     &                          * ( 1.0 - sigb_mb  * lambdab( n ) / vegfree ) 
+     &                          * ( 1.0 + betab_mb * lambdab( n ) / vegfree )
+                        if (fruf2 .gt. 1.0 ) then
+                           fruf( c,r,m ) = sqrt( fruf2 )
+                        else
+                           fruf( c,r,m ) = 10.0
+                        end if
+
 
 C---Vert-to-Horiz dust flux ratio : Kang et al. [JGR, 2011] : Eq. (12)
 !                       kvh( c,r,m ) = ( calpha * 9.81 * pfrac * 1000.0 / 2.0 / pp )
@@ -1148,33 +1154,35 @@ C --------- ###### End Main Loop ##### ---------
          do c = 1, my_ncols
 
 C J/K mass emis rate [g/s]  (edust( 1 ) not used)
-            edust( 2 ) = fracmj * dust_em( c,r )
-            edust( 3 ) = fracmk * dust_em( c,r )
+            edust( ia_acc ) = fracmj * dust_em( c,r )
+            edust( ia_crs ) = fracmk * dust_em( c,r )
 
             do v = 1, ndust_spc
                dustoutm( v,1,c,r ) = 0.0
             end do
 
-            do n = 2, n_mode
+            do n = ia_acc, n_mode
                do v = 1, ndust_spc
                   dustoutm( v,n,c,r ) = edust( n ) * dust_spc( v )%spcfac( n )
                end do
             end do
 
 C J/K 3rd moment emis rate [m3/s] (needed for number and surface)
-            m3j = edust( 2 ) * f6dpi / ( gpkg * dustmode_dens( 2 ) )
-            m3k = edust( 3 ) * f6dpi / ( gpkg * dustmode_dens( 3 ) )
+            m3j = edust( ia_acc ) * f6dpi / ( gpkg * dustmode_dens( ia_acc ) )
+            m3k = edust( ia_crs ) * f6dpi / ( gpkg * dustmode_dens( ia_crs ) )
 
 C Mode-specific emission rates of particle number [1/s]
-            dustoutn( 1,c,r ) = 0.0
-            dustoutn( 2,c,r ) = m3j * factnumj
-            dustoutn( 3,c,r ) = m3k * factnumk
+            dustoutn( ia_nuc,c,r ) = 0.0
+            dustoutn( ia_ait,c,r ) = 0.0
+            dustoutn( ia_acc,c,r ) = m3j * factnumj
+            dustoutn( ia_crs,c,r ) = m3k * factnumk
 
 C Mode-specific dry surface area emission rates [m**2/s].
 C 2nd moment multiplied by PI to obtain the surface area emissions rate.
-            dustouts( 1,c,r ) = 0.0
-            dustouts( 2,c,r ) = m3j * factsrfj
-            dustouts( 3,c,r ) = m3k * factsrfk
+            dustouts( ia_nuc,c,r ) = 0.0
+            dustouts( ia_ait,c,r ) = 0.0
+            dustouts( ia_acc,c,r ) = m3j * factsrfj
+            dustouts( ia_crs,c,r ) = m3k * factsrfk
 
 #ifdef verbose_wbdust
             if ( m3j .ne. 0.0 ) dusthit = dusthit + 1
@@ -1238,10 +1246,10 @@ C 2nd moment multiplied by PI to obtain the surface area emissions rate.
 
                n = n + m
 
-               diagv( n+1 ) = dustoutn( 2,c,r )
-               diagv( n+2 ) = dustoutn( 3,c,r )
-               diagv( n+3 ) = dustouts( 2,c,r )
-               diagv( n+4 ) = dustouts( 3,c,r )
+               diagv( n+1 ) = dustoutn( ia_acc,c,r )
+               diagv( n+2 ) = dustoutn( ia_crs,c,r )
+               diagv( n+3 ) = dustouts( ia_acc,c,r )
+               diagv( n+4 ) = dustouts( ia_crs,c,r )
 
 C Multiply by sync step because when write to output we divide by the output step
 C to get a timestep average.

@@ -28,7 +28,7 @@ C routines for aerosol new particle formation
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE NPF_MULTI ( CS, ASURF, RH, PRESS, TEMP, XSA, SO4RATE,
-     &                       XNH3, XDMA, XMBTCA, XELVOC,
+     &                       XNH3, XDMA, XMBTCA, XELVOC, ELVOCRATE, ELVOARATE,
      &                       JRATE, M2RATE, DMDT_SO4_TOT, DMDT_NH3_TOT,
      &                       DMDT_DMA_TOT, DMDT_MBTCA_TOT, DMDT_ELVOC_TOT)
  
@@ -93,6 +93,8 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL, INTENT(IN)  :: XMBTCA    ! MBTCA volume concentration [ug/m3]
       REAL, INTENT(IN)  :: XELVOC    ! ELVOC volume concentration [ug/m3]
       REAL, INTENT(IN)  :: SO4RATE   ! H2SO4 production rate [ug/m3/s]
+      REAL, INTENT(IN)  :: ELVOCRATE ! ELVOC production rate [ug/m3/s]
+      REAL, INTENT(IN)  :: ELVOARATE ! ELVOA availability in rate units [ug/m3/s]
       REAL              :: DMA_ppmv  ! DMA mixing ratio [ppmv]
       REAL              :: XORG_ppmv ! organic mixing ratio [ppmv]
       REAL              :: YORG_ppmv ! organic mixing ratio [ppmv]
@@ -146,6 +148,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ! Define internal variables. See usage.       
       REAL(8)            :: DMDT_SO4_BINARY, DMDT_SO4_TERNARY, DMDT_SO4_AMINE
       REAL(8)            :: DMDT_SO4_GLASOE, DMDT_SO4_PAAS2, DMDT_SO4_IMN
+      REAL(8)            :: DMDT_ELVOC_PAAS2, DMDT_ELVOC_ORG, DMDT_ELVOC_IMN
       REAL(8)            :: DMDT_DMA, DMDT_XORG, DMDT_YORG
       REAL(8)            :: DMDT_NH3, DMDT_MBTCA, DMDT_ELVOC
       REAL(8)            :: SA_RO, DMA_RO, XORG_RO, YORG_RO
@@ -169,7 +172,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL(8)            :: DMA, XORG, YORG, NH3, MBTCA, ELVOC
       REAL(8)            :: SASQRD, SAORGX, SA2ORGX, ORGYORGY
       REAL(8)            :: J0, J1, J2, J3, J4, J5, J6, J_PAAS3, J_RICCO, J_CGS, J_MKS
-      REAL(8)            :: DIFF, A1DIFF, NORM_SO4
+      REAL(8)            :: DIFF, A1DIFF, NORM_SO4, NORM_ELVOC
       LOGICAL            :: L_NAPARI, L_ACDC_TERNARY
       LOGICAL            :: L_GLASOE, L_ACDC_DMA
 
@@ -264,6 +267,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       DMA      = XDMA     * FAC0 / DMA_MW   ! total number of DMA 
       MBTCA    = XMBTCA   * FAC0 / MBTCA_MW ! total number of MBTCA
       ELVOC    = XELVOC   * FAC0 / ELVOC_MW ! total number of ELVOC
+      ELVOC    = MIN( MAX( ELVOC, 1.0D4 ), 1.0D9 )
       !DIFF     = A1TOT - DMA
       !A1DIFF   = max( 0.0, DIFF )
 
@@ -355,6 +359,38 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       !DMDT_MBTCA_TOT = J3 * MBTCA_M_PAAS2 ![ug/m3/s]
       DMDT_ELVOC_TOT = J3 * ELVOC_M_PAAS2 + J4 * ELVOC_M_ORG 
      &               + J6 * ELVOC_M_IMN    ![ug/m3/s]
+
+! Compare Total ELVOC Removal with ELVOC Production Rate and Normalize NPF
+! Rates if Necessary
+      IF ( DMDT_ELVOC_TOT .GT. ELVOCRATE ) THEN
+         NORM_ELVOC = ELVOCRATE / DMDT_ELVOC_TOT
+         DMDT_ELVOC_PAAS2   = J3 * ELVOC_M_PAAS2   * NORM_ELVOC
+         DMDT_ELVOC_ORG     = J4 * ELVOC_M_ORG     * NORM_ELVOC
+         DMDT_ELVOC_IMN     = J6 * ELVOC_M_IMN     * NORM_ELVOC
+         DMDT_ELVOC_TOT = ELVOCRATE
+
+         J3 = DMDT_ELVOC_PAAS2   / ELVOC_M_PAAS2
+         J4 = DMDT_ELVOC_ORG     / ELVOC_M_ORG
+         J6 = DMDT_ELVOC_IMN     / ELVOC_M_IMN
+      END IF
+      !Normalize ELVOC by total available ELVOA
+      IF ( DMDT_ELVOC_TOT .GT. ELVOARATE ) THEN
+         NORM_ELVOC = ELVOARATE / DMDT_ELVOC_TOT
+         DMDT_ELVOC_PAAS2   = J3 * ELVOC_M_PAAS2   * NORM_ELVOC
+         DMDT_ELVOC_ORG     = J4 * ELVOC_M_ORG     * NORM_ELVOC
+         DMDT_ELVOC_IMN     = J6 * ELVOC_M_IMN     * NORM_ELVOC
+         DMDT_ELVOC_TOT = ELVOARATE
+
+         J3 = DMDT_ELVOC_PAAS2   / ELVOC_M_PAAS2
+         J4 = DMDT_ELVOC_ORG     / ELVOC_M_ORG
+         J6 = DMDT_ELVOC_IMN     / ELVOC_M_IMN
+      END IF
+ 
+! Calculate the Mass Change for the other Species Involved
+      DMDT_SO4_PAAS2   = J3 * SA_M_PAAS2     ![ug/m3/s]
+      DMDT_SO4_TOT = DMDT_SO4_BINARY + DMDT_SO4_TERNARY + 
+     &               DMDT_SO4_AMINE  + DMDT_SO4_PAAS2   +
+     &               DMDT_SO4_IMN
 
 ! Calculate combined rate
       JRATE    = J0 + J1 + J2  + J3 + J4 + J5 + J6 ![ N/m**3/s ]
@@ -1208,7 +1244,7 @@ C.. Initialize variables
 C.. The parameterization is valid at sulfuric acid conc. of 1.0E4 - 3.16E9 molec cm-3          
       H2SO4  = REAL( MIN( MAX (H2SO4in, 5.0E5), 5.0E8), 8 )
                                                                                                             
-C.. The parameterization is valid at DMA conc. of 1.00e4 - 1.00E9 molec cm-3
+C.. The parameterization is valid at ELVOC conc. of 1.00e4 - 1.00E9 molec cm-3
       ELVOC  = REAL( MIN( MAX (ELVOCin, 1.00E4), 1.00E9), 8 )
 
 C.. The parameterization is valid at temperatures of 180.00-320.0 K

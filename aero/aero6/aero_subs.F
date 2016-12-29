@@ -1047,6 +1047,7 @@ C *** Variables for new particle formation:
       REAL XDMA               ! DMA concentration [ ug/m**3 s ]     
       REAL XMBTCA             ! MBTCA concentration [ ug/m**3 s ]     
       REAL XELVOC             ! ELVOC concentration [ ug/m**3 s ]     
+      REAL ELVOARATE          ! ELVOA concentration in rate units [ ug/m**3 s ]     
       REAL( 8 ) :: ASURF      ! Aerosol Surfae Area [ m2/m3 ]
       REAL( 8 ) :: CS         ! Sulfuric Acid Condensation Sink [ s-1 ]
       REAL( 8 ) :: JSO4RATE   ! particle mass production rate [ ug/m**3 s ]
@@ -1426,6 +1427,7 @@ C *** Adjust ELVOC vapor concentration to an equilibrium value as well
          XELVOC = ELVOCRATE / TMP
          XELVOC = MAX( XELVOC, CONMIN )
          !XELVOC = PRECURSOR_CONC( ELVOC_IDX )
+         ELVOARATE = AEROSPC_CONC( AELVO1_IDX,IA_ACC )
 
 C *** Calculate new particle production rate for 0th, 2nd, & 3rd moments
 C     from several multicomponent pathways including:
@@ -1441,7 +1443,8 @@ C       Organic-Organic
 
          CALL NPF_MULTI ( REAL(CS), REAL( ASURF ), AIRRH, AIRPRES, 
      &                    AIRTEMP, XH2SO4, SO4RATE,
-     &                    XNH3, XDMA, XMBTCA, XELVOC, JRATE, JM2RATE,
+     &                    XNH3, XDMA, XMBTCA, XELVOC, ELVOCRATE, ELVOARATE,
+     &                    JRATE, JM2RATE,
      &                    JSO4RATE, JNH3RATE, JDMARATE, JMBTCARATE,
      &                    JELVOCRATE )
          
@@ -2023,7 +2026,8 @@ C *** Simplify Condensation affect on 2nd moment: instead of integrating
 C     the 2nd moment change in time, just assume constant width across
 C     the time step. This is equivalent to current assumptions in the OA 
 C     module as of 2017/09/07. --B Murphy
-         Y = M2DRY_INIT( IMODE ) * ( DDRYM3DT / M3DRY_INIT( IMODE ) ) ** ( 2.D0/3.D0 )
+         Y = M2DRY_INIT( IMODE ) * ( ( M3DRY_INIT( IMODE ) + DDRYM3DT * DELT ) / 
+     &                               M3DRY_INIT( IMODE ) ) ** ( 2.D0/3.D0 )
 
 C *** Compute net change in 2nd moment due to dry inorganic mass transfer
 C     (including nucleation) using equation A7 of Binkowski & Shankar (1995)
