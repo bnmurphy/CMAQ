@@ -1260,7 +1260,7 @@ C      of orgaic aerosol. Caer is then calculated based on that number.
 C        Solve for total number of organic moles in aerosol (hotp 7/5/11)
          lowb      = totorgsw   ! lower: moles of nonvolatile
          upb       = lowb + upb ! upper: all moles (semi and nonvolatile)
-         upb       = upb * ( 1.0 + 1e-7*n_vapor ) ! prevent numerical issues
+         upb       = upb * ( 1.0 + 1e-7 * n_vapor ) ! prevent numerical issues
          If ( abs( upb - lowb ) .Lt. threshmin ) Then
             ! no SOA to partition
             orgmoles = ( lowb + upb ) / 2.0D0
@@ -1312,39 +1312,17 @@ C Constrain caer to values between conmin and ctotf
 
                If ( im .eq. ia_nuc ) Then
                  aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
-     &               + aerospc_conc( indx,ia_nuc )
+     &             + aerospc_conc( indx,ia_nuc )
                  aerospc_conc( indx,ia_nuc ) = 0.0
                Else If ( im .eq. ia_ait ) Then
                  aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
-     &                + aerospc_conc( indx,ia_ait )
+     &             + aerospc_conc( indx,ia_ait )
                  aerospc_conc( indx,ia_ait ) = 0.0
                Else
                  aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
      &             + aerospc_conc( indx,ia_acc )
                  aerospc_conc( indx,ia_acc ) = 0.0
 
-                 If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
-                    aerospc_conc( indx,ia_nuc ) = aerospc_conc( indx,ia_nuc )
-     &                + aerospc_conc( indx,ia_ait )
-            
-                   If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
-                      Write( xmsg,'( A56,/,A11,I2,3(A9,E12.5))' ) 
-     &                   ' *** Too Much Evaporation from Existing Organic Aerosol:',
-     &                   ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
-     &                   ' Mode 2: ',aerospc_conc( indx,ia_ait ),
-     &                   ' Mode 3: ',aerospc_conc( indx,ia_acc )
-                      aerospc_conc( indx,ia_nuc ) = 0.0
-                      Call m3exit( pname, 0, 0, xmsg, xstat3 )
-                   Else
-                      aerospc_conc( indx,ia_nuc ) = 0.0
-                   End If
-                 End If
-                       
-               End If
-             End If
-           
-           End Do 
-=======
                  If ( aerospc_conc( indx,ia_ait ) .lt. 0.0 ) Then
                    aerospc_conc( indx,ia_nuc ) = aerospc_conc( indx,ia_nuc )
      &                + aerospc_conc( indx,ia_ait )
@@ -1362,12 +1340,11 @@ C Constrain caer to values between conmin and ctotf
                       aerospc_conc( indx,ia_nuc ) = max( aerospc_conc( indx,ia_nuc ),0.0 )
                    End If
                  End If
-                   
+                       
                End If
              End If
-           End Do
+           End Do 
           
->>>>>>> 25f1e6d... Fix strange blocks by initializing CGR variable used for mode merging
          End Do
 
       Else   ! threshold not exceeded; no material transferred to aerosol phase
