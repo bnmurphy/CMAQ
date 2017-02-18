@@ -676,7 +676,8 @@ C     intermodal coagulation.
            PTNUAT = REAL( LOSS1 / ( LOSS1 + LOSS2 ) ) * PTNU 
            PTNUAC = REAL( LOSS2 / ( LOSS1 + LOSS2 ) ) * PTNU 
  
-         TMASS = AEROSPC_CONC( SPC,1 ) + AEROSPC_CONC( SPC,2 )
+         TMASS = AEROSPC_CONC( SPC,IA_NUC ) + AEROSPC_CONC( SPC,IA_AIT )
+     &             + AEROSPC_CONC( SPC,IA_ACC )
          IF( SPC .EQ. APHGJ_IDX  )THEN 
 ! assumes all production adsorb onto accumulation mode
              TMASS = TMASS + PHG_RATE * DT
