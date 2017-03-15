@@ -128,7 +128,7 @@ C Number of aerosol species and modes
 C Default minimum concentration
       Real,    Parameter :: conmin  = 1.0E-30    ! [ ug/m^3 ]
       Real(8), Parameter :: conminD = 1.0D-30    ! [ ug/m^3 ]
-      Real,    Parameter :: evapmin = 1.0E-20    ! [ ug/m^3 ]
+      Real(8), Parameter :: evapmin = 1.0E-20    ! [ ug/m^3 ]
       Real(8), Parameter :: evapminD= 1.0D-20    ! [ ug/m^3 ]
       Real,    Parameter :: cm_set( n_mode ) = (/conmin, conmin, conmin, conmin/)
       Real,    Parameter :: cm_so4( n_mode ) = (/1.0E-14, 1.0E-12,1.0E-6, conmin/)
@@ -225,7 +225,7 @@ C                  --------- --------- --------- ---------  --------- ------- + 
      & spcs_type((/'       ','       ','AISO1J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','AISO2J ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'AISO3H ','AISO3I ','AISO3J ','       '/), cm_set, 1400.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
-     & spcs_type((/'       ','       ','ASQTJ  ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
+     & spcs_type((/'ASQTH  ','ASQTI  ','ASQTJ  ','       '/), cm_set, 1400.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','APAH1J ','       '/), cm_set, 1480.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'       ','       ','APAH2J ','       '/), cm_set, 1480.0, F, F, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),
      & spcs_type((/'APAH3H ','APAH3I ','APAH3J ','       '/), cm_set, 1550.0, F, T, F,  0,  2.8, 6.1,T, 'DUST  ','      ',es_0),     
@@ -355,6 +355,7 @@ C                      Nuc        Aitken   Accum     Coarse         Nuc Aitken A
      
       Type( emis_table ), Save :: dust_spc( ndust_spc )
 
+        
 C Sea-Salt Speciation factors based on seawater composition:
 
 C number of chemical species in seawater aerosol composition
@@ -690,7 +691,6 @@ C Build mapping to CGRID for each species in the master AeroList
          aerospc( spc ) = aerolist( l )   ! Map AeroList to AeroSpc
          aerospc_mw( spc ) = mole_weight( l )
 
-         Write( xmsg2,* ) (' ', Trim( aerolist( spc )%name( m ) ), ' ', m = 1, n_mode )
          Do n = 1,n_mode
             ! Map the Modal-Dependent CGRID Pointers from AeroSpc to AeroList
             aerospc_map( spc, n ) = aerolist_map( l, n )
@@ -710,6 +710,7 @@ C Build mapping to CGRID for each species in the master AeroList
             If ( aerospc( spc )%name( n )(1:) .Ne. ' ' .And.
      &           aerolist_map( aerospc_tolist( spc ),n ) .Eq. 0 ) Then
                error_flag = .True.
+               Write( xmsg2,* ) (' ', Trim( aerolist( spc )%name( m ) ), ' ', m = 1, n_mode )
                Write( xmsg,* ) 'FATAL ERROR: Linked set of tracers, ',
      &                    Trim( xmsg2 ),', is missing species, ',
      &                    Trim( aerolist( spc )%name( n ) )
@@ -732,7 +733,7 @@ C Build mapping to CGRID for aero # and surf area variables
       aerosrf_map = 0
 
       Do m = 1, n_mode
-         n = index1( Trim( aeromode( m )%num_name ), n_ae_spc, ae_spc )
+         n = index1(  aeromode( m )%num_name , n_ae_spc, ae_spc )
          If ( n .Eq. 0 ) Then
             xmsg = 'Species ' // Trim( aeromode( m )%num_name )
      &           //' in aeronum name is not in AE_SPC'
@@ -741,7 +742,7 @@ C Build mapping to CGRID for aero # and surf area variables
             aeronum_map( m ) = ae_strt - 1 + n
          End If
 
-         n = index1( Trim( aeromode( m )%srf_name ), n_ae_spc, ae_spc )
+         n = index1( aeromode( m )%srf_name , n_ae_spc, ae_spc )
          If ( n .Eq. 0 ) Then
             xmsg = 'species ' // Trim( aeromode( m )%srf_name )
      &           // ' in aerosrf name is not in AE_SPC'
@@ -946,7 +947,7 @@ C are the same and set pmem_units
 
       Do v = 1, n_aerospc
          If ( aerospc( v )%emis( 1:1 ) .Ne. ' ' ) Then
-            indx = index1( Trim( aerospc( v )%emis ), nvars3d, vname3d )
+            indx = index1( aerospc( v )%emis , nvars3d, vname3d )
             If ( indx .Le. 0 ) Then
                xmsg1 = Trim( xmsg1 ) // crlf() // blank10
      &               // Trim( aerospc( v )%emis )
@@ -1065,9 +1066,8 @@ C Copy grid cell concentrations of aero species to aerospc_conc
       ! Calculate Dry Third Moment [ m3 / m3 ]
       Do m = 1, n_mode
          moment3_conc( m ) = sum( aerospc_conc(:,m) / aerospc(:)%density,
-!    &      MASK= (aerospc%no_M2wet==.false. .AND. aerospc%Tracer==.false.) )
-     &      MASK= ( ( .NOT. aerospc%no_M2wet ) .AND.
-     &              ( .NOT. aerospc%Tracer ) ) )
+     &                            MASK= ( ( .NOT. aerospc%no_M2wet ) .AND.
+     &                                    ( .NOT. aerospc%Tracer ) ) )
          moment3_conc( m ) = max( moment3_conc( m ) * 1.0E-9 * f6pi,
      &                            aeromode( m )%min_m3conc )
       End Do
@@ -1420,7 +1420,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
         if ( flteq( CS, 2.0E-01 ) ) then
           CS1 = ACDC_DMA( IAC, IDM, ITK, ICS-1 )
-	  !Renormalize table entry so that DCS==1.0
+	      !Renormalize table entry so that DCS==1.0
           ACDC_DMA( IAC, IDM, ITK, ICS ) = CS1 + 5.0*( JVAL - CS1 )
         else
           ACDC_DMA( IAC, IDM, ITK, ICS ) = JVAL

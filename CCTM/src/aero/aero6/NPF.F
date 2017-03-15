@@ -255,12 +255,15 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       SA_M_GLASOE  = SA_MW *  2.0/MWtot_GLASOE * M_GLASOE 
       SA_M_PAAS2   = SA_MW *  1.0/MWtot_PAAS2  * M_PAAS2   ![ug/particle]
+      SA_M_AMINE   = 0.1
       DMA_M_GLASOE = DMA_MW*  1.0/MWtot_GLASOE * M_GLASOE  ![ug/particle]
+      DMA_M_AMINE  = 0.0
       !MBTCA_M_PAAS2 = MBTCA_MW* 1.0/MWtot_PAAS2  * M_PAAS2    ![ug/particle]
       ELVOC_M_PAAS2= ELVOC_MW* 1.0/MWtot_PAAS2 * M_PAAS2   ![ug/particle]
       !ELVOC_M_PAAS3= ELVOC_MW* 2.0/MWtot_PAAS3 * M_PAAS3   ![ug/particle]
       ELVOC_M_ORG  = ELVOC_MW* 1.0/MWtot_ORG   * M_ORG     ![ug/particle]
 
+      M20_AMINE   = 0.0
 ! Calculate number concentrations in [molecules / cm**3]      
       A1TOT    = XSA      * FAC0 / SA_MW    ! total number of SA 
       NH3      = XNH3     * FAC0 / NH3_MW   ! total number of DMA 
@@ -1025,7 +1028,7 @@ C..Inputs:
       REAL,    INTENT(IN ) :: CSin            ! Condesation Sink (s-1)      
       REAL,    INTENT(IN)  :: TEMPin          ! Ambient temperature [ K ]
       REAL,    INTENT(IN)  :: XH2SO4          ! sulfuric acid concentration [ ug/m**3 ]
-      REAL,    INTENT(IN)  :: XDMA            ! ammonia concentration [ ug/m**3 ]
+      REAL,    INTENT(IN)  :: XDMA            ! amine concentration [ ug/m**3 ]
 
 C.. Outputs:
       REAL(8), INTENT( OUT ) :: DNDT       ! particle number production rate [ m-3 s-1 ]

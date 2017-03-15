@@ -676,11 +676,6 @@ C     intermodal coagulation.
            PTNUAT = REAL( LOSS1 / ( LOSS1 + LOSS2 ) ) * PTNU 
            PTNUAC = REAL( LOSS2 / ( LOSS1 + LOSS2 ) ) * PTNU 
  
-         TMASS = AEROSPC_CONC( SPC,IA_NUC ) + AEROSPC_CONC( SPC,IA_AIT )
-     &             + AEROSPC_CONC( SPC,IA_ACC )
-         IF( SPC .EQ. APHGJ_IDX  )THEN 
-! assumes all production adsorb onto accumulation mode
-             TMASS = TMASS + PHG_RATE * DT
          END IF
 
          IF ( .NOT. AERO_MISSING( SPC, IA_AIT ) ) THEN
@@ -771,7 +766,7 @@ C     Equations 11d - 11f of Binkowski and Roselle (2003).
          !MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) * PHNUM
          !MOMENT3_CONC( IA_NUC ) = MOMENT3_CONC( IA_NUC ) * PHNUM
  
-C *** Rename masses of each species from Aitken mode to acumulation mode
+C *** Rename masses of each species from Nucleation mode to Aitken mode
 C     using Equation 11b of Binkowski and Roselle (2003). Do this for
 C     all species, even the aerosol water.
          DO SPC = 1, N_AEROSPC
@@ -1041,10 +1036,12 @@ C     expressions defined in Equations A13-A14 of [Binkowski & Shankar,1995]
 
 C *** Modal partition factors [ dimensionless ]
 C     defined in Equations A17-A18 of [Binkowski & Shankar,1995]
-      REAL( 8 ) :: OMEGA_NU_SO4  ! Aitken mode 2nd and 3rd moments
-      REAL( 8 ) :: OMEGA_AT_SO4  ! Aitken mode 2nd and 3rd moments
-      REAL( 8 ) :: OMEGA_AC_SO4  ! Accumulation mode 2nd and 3rd moments
-      REAL( 8 ) :: OMEGA( n_mode )    ! partitioning coefficient for equilibrium PM mass
+      REAL( 8 ) :: OMEGA_NU_SO4    ! Aitken mode 2nd and 3rd moments
+      REAL( 8 ) :: OMEGA_AT_SO4    ! Aitken mode 2nd and 3rd moments
+      REAL( 8 ) :: OMEGA_AC_SO4    ! Accumulation mode 2nd and 3rd moments
+      REAL( 8 ) :: OMEGA( N_MODE ) ! partitioning coefficient for equilibrium PM mass
+      REAL( 8 ) :: PHI( NINORG,N_MODE ) ! Mass Fraction of each componenet in each aerosol mode
+      REAL( 8 ) :: TOTAER( NINORG ) ! Total aerosol component across multiple modes
 
 C *** Variables for new particle formation:
       REAL XH2SO4             ! steady state H2SO4 concentration [ ug/m**3 s ]     
@@ -1151,7 +1148,6 @@ C     mass partitioning between the modes
 C *** Local Saved Variables 
       LOGICAL, SAVE :: FIRSTIME = .TRUE.
       LOGICAL, SAVE :: FIRSTWRITE = .TRUE.
-      REAL( 8 ), SAVE :: SO4FAC         !  F6DPIM9 / RHOSO4
       REAL( 8 ), SAVE :: SOILFAC        !  F6DPIM9 / RHOSOIL
       REAL( 8 ), SAVE :: ANTHFAC        !  F6DPIM9 / RHOANTH
       REAL( 8 ), SAVE :: NH3RAT         ! Mol. wt ratios NH3/NH4
@@ -1217,6 +1213,7 @@ C-----------------------------------------------------------------------
          M3FAC_H2O  = 1.0D-9 * F6DPI / REAL( AEROSPC( AH2O_IDX )%DENSITY, 8 )
          SOILFAC = 1.0D-9 * F6DPI / REAL( AEROSPC( ASOIL_IDX )%DENSITY, 8 )
          ANTHFAC = 1.0D-9 * F6DPI / REAL( AEROSPC( ACORS_IDX )%DENSITY, 8 )
+
 
          DF( KNH4 ) = 1.0D0 / CFAC_ANH4
          DF( KNO3 ) = 1.0D0 / CFAC_ANO3
@@ -1402,6 +1399,7 @@ C *** Initialize Variables
       JM2RATE    = 0.0D0
       SCONDRATE  = 0.0D0
       JNH3RATE   = 0.0D0
+      JDMARATE   = 0.0D0
       JMBTCARATE = 0.0D0
       JELVOCRATE = 0.0D0
 
@@ -1847,7 +1845,7 @@ C *** Fine Aerosol Modes: Call ISORROPIA in forward mode to calculate gas-partic
       GNO3R8 = PRECURSOR_CONC( HNO3_IDX )  
       GCLR8  = PRECURSOR_CONC( HCL_IDX )
 
-C *** Diagnose all total gas+particle concentrations to passed to
+C *** Diagnose all total gas+particle concentrations to pass to
 C     ISORROPIA. Convert everything to [mol m-3].
       WI( 1 ) = SUM( AEROSPC_CONC( ANA_IDX,IA_NUC:IA_ACC ))   * CFAC_ANA
       !Compute sulfate from total sulfate production rate [ug/m3-s] for fine 
@@ -1915,63 +1913,79 @@ C     condensation and negative for evaporation.
       END IF
 
 C *** Apply modal partitioning of equilibrium aerosol mass
-      ! Calculate Distribution of Mass Transfer Among Modes
+      ! Calculate Distribution of Condensation Flux Among Modes
       OMEGA( IA_NUC ) = GRFAC2( IA_NUC ) / SUM ( GRFAC2( IA_NUC:IA_ACC ) )
       OMEGA( IA_AIT ) = GRFAC2( IA_AIT ) / SUM ( GRFAC2( IA_NUC:IA_ACC ) )
       OMEGA( IA_ACC ) = 1.0D0 - OMEGA( IA_NUC ) - OMEGA( IA_AIT )
 
+      ! Save Initial Concentrations
+      DO IMODE = IA_NUC,IA_ACC
+          CINORG( KSO4,IMODE ) = AEROSPC_CONC( ASO4_IDX, IMODE )
+          CINORG( KNH4,IMODE ) = AEROSPC_CONC( ANH4_IDX, IMODE )
+          CINORG( KNO3,IMODE ) = AEROSPC_CONC( ANO3_IDX, IMODE )
+          CINORG( KNA, IMODE ) = AEROSPC_CONC( ANA_IDX,  IMODE )
+          CINORG( KCL, IMODE ) = AEROSPC_CONC( ACL_IDX,  IMODE )
+          CINORG( KCA, IMODE ) = AEROSPC_CONC( ACA_IDX,  IMODE )
+          CINORG( KK,  IMODE ) = AEROSPC_CONC( AK_IDX,   IMODE )
+          CINORG( KMG, IMODE ) = AEROSPC_CONC( AMG_IDX,  IMODE )
+      ENDDO
+
+      ! Calculate Initial Distribution of Mass Composition among Modes
+      DO ISP = 1, NVOLINORG
+          TOTAER( ISP ) = MAX( SUM( CINORG( ISP,IA_NUC:IA_ACC ) ), CONMIND )
+          DO IMODE = IA_NUC, IA_ACC
+              PHI( ISP, IMODE ) = CINORG( ISP,IMODE ) / TOTAER( ISP )
+          ENDDO
+      ENDDO
+
+      ! Initialize Final Concentration
       CFINAL = 0.0
-      DO IMODE = IA_NUC, IA_ACC
-         ! Save Initial Concentrations
-         CINORG( KSO4,IMODE ) = AEROSPC_CONC( ASO4_IDX, IMODE )
-         CINORG( KNH4,IMODE ) = AEROSPC_CONC( ANH4_IDX, IMODE )
-         CINORG( KNO3,IMODE ) = AEROSPC_CONC( ANO3_IDX, IMODE )
-         CINORG( KNA, IMODE ) = AEROSPC_CONC( ANA_IDX,  IMODE )
-         CINORG( KCL, IMODE ) = AEROSPC_CONC( ACL_IDX,  IMODE )
-         CINORG( KCA, IMODE ) = AEROSPC_CONC( ACA_IDX,  IMODE )
-         CINORG( KK,  IMODE ) = AEROSPC_CONC( AK_IDX,   IMODE )
-         CINORG( KMG, IMODE ) = AEROSPC_CONC( AMG_IDX,  IMODE )
+      
+      ! Calculate Final Concentrations
+      DO ISP = 1, NVOLINORG
+         IF ( DVOLINORG( ISP ) .LT. 0.0 ) THEN 
+           ! Use Condensed Mass Fraction Weighting For Evaporation
+           CFINAL( ISP,IA_NUC:IA_ACC ) = CFINAL( ISP, IA_NUC:IA_ACC ) + CINORG( ISP, IA_NUC:IA_ACC ) 
+     &                                 + PHI( ISP, IA_NUC:IA_ACC ) * DVOLINORG( ISP ) * DF( ISP )
+         ELSE
+           ! Use Condensation Sink Weighting for Condensation
+           CFINAL( ISP, IA_NUC:IA_ACC ) = CFINAL( ISP,IA_NUC:IA_ACC ) + CINORG( ISP, IA_NUC:IA_ACC )
+     &                                  + OMEGA( IA_NUC:IA_ACC ) * DVOLINORG( ISP ) * DF( ISP )
+         END IF
+           
+c            ! Jai Xing's VOLINORG fix - Check Aitken and Accumulation modes
+c            ! individually for negative concentrations
+c            IF (CFINAL( ISP,IMODE ) .LT. 0.0D0 ) THEN
+c           
+c              IF ( IMODE .EQ. IA_NUC ) THEN
+c                CFINAL( ISP,IA_ACC ) = CFINAL( ISP,IA_ACC ) + CFINAL( ISP,IA_NUC )
+c                CFINAL( ISP,IMODE ) = 0.0D0
+c              ELSE IF ( IMODE .EQ. IA_AIT ) THEN
+c                CFINAL( ISP,IA_ACC ) = CFINAL( ISP,IA_ACC ) + CFINAL( ISP,IA_AIT )
+c                CFINAL( ISP,IMODE ) = 0.0D0
+c              ELSE   ! IMODE = IA_ACC
+c                CFINAL( ISP,IA_AIT ) = CFINAL( ISP,IA_AIT ) + CFINAL( ISP,IA_ACC )
+c                CFINAL( ISP,IMODE ) = 0.0D0
+c           
+c                IF ( CFINAL( ISP, IA_AIT ) .LT. -1.0D-15 ) THEN
+c                    CFINAL( ISP,IA_NUC ) = CFINAL( ISP,IA_NUC ) + CFINAL( ISP,IA_AIT )
+c                    CFINAL( ISP,IA_AIT ) = 0.0D0
+c           
+c                    IF ( CFINAL( ISP,IA_NUC ) .LT. -1.0D-15 ) THEN
+c                    !Note: this should NEVER happen because there
+c                     !should not be more evaporated mass than there is
+c                     !existing particle mass
+c                     XMSG = 'VOLINORG: Too much evaporation'
+c                     CFINAL( ISP,IA_NUC ) = 0.0D0
+c                     CALL M3EXIT( 'VOLINORG', 0, 0, XMSG, XSTAT1 ) 
+c                    ELSE
+c                       CFINAL( ISP,IA_NUC ) = MAX( CFINAL( ISP,IA_NUC ), 0.0D0 )
+c                    END IF
+c                END IF
+c              END IF
+c            END IF  ! IMODE = 1
 
-         ! Calculate Final Concentrations
-         DO ISP = 1, NVOLINORG
-
-            CFINAL( ISP,IMODE ) = CFINAL( ISP,IMODE ) + CINORG( ISP,IMODE )
-     &                          + OMEGA( IMODE ) * DVOLINORG( ISP ) * DF( ISP )
-
-            ! Jai Xing's VOLINORG fix - Check Aitken and Accumulation modes
-            ! individually for negative concentrations
-            IF (CFINAL( ISP,IMODE ) .LT. 0.0D0 ) THEN
-
-              IF ( IMODE .EQ. IA_NUC ) THEN
-                CFINAL( ISP,IA_ACC ) = CFINAL( ISP,IA_ACC ) + CFINAL( ISP,IA_NUC )
-                CFINAL( ISP,IMODE ) = 0.0D0
-              ELSE IF ( IMODE .EQ. IA_AIT ) THEN
-                CFINAL( ISP,IA_ACC ) = CFINAL( ISP,IA_ACC ) + CFINAL( ISP,IA_AIT )
-                CFINAL( ISP,IMODE ) = 0.0D0
-              ELSE   ! IMODE = IA_ACC
-                CFINAL( ISP,IA_AIT ) = CFINAL( ISP,IA_AIT ) + CFINAL( ISP,IA_ACC )
-                CFINAL( ISP,IMODE ) = 0.0D0
-
-                IF ( CFINAL( ISP, IA_AIT ) .LT. -1.0D-15 ) THEN
-                    CFINAL( ISP,IA_NUC ) = CFINAL( ISP,IA_NUC ) + CFINAL( ISP,IA_AIT )
-                    CFINAL( ISP,IA_AIT ) = 0.0D0
-
-                    IF ( CFINAL( ISP,IA_NUC ) .LT. -1.0D-15 ) THEN
-                     !Note: this should NEVER happen because there
-                     !should not be more evaporated mass than there is
-                     !existing particle mass
-                     XMSG = 'VOLINORG: Too much evaporation'
-                     CFINAL( ISP,IA_NUC ) = 0.0D0
-                     CALL M3EXIT( 'VOLINORG', 0, 0, XMSG, XSTAT1 ) 
-                    ELSE
-                       CFINAL( ISP,IA_NUC ) = MAX( CFINAL( ISP,IA_NUC ), 0.0D0 )
-                    END IF
-                END IF
-              END IF
-            END IF  ! IMODE = 1
-         END DO ! ISP
-
-      END DO    ! IMODE
+      END DO    ! ISP
 
 C *** Apply Final Concentrations to Moment Variables in Aerosol Scheme
       ! Store Initial Wet Moments

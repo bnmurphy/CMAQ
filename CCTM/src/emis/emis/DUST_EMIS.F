@@ -1158,7 +1158,8 @@ C J/K mass emis rate [g/s]  (edust( 1 ) not used)
             edust( ia_crs ) = fracmk * dust_em( c,r )
 
             do v = 1, ndust_spc
-               dustoutm( v,1,c,r ) = 0.0
+               dustoutm( v,ia_nuc,c,r ) = 0.0
+               dustoutm( v,ia_ait,c,r ) = 0.0
             end do
 
             do n = ia_acc, n_mode
@@ -1233,14 +1234,14 @@ C 2nd moment multiplied by PI to obtain the surface area emissions rate.
                do v = 1, ndust_spc
                   if ( trim( dust_spc( v )%name( 2 ) ) .ne. ' ' ) then  ! accum. mode
                      m = m + 1
-                     diagv( m+n ) = dustoutm( v,2,c,r )
+                     diagv( m+n ) = dustoutm( v,ia_acc,c,r )
                   end if
                end do
 
                do v = 1, ndust_spc
                   if ( trim( dust_spc( v )%name( 3 ) ) .ne. ' ' ) then  ! coarse mode
                      m = m + 1
-                     diagv( m+n ) = dustoutm( v,3,c,r )
+                     diagv( m+n ) = dustoutm( v,ia_crs,c,r )
                   end if
                end do
 

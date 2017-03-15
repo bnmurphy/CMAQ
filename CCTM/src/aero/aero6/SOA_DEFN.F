@@ -473,7 +473,6 @@ C Compute gas conversion constant
 
 C Copy grid cell concentrations of vapor species
       vapor_conc = 0.0
-
       Do spc = 1, n_vapor
          n = vapor_map( spc )
          If ( n .Ne. 0 ) Then
@@ -571,7 +570,7 @@ C Local Variables:
       Integer         :: spc
 
       Do spc = 1, n_vapor
-         If ( Trim( vaporspc( spc )%name ) .Eq. Trim( vname ) ) Then
+         If ( vaporspc( spc )%name .Eq. vname ) Then
             ndx = spc
             Return
          End If
@@ -609,7 +608,7 @@ C Local Variables:
 
       Do spc = 1, n_orgprod
          ! If ( Index( orgprod( spc )%name, Trim( vname ) ) .Gt. 0 ) Then
-         If ( Trim( orgprod( spc )%name ) .Eq. Trim( vname ) ) Then
+         If ( orgprod( spc )%name .Eq. vname ) Then
             ndx = spc
             ! Write( *,'(a,i5)' ) vname, ndx
             Return
@@ -1014,6 +1013,8 @@ C Variables needed for Growth Calculations
       Real         Cbar_p ( n_mode ) !Velocity of a particle
       Real         Dv_p( n_mode )    !Diffusivity of Particle
       Real         mass_p            !Mass of individual particle [ kg ]
+      Real         totaer            !Total Aerosol Mass used for calculating mass fraction
+      Real         phi               !Species Mass fraction in any mode
 
 C-----------------------------------------------------------------------
 
@@ -1297,54 +1298,65 @@ C Constrain caer to values between conmin and ctotf
                caer( i ) = ctotf( i )
            End If
 
-           ! Calculate total change in Vapor Species
-           dcaer( i ) = caer( i ) - caer0( i )   ! Change in each species conc.
- 
+           ! Calculate total change in OA Species Concentration
+           dcaer( i ) = caer( i ) - caer0( i )   
+           totaer = max( sum( aerospc_conc( indx,: ) , mask =  
+     &                   .NOT.aero_missing( indx,: ) ), conmin )
+
+
            ! Transfer the semivolatile mass
            Do im = ia_nuc,ia_acc
-             If ( aero_missing( soa_aeroMap( i ),im ) ) Cycle
-             aerospc_conc( indx,im ) = 
-     &            aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
+              If ( aero_missing( soa_aeroMap( i ),im ) ) Cycle
+              If ( dcaer( i ) .lt. 0.0 ) Then
+                 !Evaporate using mode-dependent mass fraction
+                 PHI = aerospc_conc( indx,im ) / totaer 
+                 aerospc_conc( indx,im ) = 
+     &                aerospc_conc( indx,im ) + dcaer( i ) * PHI 
+              Else
+                 !Condense using mode-dependent condensation flux fraction
+                 aerospc_conc( indx,im ) = 
+     &                aerospc_conc( indx,im ) + dcaer( i ) * GR3FRAC( i,im )
+              End If
            End Do
 
-           ! Check to make sure none of the modes went negative
-           Do im = ia_nuc,ia_acc
-             If ( aerospc_conc( indx,im ) .lt. 0.0 ) Then
-
-               If ( im .eq. ia_nuc ) Then
-                 aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
-     &             + aerospc_conc( indx,ia_nuc )
-                 aerospc_conc( indx,ia_nuc ) = 0.0
-               Else If ( im .eq. ia_ait ) Then
-                 aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
-     &             + aerospc_conc( indx,ia_ait )
-                 aerospc_conc( indx,ia_ait ) = 0.0
-               Else
-                 aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
-     &             + aerospc_conc( indx,ia_acc )
-                 aerospc_conc( indx,ia_acc ) = 0.0
-
-                 If ( aerospc_conc( indx,ia_ait ) .lt. 0.0 ) Then
-                   aerospc_conc( indx,ia_nuc ) = aerospc_conc( indx,ia_nuc )
-     &                + aerospc_conc( indx,ia_ait )
-                   aerospc_conc( indx,ia_ait ) = 0.0
-           
-                   If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
-                      Write( xmsg,'( A56,/,A11,I2,3(A9,E12.5))' ) 
-     &                  ' *** Too Much Evaporation from Existing Organic Aerosol:',
-     &                  ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
-     &                  ' Mode 2: ',aerospc_conc( indx,ia_ait ),
-     &                  ' Mode 3: ',aerospc_conc( indx,ia_acc )
-                      aerospc_conc( indx,ia_nuc ) = 0.0
-                      Call m3exit( pname, 0, 0, xmsg, xstat3 )
-                   Else
-                      aerospc_conc( indx,ia_nuc ) = max( aerospc_conc( indx,ia_nuc ),0.0 )
-                   End If
-                 End If
-                       
-               End If
-             End If
-           End Do 
+c           ! Check to make sure none of the modes went negative
+c           Do im = ia_nuc,ia_acc
+c             If ( aerospc_conc( indx,im ) .lt. 0.0 ) Then
+c
+c               If ( im .eq. ia_nuc ) Then
+c                 aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
+c     &             + aerospc_conc( indx,ia_nuc )
+c                 aerospc_conc( indx,ia_nuc ) = 0.0
+c               Else If ( im .eq. ia_ait ) Then
+c                 aerospc_conc( indx,ia_acc ) = aerospc_conc( indx,ia_acc ) 
+c     &             + aerospc_conc( indx,ia_ait )
+c                 aerospc_conc( indx,ia_ait ) = 0.0
+c               Else
+c                 aerospc_conc( indx,ia_ait ) = aerospc_conc( indx,ia_ait ) 
+c     &             + aerospc_conc( indx,ia_acc )
+c                 aerospc_conc( indx,ia_acc ) = 0.0
+c
+c                 If ( aerospc_conc( indx,ia_ait ) .lt. 0.0 ) Then
+c                   aerospc_conc( indx,ia_nuc ) = aerospc_conc( indx,ia_nuc )
+c     &                + aerospc_conc( indx,ia_ait )
+c                   aerospc_conc( indx,ia_ait ) = 0.0
+c           
+c                   If ( aerospc_conc( indx,ia_nuc ) .lt. -1.0e-15 ) Then
+c                      Write( xmsg,'( A56,/,A11,I2,3(A9,E12.5))' ) 
+c     &                  ' *** Too Much Evaporation from Existing Organic Aerosol:',
+c     &                  ' SOA Spcs: ',i,' Mode 1: ',aerospc_conc( indx,ia_nuc ),
+c     &                  ' Mode 2: ',aerospc_conc( indx,ia_ait ),
+c     &                  ' Mode 3: ',aerospc_conc( indx,ia_acc )
+c                      aerospc_conc( indx,ia_nuc ) = 0.0
+c                      Call m3exit( pname, 0, 0, xmsg, xstat3 )
+c                   Else
+c                      aerospc_conc( indx,ia_nuc ) = max( aerospc_conc( indx,ia_nuc ),0.0 )
+c                   End If
+c                 End If
+c                       
+cc               End If
+c             End If
+c           End Do 
           
          End Do
 
@@ -1420,7 +1432,7 @@ C condensation/evaporation does not affect the geometric standard deviation.
       m2wet_final( ia_acc ) = m2wet_init( ia_acc ) * ( m3wet_final( ia_acc ) / m3wet_init( ia_acc ) ) ** ( 2.0 / 3.0 )
       moment2_conc( ia_nuc:ia_acc )  = m2wet_final( : )
 
-      !Continue Acucmulating Growth Rate
+      !Continue Accumulating Growth Rate
       CGR( IA_NUC:IA_ACC ) = CGR( IA_NUC:IA_ACC ) 
      &                      + ( M3WET_FINAL( IA_NUC:IA_ACC ) 
      &                         -M3WET_INIT ( IA_NUC:IA_ACC ) ) / DT
