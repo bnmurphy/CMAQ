@@ -21,6 +21,9 @@
 C RCS file, release, date & time of last delta, author, state, [and locker]
 C $Header: /project/yoj/arc/CCTM/src/aero/aero5/aero_driver.F,v 1.11 2012/01/19 13:12:57 yoj Exp $
 
+C what(1) key, module and SID; SCCS file; date and time of last delta:
+C %W% %P% %G% %U%
+
 C >>> 08/04/2000 Changes necessary to be able to read and process
 C two different types of emissions files.
 C the first type is the existing opperational PM2.5 & PM10 unspeciated
@@ -212,6 +215,7 @@ C *** atmospheric properties
       REAL AMU             ! atmospheric dynamic viscosity [ kg/m s ]
 
 C *** mass fraction of each mode less than Specified Aerodynamic Diameters
+      REAL fPM01( N_MODE )  ! PM0.1 fraction
       REAL fPM1 ( N_MODE )  ! PM1 fraction
       REAL fPM25( N_MODE )  ! PM2.5 fraction
       REAL fPM10( N_MODE )  ! PM10 fraction
@@ -317,9 +321,9 @@ C ------------------ begin body of AERO_DRIVER -------------------------
          LOGDEV = INIT3()
 
          IF ( INDEX(MECHNAME, 'SAPRC07TIC_AE6I_AQ') .GT. 0 ) THEN
-            NUM_PMDIAG_SPC = 94
+            NUM_PMDIAG_SPC = 98
          ELSE
-            NUM_PMDIAG_SPC = 92
+            NUM_PMDIAG_SPC = 96
          END IF
 
          CALL GET_ENVLIST ( APMDIAG_BLEV_ELEV, N, V_LIST )
@@ -606,8 +610,8 @@ C *** Calculate volume fraction of each mode for measurement applications
                   ! Report fraction of PM1, PM2.5, and PM10.0 for all modes
                   ! after converting to aerodynamic diameter.
                   CALL AERO_INLET ( AEROMODE_DIAM( N ), AEROMODE_LNSG( N ),
-     &                              AEROMODE_DENS( N ), fPM1( N ), fPM25( N ),
-     &                              fPM10( N ) )
+     &                              AEROMODE_DENS( N ), fPM01( N ), fPM1( N ), 
+     &                              fPM25( N ), fPM10( N ) )
            
                   ! Calculate AMS Transmission Fraction. Aerosol water will
                   ! be excluded from the calculation since AMS standard
@@ -653,83 +657,87 @@ C     diagnostic array (lowest vertical layer only)
                   TEMP_DATA( 22 ) = MOMENT3_CONC( 2 )     ! wet i-mode 3rd moment
                   TEMP_DATA( 23 ) = MOMENT3_CONC( 3 )     ! wet j-mode 3rd moment
                   TEMP_DATA( 24 ) = MOMENT3_CONC( 4 )     ! wet k-mode 3rd moment
-                  TEMP_DATA( 26 ) = fPM1( 1 )             ! h-mode PM1 fraction
-                  TEMP_DATA( 27 ) = fPM1( 2 )             ! i-mode PM1 fraction
-                  TEMP_DATA( 28 ) = fPM1( 3 )             ! j-mode PM1 fraction
-                  TEMP_DATA( 29 ) = fPM1( 4 )             ! k-mode PM1 fraction
-                  TEMP_DATA( 30 ) = fPM25( 1 )            ! h-mode fine fraction
-                  TEMP_DATA( 31 ) = fPM25( 2 )            ! i-mode fine fraction
-                  TEMP_DATA( 32 ) = fPM25( 3 )            ! j-mode fine fraction
-                  TEMP_DATA( 33 ) = fPM25( 4 )            ! k-mode fine fraction
-                  TEMP_DATA( 34 ) = fPM10( 1 )            ! h-mode PM10 fraction
-                  TEMP_DATA( 35 ) = fPM10( 2 )            ! i-mode PM10 fraction
-                  TEMP_DATA( 36 ) = fPM10( 3 )            ! j-mode PM10 fraction
-                  TEMP_DATA( 37 ) = fPM10( 4 )            ! k-mode PM10 fraction
-                  TEMP_DATA( 38 ) = fAMS( 1 )             ! h-mode fraction transmitted through AMS
-                  TEMP_DATA( 39 ) = fAMS( 2 )             ! i-mode fraction transmitted through AMS
-                  TEMP_DATA( 40 ) = fAMS( 3 )             ! j-mode fraction transmitted through AMS
-                  TEMP_DATA( 41 ) = fAMS( 4 )             ! k-mode fraction transmitted through AMS
+                  TEMP_DATA( 26 ) = fPM01( 1 )            ! h-mode PM0.1 fraction
+                  TEMP_DATA( 27 ) = fPM01( 2 )            ! i-mode PM0.1 fraction
+                  TEMP_DATA( 28 ) = fPM01( 3 )            ! j-mode PM0.1 fraction
+                  TEMP_DATA( 29 ) = fPM01( 4 )            ! k-mode PM0.1 fraction
+                  TEMP_DATA( 30 ) = fPM1( 1 )             ! h-mode PM1 fraction
+                  TEMP_DATA( 31 ) = fPM1( 2 )             ! i-mode PM1 fraction
+                  TEMP_DATA( 32 ) = fPM1( 3 )             ! j-mode PM1 fraction
+                  TEMP_DATA( 33 ) = fPM1( 4 )             ! k-mode PM1 fraction
+                  TEMP_DATA( 34 ) = fPM25( 1 )            ! h-mode fine fraction
+                  TEMP_DATA( 35 ) = fPM25( 2 )            ! i-mode fine fraction
+                  TEMP_DATA( 36 ) = fPM25( 3 )            ! j-mode fine fraction
+                  TEMP_DATA( 37 ) = fPM25( 4 )            ! k-mode fine fraction
+                  TEMP_DATA( 38 ) = fPM10( 1 )            ! h-mode PM10 fraction
+                  TEMP_DATA( 39 ) = fPM10( 2 )            ! i-mode PM10 fraction
+                  TEMP_DATA( 40 ) = fPM10( 3 )            ! j-mode PM10 fraction
+                  TEMP_DATA( 41 ) = fPM10( 4 )            ! k-mode PM10 fraction
+                  TEMP_DATA( 42 ) = fAMS( 1 )             ! h-mode fraction transmitted through AMS
+                  TEMP_DATA( 43 ) = fAMS( 2 )             ! i-mode fraction transmitted through AMS
+                  TEMP_DATA( 44 ) = fAMS( 3 )             ! j-mode fraction transmitted through AMS
+                  TEMP_DATA( 45 ) = fAMS( 4 )             ! k-mode fraction transmitted through AMS
 
                   IF ( AERO_CHEM_SET ) THEN
-                     TEMP_DATA( 42 ) = GAMMA_N2O5IJ( C,R,L ) ! fine N2O5 heterorxn probability
-                     TEMP_DATA( 43 ) = GAMMA_N2O5K( C,R,L )  ! coarse N2O5 heterorxn probability
-                     TEMP_DATA( 44 ) = YCLNO2IJ( C,R,L )     ! fine CLNO2 heterorxn yield
-                     TEMP_DATA( 45 ) = YCLNO2K( C,R,L )      ! coarse CLNO2 heterorxn yield
-                     TEMP_DATA( 46 ) = GAMMA_IEPOX( C,R,L )  ! IEPOX heterorxn uptake coeff
+                     TEMP_DATA( 46 ) = GAMMA_N2O5IJ( C,R,L ) ! fine N2O5 heterorxn probability
+                     TEMP_DATA( 47 ) = GAMMA_N2O5K( C,R,L )  ! coarse N2O5 heterorxn probability
+                     TEMP_DATA( 48 ) = YCLNO2IJ( C,R,L )     ! fine CLNO2 heterorxn yield
+                     TEMP_DATA( 49 ) = YCLNO2K( C,R,L )      ! coarse CLNO2 heterorxn yield
+                     TEMP_DATA( 50 ) = GAMMA_IEPOX( C,R,L )  ! IEPOX heterorxn uptake coeff
                   ELSE
-                     TEMP_DATA( 42:46 ) = 0.0
+                     TEMP_DATA( 46:50 ) = 0.0
                   END IF
 
-                  TEMP_DATA( 47 ) = AEROMODE_DENS( 1 )    ! Nucleation Mode Density [kg m-3]
-                  TEMP_DATA( 48 ) = AEROMODE_DENS( 2 )    ! Aitken Mode Density [kg m-3]
-                  TEMP_DATA( 49 ) = AEROMODE_DENS( 3 )    ! Accumulation Mode Density [kg m-3]
-                  TEMP_DATA( 50 ) = AEROMODE_DENS( 4 )    ! Coarse Mode Density [kg m3-]
-                  TEMP_DATA( 51 ) = JDIAG( 1 )            ! Binary NPF Rate ( Vehkamaki )
-                  TEMP_DATA( 52 ) = JDIAG( 2 )            ! Ternary NPF Rate ( Napari )
-                  TEMP_DATA( 53 ) = JDIAG( 3 )            ! H2SO4-DMA NPF Rate ( Glasoe )
-                  TEMP_DATA( 54 ) = JDIAG( 4 )            ! H2SO4-Org NPF Rate ( Paasonen )
-                  TEMP_DATA( 55 ) = JDIAG( 5 )            ! Org-Org NPF Rate ( Kirkby )
-                  TEMP_DATA( 56 ) = JDIAG( 6 )            ! SO4 NPF Rate ( Ion-Mediated )
-                  TEMP_DATA( 57 ) = JDIAG( 7 )            ! Org NPF Rate ( Ion-Mediated )
-                  TEMP_DATA( 58 ) = JDIAG( 8 )            ! H2SO4-Org NPF Rate ( Riccobono )
-                  TEMP_DATA( 59 ) = JDIAG( 9 )            ! Org-Org NPF Rate ( Paasonen )
-                  TEMP_DATA( 60 ) = JM2DIAG( 1 )          ! Binary NPF 2nd Moment Change ( Vehkamaki )
-                  TEMP_DATA( 61 ) = JM2DIAG( 2 )          ! Ternary NPF 2nd Moment Change ( Napari )
-                  TEMP_DATA( 62 ) = JM2DIAG( 3 )          ! H2SO4-DMA NPF 2nd Moment Change ( Glasoe )
-                  TEMP_DATA( 63 ) = JM2DIAG( 4 )          ! H2SO4-Org NPF 2nd Moment Change ( Paasonen )
-                  TEMP_DATA( 64 ) = JM2DIAG( 5 )          ! Org-Org NPF 2nd Moment Change ( Kirkby )
-                  TEMP_DATA( 65 ) = JM2DIAG( 6 )          ! SO4-Ion NPF 2nd Moment Change ( Yu et al )
-                  TEMP_DATA( 66 ) = JM2DIAG( 7 )          ! Org-Ion NPF 2nd Moment Change ( Kirkby )
-                  TEMP_DATA( 67 ) = JM2DIAG( 8 )          ! H2SO4-Org NPF 2nd Moment Change ( Riccobono )
-                  TEMP_DATA( 68 ) = JM2DIAG( 9 )          ! Org-Org NPF 2nd Moment Change ( Paasonen )
-                  TEMP_DATA( 69 ) = JDGASDIAG( 1 )        ! H2SO4 Binary Change [ug/m3]
-                  TEMP_DATA( 70 ) = JDGASDIAG( 2 )        ! H2SO4 Ternary Change [ug/m3]
-                  TEMP_DATA( 71 ) = JDGASDIAG( 3 )        ! H2SO4 Glasoe Change [ug/m3] 
-                  TEMP_DATA( 72 ) = JDGASDIAG( 4 )        ! H2SO4 Paasonen Change [ug/m3]
-                  TEMP_DATA( 73 ) = JDGASDIAG( 5 )        ! NH3 Ternary Change [ug/m3]
-                  TEMP_DATA( 74 ) = JDGASDIAG( 6 )        ! DMA Glasoe Change [ug/m3] 
-                  TEMP_DATA( 75 ) = JDGASDIAG( 7 )        ! MBTCA Paasonen Change [ug/m3] 
-                  TEMP_DATA( 76 ) = JDGASDIAG( 8 )        ! ELVOC Homogeneous Paasonen Change [ug/m3]
-                  TEMP_DATA( 77 ) = CONDSINK4_SO4( 1 )        ! Nuc Mode Cond. Sink [s-1]
-                  TEMP_DATA( 78 ) = CONDSINK4_SO4( 2 )        ! Aitken Mode Cond. Sink [s-1]
-                  TEMP_DATA( 79 ) = CONDSINK4_SO4( 3 )        ! Accumulation Mode Cond. Sink [s-1]
-                  TEMP_DATA( 80 ) = CONDSINK4_SO4( 4 )        ! Coarse Mode Cond. Sink [s-1]
-                  TEMP_DATA( 81 ) = CONDSINK3_SO4( 1 )        ! Nuc Mode Cond. Sink [s-1]
-                  TEMP_DATA( 82 ) = CONDSINK3_SO4( 2 )        ! Aitken Mode Cond. Sink [s-1]
-                  TEMP_DATA( 83 ) = CONDSINK3_SO4( 3 )        ! Accumulation Mode Cond. Sink [s-1]
-                  TEMP_DATA( 84 ) = CONDSINK3_SO4( 4 )        ! Coarse Mode Cond. Sink [s-1]
-                  TEMP_DATA( 85 ) = CONDSINK4_ELV( 1 )        ! Nuc Mode Cond. Sink [s-1]
-                  TEMP_DATA( 86 ) = CONDSINK4_ELV( 2 )        ! Aitken Mode Cond. Sink [s-1]
-                  TEMP_DATA( 87 ) = CONDSINK4_ELV( 3 )        ! Accumulation Mode Cond. Sink [s-1]
-                  TEMP_DATA( 88 ) = CONDSINK4_ELV( 4 )        ! Coarse Mode Cond. Sink [s-1]
-                  TEMP_DATA( 89 ) = CONDSINK3_ELV( 1 )        ! Nuc Mode Cond. Sink [s-1]
-                  TEMP_DATA( 90 ) = CONDSINK3_ELV( 2 )        ! Aitken Mode Cond. Sink [s-1]
-                  TEMP_DATA( 91 ) = CONDSINK3_ELV( 3 )        ! Accumulation Mode Cond. Sink [s-1]
-                  TEMP_DATA( 92 ) = CONDSINK3_ELV( 4 )        ! Coarse Mode Cond. Sink [s-1]
+                  TEMP_DATA( 51 ) = AEROMODE_DENS( 1 )    ! Nucleation Mode Density [kg m-3]
+                  TEMP_DATA( 52 ) = AEROMODE_DENS( 2 )    ! Aitken Mode Density [kg m-3]
+                  TEMP_DATA( 53 ) = AEROMODE_DENS( 3 )    ! Accumulation Mode Density [kg m-3]
+                  TEMP_DATA( 54 ) = AEROMODE_DENS( 4 )    ! Coarse Mode Density [kg m3-]
+                  TEMP_DATA( 55 ) = JDIAG( 1 )            ! Binary NPF Rate ( Vehkamaki )
+                  TEMP_DATA( 56 ) = JDIAG( 2 )            ! Ternary NPF Rate ( Napari )
+                  TEMP_DATA( 57 ) = JDIAG( 3 )            ! H2SO4-DMA NPF Rate ( Glasoe )
+                  TEMP_DATA( 58 ) = JDIAG( 4 )            ! H2SO4-Org NPF Rate ( Paasonen )
+                  TEMP_DATA( 59 ) = JDIAG( 5 )            ! Org-Org NPF Rate ( Kirkby )
+                  TEMP_DATA( 60 ) = JDIAG( 6 )            ! SO4 NPF Rate ( Ion-Mediated )
+                  TEMP_DATA( 61 ) = JDIAG( 7 )            ! Org NPF Rate ( Ion-Mediated )
+                  TEMP_DATA( 62 ) = JDIAG( 8 )            ! H2SO4-Org NPF Rate ( Riccobono )
+                  TEMP_DATA( 63 ) = JDIAG( 9 )            ! Org-Org NPF Rate ( Paasonen )
+                  TEMP_DATA( 64 ) = JM2DIAG( 1 )          ! Binary NPF 2nd Moment Change ( Vehkamaki )
+                  TEMP_DATA( 65 ) = JM2DIAG( 2 )          ! Ternary NPF 2nd Moment Change ( Napari )
+                  TEMP_DATA( 66 ) = JM2DIAG( 3 )          ! H2SO4-DMA NPF 2nd Moment Change ( Glasoe )
+                  TEMP_DATA( 67 ) = JM2DIAG( 4 )          ! H2SO4-Org NPF 2nd Moment Change ( Paasonen )
+                  TEMP_DATA( 68 ) = JM2DIAG( 5 )          ! Org-Org NPF 2nd Moment Change ( Kirkby )
+                  TEMP_DATA( 69 ) = JM2DIAG( 6 )          ! SO4-Ion NPF 2nd Moment Change ( Yu et al )
+                  TEMP_DATA( 70 ) = JM2DIAG( 7 )          ! Org-Ion NPF 2nd Moment Change ( Kirkby )
+                  TEMP_DATA( 71 ) = JM2DIAG( 8 )          ! H2SO4-Org NPF 2nd Moment Change ( Riccobono )
+                  TEMP_DATA( 72 ) = JM2DIAG( 9 )          ! Org-Org NPF 2nd Moment Change ( Paasonen )
+                  TEMP_DATA( 73 ) = JDGASDIAG( 1 )        ! H2SO4 Binary Change [ug/m3]
+                  TEMP_DATA( 74 ) = JDGASDIAG( 2 )        ! H2SO4 Ternary Change [ug/m3]
+                  TEMP_DATA( 75 ) = JDGASDIAG( 3 )        ! H2SO4 Glasoe Change [ug/m3] 
+                  TEMP_DATA( 76 ) = JDGASDIAG( 4 )        ! H2SO4 Paasonen Change [ug/m3]
+                  TEMP_DATA( 77 ) = JDGASDIAG( 5 )        ! NH3 Ternary Change [ug/m3]
+                  TEMP_DATA( 78 ) = JDGASDIAG( 6 )        ! DMA Glasoe Change [ug/m3] 
+                  TEMP_DATA( 79 ) = JDGASDIAG( 7 )        ! MBTCA Paasonen Change [ug/m3] 
+                  TEMP_DATA( 80 ) = JDGASDIAG( 8 )        ! ELVOC Homogeneous Paasonen Change [ug/m3]
+                  TEMP_DATA( 81 ) = CONDSINK4_SO4( 1 )        ! Nuc Mode Cond. Sink [s-1]
+                  TEMP_DATA( 82 ) = CONDSINK4_SO4( 2 )        ! Aitken Mode Cond. Sink [s-1]
+                  TEMP_DATA( 83 ) = CONDSINK4_SO4( 3 )        ! Accumulation Mode Cond. Sink [s-1]
+                  TEMP_DATA( 84 ) = CONDSINK4_SO4( 4 )        ! Coarse Mode Cond. Sink [s-1]
+                  TEMP_DATA( 85 ) = CONDSINK3_SO4( 1 )        ! Nuc Mode Cond. Sink [s-1]
+                  TEMP_DATA( 86 ) = CONDSINK3_SO4( 2 )        ! Aitken Mode Cond. Sink [s-1]
+                  TEMP_DATA( 87 ) = CONDSINK3_SO4( 3 )        ! Accumulation Mode Cond. Sink [s-1]
+                  TEMP_DATA( 88 ) = CONDSINK3_SO4( 4 )        ! Coarse Mode Cond. Sink [s-1]
+                  TEMP_DATA( 89 ) = CONDSINK4_ELV( 1 )        ! Nuc Mode Cond. Sink [s-1]
+                  TEMP_DATA( 90 ) = CONDSINK4_ELV( 2 )        ! Aitken Mode Cond. Sink [s-1]
+                  TEMP_DATA( 91 ) = CONDSINK4_ELV( 3 )        ! Accumulation Mode Cond. Sink [s-1]
+                  TEMP_DATA( 92 ) = CONDSINK4_ELV( 4 )        ! Coarse Mode Cond. Sink [s-1]
+                  TEMP_DATA( 93 ) = CONDSINK3_ELV( 1 )        ! Nuc Mode Cond. Sink [s-1]
+                  TEMP_DATA( 94 ) = CONDSINK3_ELV( 2 )        ! Aitken Mode Cond. Sink [s-1]
+                  TEMP_DATA( 95 ) = CONDSINK3_ELV( 3 )        ! Accumulation Mode Cond. Sink [s-1]
+                  TEMP_DATA( 96 ) = CONDSINK3_ELV( 4 )        ! Coarse Mode Cond. Sink [s-1]
 
-                  IF ( NUM_PMDIAG_SPC .GT. 92 ) THEN ! AERO6i
-                     TEMP_DATA( 93 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
-                     TEMP_DATA( 94 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
+                  IF ( NUM_PMDIAG_SPC .GT. 96 ) THEN ! AERO6i
+                     TEMP_DATA( 97 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
+                     TEMP_DATA( 98 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
                   END IF
                END IF
 
