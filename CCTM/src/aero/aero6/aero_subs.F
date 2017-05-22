@@ -224,7 +224,8 @@ C *** arguments:
 C *** Parameters
       REAL, PARAMETER :: SQRT2 = 1.4142135623731
       REAL, PARAMETER :: T0 = 288.15   ! [ K ]
-      REAL, PARAMETER :: TWOTHIRDS = 2.0 / 3.0
+      REAL, PARAMETER :: TWOTHIRDS   =  2.0 / 3.0
+      REAL, PARAMETER :: ONE_OVER_TICE =  1.0 / 273.16
 
 C *** local variables
       REAL         SQRT_TEMP  ! square root of ambient temperature
@@ -2090,7 +2091,7 @@ C *** Assign H+ Concentration to each Mode
       ELSE
           AEROSPC_CONC( AH3OP_IDX, IA_NUC:IA_ACC ) = CONMIN
       END IF
-      AEROSPC_CONC( AH3OP_IDX, IA_CRS ) = 1.0D+6 * HPLUS( IA_CRS )  !Coarse mode H+ concentration
+      AEROSPC_CONC( AH3OP_IDX, IA_CRS ) = HPLUS( IA_CRS ) * AEROSPC_MW( ah3op_idx ) ! Coarse mode H+ concentration in ug/m3
 
 C *** Update the third moments, geometric mean diameters, geometric 
 C     standard deviations, modal mass totals, and modal particle 
