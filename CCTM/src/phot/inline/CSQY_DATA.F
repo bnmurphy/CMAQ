@@ -1116,7 +1116,7 @@ C...begin read
      &         OPTICS_EXPECT, DIAMETER_ICE( ITT_LOAD ),
      &         ( ICE_COALBEDO( ITT_LOAD, IWL_LOAD), IWL_LOAD = 1, NWL_OPTICS )
 #endif
-            IF ( TRIM( OPTICS_EXPECT ) .NE. TRIM( QUANTITY ) ) THEN
+            IF ( OPTICS_EXPECT .NE. QUANTITY ) THEN
                MSG =  'Optical quantity read ' // TRIM( OPTICS_EXPECT )
      &             // ' does match expected quantity, ' // TRIM( QUANTITY )
                CALL M3WARN( PNAME, 0, 0, MSG )
@@ -1141,7 +1141,7 @@ C...begin read
      &         OPTICS_EXPECT, DIAMETER_ICE( ITT_LOAD ),
      &         ( ICE_DELTRANS( ITT_LOAD, IWL_LOAD), IWL_LOAD = 1, NWL_OPTICS )
 #endif
-            IF ( TRIM( OPTICS_EXPECT ) .NE. TRIM( QUANTITY ) ) THEN
+            IF ( OPTICS_EXPECT .NE.  QUANTITY ) THEN
                MSG =  'Optical quantity read ' // TRIM( OPTICS_EXPECT )
      &             // ' does match expected quantity, ' // TRIM( QUANTITY )
                CALL M3WARN( PNAME, 0, 0, MSG )

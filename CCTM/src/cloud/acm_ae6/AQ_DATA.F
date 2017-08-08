@@ -754,7 +754,7 @@ C Local Variables:
       Do spc = 1, naer
          Do n = 1, n_mode
             ! Write( *,'(a,i5)' ) vname, spc
-            If ( srgaer( spc )%name( n ) .Eq. Trim( vname ) ) Then
+            If ( srgaer( spc )%name( n ) .Eq. vname ) Then
                idx = spc
                ! Write( *,'(a,i5)' ) vname, idx
                Return

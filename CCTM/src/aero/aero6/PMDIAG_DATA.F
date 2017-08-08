@@ -34,7 +34,7 @@ c-----------------------------------------------------------------------
           CHARACTER (LEN = 80) :: SPC_DESC
         END TYPE PMDIAG_SPC_RECORD_TYPE
 
-        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(94) = (/
+        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(98) = (/
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVNUC        ', 5, 'na              ', 'NPF mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVATKN       ', 5, 'na              ', 'Aitken mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVACC        ', 5, 'na              ', 
@@ -61,6 +61,10 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'M3ACC_WET       ', 5, 'm**3/m**3       ', 'Accumulation mode 3rd moment (wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'M3COR_WET       ', 5, 'm**3/m**3       ', 'Coarse mode 3rd moment (wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'RH              ', 5, 'na              ', 'Relative humidity' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'PM01NU          ', 5, 'fraction        ', 'PM0.1 fraction of NPF mode' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'PM01AT          ', 5, 'fraction        ', 'PM0.1 fraction of Aitken mode' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'PM01AC          ', 5, 'fraction        ', 'PM0.1 fraction of accumulation mode' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'PM01CO          ', 5, 'fraction        ', 'PM0.1 fraction of coarse mode' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'PM1NU           ', 5, 'fraction        ', 'PM1 fraction of NPF mode' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'PM1AT           ', 5, 'fraction        ', 'PM1 fraction of Aitken mode' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'PM1AC           ', 5, 'fraction        ', 'PM1 fraction of accumulation mode' ),
@@ -133,6 +137,6 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'k_prtcl_iepox   ', 5, '1/s             ', 'IEPOX pseudo particle phase reaction rate const' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'GAMMA_IMAE      ', 5, 'na              ', 'IMAE heterogeneous uptake coefficient' ) /)
 
-        INTEGER :: A_PMDIAG_SPC_MAP (94), NUM_PMDIAG_SPC
+        INTEGER :: A_PMDIAG_SPC_MAP (98), NUM_PMDIAG_SPC
 
       END MODULE PMDIAG_DATA_MODULE

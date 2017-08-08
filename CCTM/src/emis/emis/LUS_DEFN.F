@@ -568,7 +568,7 @@ C Includes:
 
 C mminlu and num_land_cat are WRF global variables
             
-            select case( trim( mminlu ) )
+            select case( mminlu )
 
                case( 'USGS24' )
                   if ( num_land_cat .ne. 24 ) then

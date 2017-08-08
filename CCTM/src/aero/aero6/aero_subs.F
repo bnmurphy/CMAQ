@@ -2881,7 +2881,7 @@ C     the 2 modes.
       END FUNCTION GETAF
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      SUBROUTINE AERO_INLET ( DGN, XXLSG, RHOP, fPM1, fPM25, fPM10 )
+      SUBROUTINE AERO_INLET ( DGN, XXLSG, RHOP, fPM01, fPM1, fPM25, fPM10 )
 
 C  Calculates the volume fraction of a given aerosol mode that would enter
 C  a sharp-cut inlet, using equations from Jiang et al (2006). The
@@ -2960,19 +2960,21 @@ C    Input variables
       REAL   RHOP    ! average particle density [ kg/m**3 ]
 
 C    Output variable
-      REAL, INTENT( OUT ) :: fPM1   ! fraction of particulate volume transmitted through 1
-      REAL, INTENT( OUT ) :: fPM25  ! fraction of particulate volume transmitted through 2
-      REAL, INTENT( OUT ) :: fPM10  ! fraction of particulate volume transmitted through 10
+      REAL, INTENT( OUT ) :: fPM01  ! fraction of particulate volume transmitted through 100 nm
+      REAL, INTENT( OUT ) :: fPM1   ! fraction of particulate volume transmitted through 1 um
+      REAL, INTENT( OUT ) :: fPM25  ! fraction of particulate volume transmitted through 2.5 um
+      REAL, INTENT( OUT ) :: fPM10  ! fraction of particulate volume transmitted through 10 um
 
 C    Internal variables
       REAL, PARAMETER :: SQRT2 = 1.4142136  !  SQRT( 2 )
+      REAL, PARAMETER :: D_AD01 = 0.1  ! aerodynamic diameter cut point [ um ]
       REAL, PARAMETER :: D_AD1  = 1.0  ! aerodynamic diameter cut point [ um ]
       REAL, PARAMETER :: D_AD25 = 2.5  ! aerodynamic diameter cut point [ um ]
       REAL, PARAMETER :: D_AD10 = 10.0 ! aerodynamic diameter cut point [ um ]
       REAL, PARAMETER :: B = 0.21470 ! Cunningham slip-correction approx. param [ um ]
                                      ! This factor works well applied to the entire particle size-range
                                      ! The approximation is: Cc(Dp) = 1 + B/Dp
-      REAL D_ST1, D_ST25, D_ST10     ! Stokes diameter equivalent of DCA..
+      REAL D_ST01, D_ST1, D_ST25, D_ST10  ! Stokes diameter equivalent of DCA..
       REAL DG                        ! DGN converted to [ um ]
       REAL ERFARG                    ! argument of ERF, from Step#6 of Jiang et al. (2006)
 
@@ -2990,6 +2992,8 @@ C     Cutoffs
       ! Convert size cut to equivalent Stokes diameter using
       ! equation 2 of Jiang et al. (2006). Note: the equation in Step 5
       ! of this paper has a typo (i.e., eq. 2 is correct).
+      D_ST01 = 0.5 * ( SQRT( B ** 2 + 4.0 * D_AD01 *
+     &                     ( D_AD01 + B ) * 1.0E+03 / RHOP ) - B )
       D_ST1  = 0.5 * ( SQRT( B ** 2 + 4.0 * D_AD1 *
      &                     ( D_AD1 + B ) * 1.0E+03 / RHOP ) - B )
       D_ST25 = 0.5 * ( SQRT( B ** 2 + 4.0 * D_AD25 *
@@ -3000,7 +3004,9 @@ C     Cutoffs
       ! Calculate mass fraction with Dca < SizeCut, using ERF approximation
       ! from Meng & Seinfeld (1994) and modified form of Fk(X) equation
       ! in Step#6 of Jiang et al. (2006).
-      ERFARG = ( LOG( D_ST1 ) - LOG( DG ) ) / ( SQRT2 * XXLSG ) - 3.0 * XXLSG / SQRT2
+      ERFARG = ( LOG( D_ST01 ) - LOG( DG ) ) / ( SQRT2 * XXLSG ) - 3.0 * XXLSG / SQRT2
+      fPM01  = 0.5 * ( 1.0 + ERF( ERFARG ) )
+      ERFARG = ( LOG( D_ST1  ) - LOG( DG ) ) / ( SQRT2 * XXLSG ) - 3.0 * XXLSG / SQRT2
       fPM1   = 0.5 * ( 1.0 + ERF( ERFARG ) )
       ERFARG = ( LOG( D_ST25 ) - LOG( DG ) ) / ( SQRT2 * XXLSG ) - 3.0 * XXLSG / SQRT2
       fPM25  = 0.5 * ( 1.0 + ERF( ERFARG ) )

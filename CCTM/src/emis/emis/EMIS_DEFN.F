@@ -360,7 +360,7 @@ C Local Variables:
          INTEGER          S_STRT, S_END ! substitute loop induction variables
 
          CHARACTER( 16 ) :: PNAME = 'GET_EMIS'
-         CHARACTER( 120 ) :: XMSG = ' '
+         CHARACTER( 200 ) :: XMSG = ' '
 #ifdef verbose_emis_defn
          integer, save :: logdev
          real sumem
@@ -413,6 +413,29 @@ C                                       vvvvvvv - emis surrogate names
               BUFF = BUFF + BUFF2
             ENDIF
 
+            
+            !If DMA emissions, then subtract away NH3 fertilizer application emissions
+            IF ( ABFLUX .AND. GC_SPC( GC_EMIS_MAP( S ) ) .EQ. 'DMA' ) THEN
+               FERT = 0.0   ! array assignment
+               IF ( .NOT. INTERPX( EMIS_1, 'NH3_FERT', PNAME,
+     &                          STARTCOL,ENDCOL, STARTROW,ENDROW, 1,EMLYRS,
+     &                          JDATE, JTIME, FERT ) ) THEN
+                  XMSG = 'Could not read NH3_FERT from'
+     &                   // EMIS_1
+                  CALL M3EXIT( PNAME, JDATE, JTIME, XMSG, XSTAT1 )
+               END IF
+               DO R = 1, MY_NROWS
+                  DO C = 1, MY_NCOLS
+                     BUFF( C,R,1 ) = BUFF( C,R,1 ) - FERT( C,R,1 )
+                     IF ( BUFF( C,R,1 ) .LT. 0.0 ) THEN
+                        XMSG = 'Error calculating DMA emissions. Negative values in '
+     &                       //'NH3 emissions after subtracting fertilizer emissions.'        
+                        CALL M3EXIT( PNAME, JDATE, JTIME, XMSG, XSTAT1 )
+                     END IF
+                  END DO
+               END DO    
+            END IF ! ABFLUX
+ 
 
             CNVTI = CNVTP * GC_EMIS_FAC( S )
 
@@ -631,7 +654,7 @@ C                                       vvvvvvv - emis surrogate names
             END IF
 ! subtract the fertilizer emissions from the NEI for use in the NH3 bidirectional
 ! exchange model JOB
-            IF ( ABFLUX .AND. TRIM( NR_EMIS( S ) ) .EQ. 'NH3' ) THEN
+            IF ( ABFLUX .AND. NR_EMIS( S ) .EQ. 'NH3' ) THEN
                FERT = 0.0   ! array assignment
                IF ( .NOT. INTERPX( EMIS_1, 'NH3_FERT', PNAME,
      &                          STARTCOL,ENDCOL, STARTROW,ENDROW, 1,EMLYRS,
