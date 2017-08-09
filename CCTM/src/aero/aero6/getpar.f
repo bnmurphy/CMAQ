@@ -57,7 +57,7 @@ C-----------------------------------------------------------------------
 
       Use aero_data, only : wet_moments_flag, moment3_conc, moment2_conc, moment0_conc,
      &                       aeromode_dens, aeromode_lnsg, aeromode_diam, aeromode_mass,
-     &                       min_sigma_g, max_sigma_g, n_mode, n_aerospc,
+     &                       min_diam_g, min_sigma_g, max_sigma_g, n_mode, n_aerospc,
      &                       aerospc, aero_missing, aerospc_conc, aeromode
       Use aeromet_data, only : f6pi   ! Includes CONST.EXT
 
@@ -82,13 +82,11 @@ C Local Variables:
       Real( 8 ) :: lxfm2       ! ln(M2); used in Sg calcs
       Real( 8 ) :: l2sg        ! square of ln(Sg); used in diameter calcs
       Real      :: es36        ! exp(4.5*l2sg); used in diameter calcs
-      Real      :: m3augm      ! temp variable for wet 3rd moment calcs
 
       Real( 8 ), Parameter :: one3d = 1.0D0 / 3.0D0
       Real( 8 ), Parameter :: two3d = 2.0D0 / 3.0D0
 
       Real,      Parameter :: one3  = 1.0 / 3.0
-      Real,      Parameter :: dgmin( n_mode ) = (/ 1.0E-09, 2.0E-09, 3.0E-09, 4.0E-09 /)   ! minimum particle diameter [ m ]
       Real,      Parameter :: densmin = 1.0E03  ! minimum particle density [ kg/m**3 ]
 
       Real( 8 ) :: minl2sg( n_mode )   ! min value of ln(sg)**2 for each mode
@@ -178,7 +176,7 @@ c         below the minimum limit.
          aeromode_lnsg( n ) = Real( Sqrt( l2sg ) )
 
          ES36 = Real( Exp( 4.5d0 * l2sg ) )
-         aeromode_diam( n ) = Max( dgmin( n ), ( moment3_conc( n )
+         aeromode_diam( n ) = Max( min_diam_g( n ), ( moment3_conc( n )
      &                      / ( moment0_conc( n ) * es36 ) ) ** one3 )
 
       End Do

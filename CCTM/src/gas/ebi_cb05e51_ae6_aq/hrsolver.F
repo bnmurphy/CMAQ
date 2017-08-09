@@ -30,16 +30,20 @@ C**********************************************************************
 C
 C  FUNCTION: EBI solver
 C
-C  PRECONDITIONS: For the CB05E51 family of mechanisms
+C  PRECONDITIONS: For the CB05e51 family of mechanisms
 C
 C  KEY SUBROUTINES/FUNCTIONS CALLED:  HRRATES, HRG1, HRG2, HRG3
 C                                     HRG4, HRPRODLOSS
 C
+<<<<<<< HEAD
 C  REVISION HISTORY: Created by EBI solver program, June 29, 2016
 C                     Revised hrsolver.F by Golam Sarwar, December, 2007
 C                             rearranged a statement suggested by CARB
 C                             to reduce the chance of code crash; it does
 C                             not change results
+=======
+C  REVISION HISTORY: Created by EBI solver program, May 26, 2017
+>>>>>>> master
 C   21 Jun 10 J.Young: convert for Namelist redesign
 C   18 Jul 14 B.Hutzell: revised 1) to use the RXNS_DATA and RXNS_FUNCTION
 C                        modules instead of include files and 2) to use
@@ -64,6 +68,10 @@ C..PARAMETERS:
       INTEGER, PARAMETER :: MXBKUPS = 5  ! Max no. of back-ups allowed
       INTEGER, PARAMETER :: STAT    = 1  ! Status code
 
+<<<<<<< HEAD
+=======
+      REAL( 8 ), PARAMETER :: DTMIN   = 1.0D-08    ! Smallest time step allowed, min
+>>>>>>> master
       REAL( 8 ), PARAMETER :: EPSLON  = 1.0D-30    ! Small number
       REAL( 8 ), PARAMETER :: MAXPRED = 1.0D+03    ! Upper limit on predicted conc
       REAL( 8 ), PARAMETER :: ZERO    = 1.0D-40    ! effective zero
@@ -74,7 +82,12 @@ C..EXTERNAL FUNCTIONS:
 C..SAVED LOCAL VARIABLES:
       CHARACTER( 16 ),      SAVE :: PNAME  = 'HRSOLVER' ! Program name
       LOGICAL,              SAVE :: LFIRST = .TRUE.     ! Flag for first call
-      LOGICAL, ALLOCATABLE, SAVE :: LEBISPFL( : )       ! Flag for EBI species
+      LOGICAL, ALLOCATABLE, SAVE :: LEBISPFL( : )       ! Convergence Error Flag for EBI species
+      LOGICAL, ALLOCATABLE, SAVE :: MAXCONC ( : )       ! MAXCONC ERROR Flag for EBI species
+      LOGICAL, ALLOCATABLE, SAVE :: NOTMAX  ( : )       ! Initial concentration not greater than MAXPRED
+
+      REAL( 8 ), ALLOCATABLE, SAVE :: RERROR  ( : )     ! Relative Error
+      REAL( 8 ), ALLOCATABLE, SAVE :: AERROR  ( : )     ! Absolute Error
 
 
 C..SCRATCH LOCAL VARIABLES:
@@ -126,6 +139,31 @@ C**********************************************************************
              MSG = 'Error allocating LEBISPFL'
              CALL M3EXIT( PNAME, JDATE, JTIME, MSG, XSTAT1 )
           END IF
+
+          ALLOCATE ( MAXCONC( NUMB_MECH_SPC ), STAT = ERR )
+          IF ( ERR .NE. 0 ) THEN
+             MSG = 'Error allocating MAXCONC'
+             CALL M3EXIT( PNAME, JDATE, JTIME, MSG, XSTAT1 )
+          END IF
+
+          ALLOCATE ( NOTMAX( NUMB_MECH_SPC ), STAT = ERR )
+          IF ( ERR .NE. 0 ) THEN
+             MSG = 'Error allocating NOTMAX'
+             CALL M3EXIT( PNAME, JDATE, JTIME, MSG, XSTAT1 )
+          END IF
+
+          ALLOCATE ( RERROR( NUMB_MECH_SPC ), STAT = ERR )
+          IF ( ERR .NE. 0 ) THEN
+             MSG = 'Error allocating ERROR'
+             CALL M3EXIT( PNAME, JDATE, JTIME, MSG, XSTAT1 )
+          END IF
+
+          ALLOCATE ( AERROR( NUMB_MECH_SPC ), STAT = ERR )
+          IF ( ERR .NE. 0 ) THEN
+             MSG = 'Error allocating AERROR'
+             CALL M3EXIT( PNAME, JDATE, JTIME, MSG, XSTAT1 )
+          END IF
+
        END IF
 
 
@@ -154,7 +192,7 @@ c      IF( JTIME .EQ. 160000 ) THEN
            WRITE( DBGOUT, '( A, F7.2) ' )
      &             'EBI_TMSTEP = ', EBI_TMSTEP
            WRITE( DBGOUT, '( A )' ) 'Starting concs and rate constants'
-           DO N = 1, N_SPEC
+           DO N = 1, NUMB_MECH_SPC
              WRITE( DBGOUT,  '( A, I3, 1X, A, 1X, 1PD13.5 )' )
      &                     'SP ',N, CHEMISTRY_SPC( N ), YC( N )
            END DO
@@ -171,6 +209,23 @@ c++++++++++++++++++++++++Debug section++++++++++++++++++++++++++++++++++
       N_EBI_IT = 0
       DTC      = EBI_TMSTEP
 
+<<<<<<< HEAD
+=======
+      N_EBI_IT    = 0
+      NBKUPS      = 0
+      N_INR_STEPS = 1
+      NEBI        = 1
+      LEBI_CONV   = .TRUE.
+
+      DO S = 1, NUMB_MECH_SPC
+         IF( YC( S ) .LE. MAXPRED )THEN
+           NOTMAX( S ) = .TRUE.
+         ELSE
+           NOTMAX( S ) = .FALSE.
+           WRITE(LOGDEV,91000)C, R, L, CHEMISTRY_SPC(S), YC(S)
+         END IF
+      END DO
+>>>>>>> master
 
       DO 3000 NEBI = 1, N_EBI_STEPS    ! outer EBI time-step loop
 
@@ -181,9 +236,10 @@ c++++++++++++++++++++++++Debug section++++++++++++++++++++++++++++++++++
 
          DO 2000 NINR = 1, N_INR_STEPS   ! No. of time steps for back-up
 
-            FORALL( S = 1:N_SPEC )YC0( S ) = YC( S )   ! Set ICs for EBI iterations
+            IF( LEBI_CONV ) FORALL( S = 1:NUMB_MECH_SPC )YC0( S ) = YC( S )   ! Set ICs for EBI iterations
 
             DO 1000 ITER = 1, NEBITER    ! EBI iteration loop
+
 
                N_EBI_IT = N_EBI_IT + 1
                CALL HRRATES
@@ -246,18 +302,35 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c  Check for convergence
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
                LEBI_CONV = .TRUE.
+<<<<<<< HEAD
                MXFL = .FALSE.
                DO S = 1, N_SPEC
+=======
+               MXFL      = .FALSE.
+
+               DO S = 1, NUMB_MECH_SPC
+>>>>>>> master
                   LEBISPFL( S ) = .FALSE.
                   YCP( S ) = MAX( ZERO, YCP( S ) )
-                  IF(ABS(YC(S)-YCP(S)) .GT. RTOL(S)*(YC(S)+YCP(S)))THEN
+                  AERROR( S ) = ABS( YC(S)-YCP(S) )
+                  RERROR( S ) = AERROR( S ) / ABS( YC(S)+YCP(S) )
+                   IF( RERROR( S ) .GT. RTOL(S) .OR. AERROR( S ) .GT. 1.0D-5 )THEN
+!                 IF( RERROR( S ) .GT. RTOL(S)  )THEN
                      LEBI_CONV     = .FALSE.
                      LEBISPFL( S ) = .TRUE.
                   END IF
+<<<<<<< HEAD
 c..if predictions growing too large, treat as a convergence failure
                   IF( YCP( S ) .GT. MAXPRED ) THEN
                      MXFL = .TRUE.
                      GO TO 1010
+=======
+c..test if predictions growing too large
+                  IF( YCP( S ) .GT. MAXPRED .AND. NOTMAX( S ) ) THEN
+                     MXFL          = .TRUE.
+                     LEBI_CONV     = .FALSE.
+                     LEBISPFL( S ) = .TRUE.
+>>>>>>> master
                   END IF
                   YC( S ) = YCP( S )
                END DO
@@ -266,7 +339,7 @@ c++++++++++++++++++++++++Debug section++++++++++++++++++++++++++++++++++
 #ifdef hrdebug
                IF( LDEBUG ) THEN
                   WRITE( DBGOUT, '( A, I5 )' ) 'Concs after ITER= ', ITER
-                  DO S = 1, N_SPEC
+                  DO S = 1, NUMB_MECH_SPC
 
                      IF( LEBISPFL( S ) ) THEN
                         NOTE = 'CONV FAIL'
@@ -300,14 +373,31 @@ c.....start inner loop over unless max backups exceeded
             IF( NBKUPS .LE. MXBKUPS ) THEN
 
                IF ( MXFL ) THEN
+<<<<<<< HEAD
                   WRITE( LOGDEV, 92010 ) C, R, L, TRIM( CHEMISTRY_SPC( S ) ), NBKUPS
+=======
+                  WRITE( LOGDEV, 92008 ) NBKUPS
+                  WRITE( LOGDEV, 92009 ) C, R, L
+                  DO S = 1, NUMB_MECH_SPC
+                     IF( LEBISPFL( S ) )WRITE( LOGDEV, 92010 )TRIM( CHEMISTRY_SPC( S ) ),
+     &               YC0(S), YCP(S)
+                  END DO
+>>>>>>> master
                ELSE
                   WRITE( LOGDEV, 92000 ) C, R, L, NBKUPS
+                  DO S = 1, NUMB_MECH_SPC
+                     IF( LEBISPFL( S ) )WRITE( LOGDEV, 92010 )TRIM( CHEMISTRY_SPC( S ) ),
+     &               YC0(S), YCP(S)
+                  END DO
                END IF
 
+<<<<<<< HEAD
                DO S = 1, N_SPEC
                   YC( S ) = YC0( s )
                END DO
+=======
+               FORALL( S = 1:NUMB_MECH_SPC )YC( S ) = YC0( S )   ! Set ICs for EBI time-step
+>>>>>>> master
 
                DTC = 0.5D0 * DTC
 
@@ -320,8 +410,9 @@ c.....start inner loop over unless max backups exceeded
                WRITE( LOGDEV, 92040 ) C, R, L
 
                WRITE( LOGDEV, 92060 )
-               DO S = 1, N_SPEC
-                  IF( LEBISPFL( S ) ) WRITE( LOGDEV, 92080 ) CHEMISTRY_SPC( S )
+               DO S = 1, NUMB_MECH_SPC
+                  IF( LEBISPFL( S ) ) WRITE( LOGDEV, 92080 ) CHEMISTRY_SPC( S ),
+     &            YC0(S), YCP(S)
                END DO
 
                MSG = 'ERROR: Stopping because of EBI convergence failures'
@@ -336,25 +427,44 @@ c.....start inner loop over unless max backups exceeded
       RETURN
 
 
+91000 FORMAT( 'WARNING: EBI solver in cell (',2(I4,','),I4,') Init.Conc. for ',
+     &         A16, ' = ', ES12.4,' ppmV')
+
 92000 FORMAT( 'WARNING: EBI Euler convergence failure' /
      &        '         Reducing EBI time step because of ',
      &         'convergence failure for ' /
      &        '         Cell (', I3, ', ', I3, ', ', I3, ')' ,
+<<<<<<< HEAD
      &        '  Back-up number', I2 )
+=======
+     &        '         Solution Attempt #', I2 /
+     &        '         Below Species Causing Error: Init.Conc, Pred.Conc.'  )
+>>>>>>> master
 
 92010 FORMAT( 'WARNING: EBI Euler convergence failure' /
      &        '         Reducing EBI time step because of ',
      &         'MAXPRED convergence failure for ' /
      &        '         Cell (', I3, ', ', I3, ', ', I3, ')' ,
+<<<<<<< HEAD
      &        ' and species ', A,
      &        '  Back-up number', I2 )
+=======
+     &        '         for the below species: : Init.Conc, Pred.Conc.')
+92010 FORMAT( A16, 2(1X,ES12.4), ' ppmV'  )
+>>>>>>> master
 
 92040 FORMAT( 'ERROR: Max number of EBI time step reductions exceeded'
      &      / '      Convergence failure for cell (', I3, ', ', I3,
      &                ', ', I3, ')' )
 
-92060 FORMAT( '      Convergence failure for the following species:' )
+92060 FORMAT( '      Convergence failure for the following species:',
+     &        'Init.Conc, Pred.Conc.' )
 
-92080 FORMAT( 10X, A )
+92080 FORMAT( 10X, A, 2(1X,ES12.4), ' ppmV ' )
+
+92061 FORMAT( '      Convergence failure for the following species:',
+     &        'Init.Conc, Pred.Conc.,Rel.Error,' )
+
+92081 FORMAT( 10X, A, 2(1X,ES12.4), ' ppmV ', ES12.4,'%' )
 
       END

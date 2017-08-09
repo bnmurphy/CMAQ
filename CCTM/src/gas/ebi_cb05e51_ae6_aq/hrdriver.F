@@ -29,11 +29,15 @@ C**********************************************************************
 C
 C  FUNCTION: Driver subroutine for Euler Backward Iterative solver
 C
-C  PRECONDITIONS: For the CB05E51 family of mechanisms
+C  PRECONDITIONS: For the CB05e51 family of mechanisms
 C
 C  KEY SUBROUTINES/FUNCTIONS CALLED:  HRINIT, PHOT, HRCALCKS, HRSOLVER
 C
+<<<<<<< HEAD
 C  REVISION HISTORY: Created by EBI solver program, June 29, 2016
+=======
+C  REVISION HISTORY: Created by EBI solver program, May 26, 2017
+>>>>>>> master
 C                       Based on the algorithm in "Test of Two Numerical
 C                       Schemes for Use in Atmospheric Transport-Chemistry
 C                       Models", O. Hertel, R. Berkowicz, J. Christensen,
@@ -86,8 +90,9 @@ C..Arguments:
       INTEGER TSTEP( 3 )      ! Time step vector (HHMMSS)
 
 C..Parameters:
-      REAL, PARAMETER :: CONCMIN = 1.0E-30               ! minimum species concentration allowed
-      REAL, PARAMETER :: MAOMV   = 1.0E6 * MWAIR / MWWAT ! Mol Wt of air over Mol Wt of water times
+      REAL( 8 ), PARAMETER :: DCONMIN = 1.0D-30               ! minimum species concentration allowed
+      REAL,      PARAMETER :: CONCMIN = 1.0E-30               ! minimum species concentration allowed
+      REAL,      PARAMETER :: MAOMV   = 1.0E6 * MWAIR / MWWAT ! Mol Wt of air over Mol Wt of water times 1.0E6
 
 C..External Functions:
 
@@ -132,7 +137,10 @@ C..Scratch Local Variables:
       REAL( 8 )  CHEMSTEP     ! Chemistry integration interval (min)
 
 
-      INTEGER     GXOFF, GYOFF            ! global origin offset from file
+      INTEGER       :: GXOFF, GYOFF            ! global origin offset from file
+
+      INTEGER, SAVE :: PECOL_OFFSET        ! Local Column Offset for processor
+      INTEGER, SAVE :: PEROW_OFFSET        ! Local Column Offset for processor
 C for INTERPX
       INTEGER, SAVE :: STRTCOLMC2, ENDCOLMC2, STRTROWMC2, ENDROWMC2
       INTEGER, SAVE :: STRTCOLMC3, ENDCOLMC3, STRTROWMC3, ENDROWMC3
@@ -227,6 +235,11 @@ c..If emissions processing requested stop
          OPEN( UNIT=ISTFL, FILE='iterstat.dat' )
          WRITE( ISTFL, 94020 )
 #endif
+C Define processor offsets
+
+         PECOL_OFFSET = COLSD_PE( 1, MYPE+1 ) - 1
+         PEROW_OFFSET = ROWSD_PE( 1, MYPE+1 ) - 1
+
 
 C.. Get fractional seawater coverage from the OCEAN file.
 
@@ -356,9 +369,13 @@ C.. Get pressure in Pascals
          CALL M3EXIT ( PNAME, JDATE, JTIME, MSG, XSTAT1 )
       END IF
 
-C.. Get photolysis rates in /min
+C.. Get photolysis rates in 1/min
       CALL PHOT ( MIDDATE, MIDTIME, JDATE, JTIME, TSTEP, RJ )
+<<<<<<< HEAD
 C.. Get Heteorogeneous rats
+=======
+C.. Get Heteorogeneous rates and Update Aerosol Distribution Properties
+>>>>>>> master
       CALL HETCHEM_RATES( TA, PRES, QV, CGRID )
 
 ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -415,7 +432,7 @@ c..Get rate constants
 c..Call EBI solver
                N_EBI_IT = 0
 
-               CALL HRSOLVER( JDATE, JTIME, C, R, L )
+               CALL HRSOLVER( JDATE, JTIME, (C+PECOL_OFFSET), (R+PEROW_OFFSET), L )
 
 #ifdef hrstats
                MXEBI  = MAX( MXEBI, N_EBI_IT )
@@ -428,10 +445,10 @@ c..Update concentration array
                DO SPC = 1, NUMB_MECH_SPC
                   S = CGRID_INDEX( SPC )
                   IF( CONVERT_CONC( SPC ) )THEN
-                      CGRID( C,R,L,S ) = MAX( REVERSE_CONV( SPC ) * DENS( C,R,L )
-     &                                 * REAL( YC( SPC ), 4), CONCMIN)
+                      CGRID( C,R,L,S ) = REAL( REVERSE_CONV( SPC ) * DENS( C,R,L )
+     &                                 * MAX( YC( SPC ), DCONMIN), 4)
                   ELSE
-                      CGRID( C,R,L,S ) = MAX( REAL( YC( SPC ), 4), CONCMIN)
+                      CGRID( C,R,L,S ) = REAL( MAX( YC( SPC ), DCONMIN), 4)
                   END IF
                END DO
 
@@ -440,7 +457,7 @@ c..Update concentration array
          END DO
       END DO
 
-      !Update Aerosol Surface Area
+!  Update Aerosol Surface Area
       CALL HETCHEM_UPDATE_AERO( CGRID )
 
 #ifdef hrstats

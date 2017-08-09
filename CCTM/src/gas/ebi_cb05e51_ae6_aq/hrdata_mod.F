@@ -29,11 +29,15 @@ C*************************************************************************
 C
 C  FUNCTION:  Mechanism & solver data for EBI solver
 C
-C  PRECONDITIONS: For the CB05E51 family of mechanisms
+C  PRECONDITIONS: For the CB05e51 family of mechanisms
 C
 C  KEY SUBROUTINES/FUNCTIONS CALLED: None
 C
+<<<<<<< HEAD
 C  REVISION HISTORY: Created by EBI solver program, June 29, 2016
+=======
+C  REVISION HISTORY: Created by EBI solver program, May 26, 2017
+>>>>>>> master
 C
 C   18 Jul 14 B.Hutzell: revised to use real(8) variables for solution
 C*************************************************************************

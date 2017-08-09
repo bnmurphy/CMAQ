@@ -322,6 +322,8 @@ C  Defines mapping from CGRID for species concentration and moments.
 C  Revision History:
 C     First version was coded in May 2010 by Steve Howard with
 C     Prakash Bhave, Jeff Young, and Sergey Napelenok.
+C     Jan 2017: Additional error check added to avoid array out of
+C     bounds when additional aerosol species are added. HOT Pye.
 C-----------------------------------------------------------------------
 
       Use cgrid_spcs          ! CGRID mechanism species
@@ -351,18 +353,18 @@ C Local Variables:
       Integer :: n_cgrid2aq
       Integer :: ios
 C Local Variable used to determine what optional TX to add to surrogates
-      Logical :: found_all_modes
-      Integer :: n_missing_tx
-      Integer :: n_which_txadd( nadd_tx )
+      !Logical :: found_all_modes
+      !Integer :: n_missing_tx
+      !Integer :: n_which_txadd( nadd_tx )
 
       Logical, Save :: Firstcall = .True.
       
 C-----------------------------------------------------------------------
 
-      logdev = setup_logdev()
 
       If ( Firstcall ) Then
          Firstcall = .False.
+         logdev    = setup_logdev()
       Else
          Return
       End if
@@ -429,30 +431,29 @@ C...Map aero species
          Call m3exit( 'aq_data_init', 0, 0, xmsg, xstat3 )
       End If
 
-C...Add missing optional aerosol surrogate species      
+C...Populate optional aerosol surrogate species (e.g.
+C   TRACER_AITKEN, TRACER_ACCUM, TRACER_COARSE, 
+C   PHG_AITKEN,    PHG_ACCUM,    PHG_COARSE     )
       Do spc = 1, nadd_tx
          srgaer( spc ) = srgaer_addtx( spc )
       End Do
- 
-      Do var = 1, n_aerospc
 
+C...Initialize aerosol surrogate species from AERO_DATA table
+      Do var = 1, n_aerospc
          spc = nadd_tx + var
          srgaer( spc ) = sur_aer_type( (/' ',' ',' ',' '/), 0.0, 0.0, 0.0 )
 
          ! Skip H2O, H2OP, and SOIL species
          If ( var .Eq. ah2o_idx .Or. var .Eq. ah3op_idx ) Then
-              write(xmsg,'(5(A,1x))')'Skipping AQ surrogate for AEROSPC ',
-     &                               aerospc( spc )%name( 1:n_mode )
+              write(xmsg,'(4(A,1x))')'Skipping AQ surrogate for AEROSPC ',
+     &                               aerospc( spc-nadd_tx )%name( 1:n_mode )
               Call m3warn( 'aq_data_init', 0, 0, xmsg )
               Cycle
          End if
-!        If ( var .Eq. asoil_idx ) Cycle ! SLN 16March2011
 
          Do mode = 1, n_mode
-
             n = index1( aerospc( var )%name( mode ), n_ae_a2aq, aename )
             If ( n .Gt. 0 ) Then
-
                ! Verify that surrogate is new
                new = .True. 
                Do i = 1, spc
@@ -466,12 +467,12 @@ C...Add missing optional aerosol surrogate species
                   srgaer( spc )%molwt = aerospc_mw( var )
                End If
            End If
-
          End Do   ! mode
-
       End Do   ! spc
 
-C...Add additional aerosol surrogate species
+C...Initialize aerosol moment surrogates (i.e.
+C   NUM_AITKEN, NUM_ACCUM, NUM_COARSE,
+C   SRF_AITKEB, SRF_ACCUM, SRF_COARSE )
       Do n = 1, naddaer
          spc = n_aerospc + nadd_tx + n
          srgaer( spc ) = addsrgaer( n )
@@ -565,6 +566,10 @@ C...Create the pointers from CGRID to the aerosol species needed by AQCHEM
                   Call m3mesg( xmsg )
                Else
                   Do isrg = 1, nsrgaer( iaer,n )
+                     If ( isrg .Gt. mxsrg ) Then
+                        xmsg = 'lsrg will index out of bounds. Increase mxsrg in AQ_DATA.F'
+                        Call m3exit( 'AQ_DATA', 0, 0, xmsg, xstat3 )
+                     End If
                      lsrgaer( iaer,n,isrg ) = lsrg( isrg )
 #ifdef verbose_cloud
                      write( logdev,1113 ) cgrid2aq_name( lsrgaer( iaer,n,isrg ) ),
@@ -682,12 +687,12 @@ C...For TXHG version
 
       Write( logdev,'( / 5x, a / )' ) ' --- AQCHEM Gas and Aerosol Species Mapped ---'
 
-1005  Format( / "GASES" / "NGAS = ", i3 / "    name   "," backgrd" // )
-1007  Format( a16, 1x, f8.2 )
-1009  Format( / "AEROSOLS" / "NAER = ", i3 / "    name(1)   ", "    name(2)   ",
-     &        "    name(3)   ", " dens ", " backgrd" // )
-1111  Format( 3(a16,1x), f6.0, 2(1x, f8.2) )
-1113  Format( a16, 1x, i4, 1x, a16, 1x, i4, 1x, i4)     
+C1005  Format( / "GASES" / "NGAS = ", i3 / "    name   "," backgrd" // )
+C1007  Format( a16, 1x, f8.2 )
+C1009  Format( / "AEROSOLS" / "NAER = ", i3 / "    name(1)   ", "    name(2)   ",
+C     &        "    name(3)   ", " dens ", " backgrd" // )
+C1111  Format( 3(a16,1x), f6.0, 2(1x, f8.2) )
+C1113  Format( a16, 1x, i4, 1x, a16, 1x, i4, 1x, i4)     
 1114  Format( / "   CGRID_SPC    ", 1x, "SPC ", 1x, "   SURROGATE   ", 1x, "ISRG", 1x, "IDX " )
 
       Return
@@ -715,8 +720,9 @@ C Local Variables:
       Character( 80 ) :: xmsg
       Integer spc
 
+      idx = 0
       Do spc = 1, ngas      
-         If ( srggas( spc )%name .Eq. Trim( vname ) ) Then
+         If ( srggas( spc )%name .Eq. vname ) Then
             idx = spc
             ! Write( *,'(a,i5)' ) vname, idx
             Return
@@ -751,6 +757,7 @@ C Local Variables:
       Character( 80 ) :: xmsg
       Integer spc, n
 
+      idx = 0
       Do spc = 1, naer
          Do n = 1, n_mode
             ! Write( *,'(a,i5)' ) vname, spc
@@ -797,13 +804,13 @@ C..Includes:
 C..Functions:
 
 C..Parameters:
-      Real, Parameter :: cmin = 1.0E-25   ! minimum concentration for most species
+      Real, Parameter :: cmin = 1.0E-34   ! minimum concentration for most species
 
 C..Arguments:
       Real, Intent( Out ) :: aeconcmin( : ) ! array of minimum concentrations
 
 C..Local Variables:
-      Character( 16 ) :: pname = 'SET_AECONCMIN'   ! program name
+      !Character( 16 ) :: pname = 'SET_AECONCMIN'   ! program name
 
       Integer m        ! mode loop counter
       Integer n        ! aerospc loop counter
