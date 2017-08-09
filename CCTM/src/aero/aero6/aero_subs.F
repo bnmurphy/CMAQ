@@ -957,37 +957,37 @@ C *** Parameters:
       REAL, PARAMETER :: ALPHSULF = 1.0  ! Accommodation coefficient for sulfuric acid
                                          ! see Capaldo et al. (2000)
       REAL, PARAMETER :: ALPHDMA = 1.0   ! Accommodation coefficient for DMA
-      REAL, PARAMETER :: ALPHELVOC= 1.0  ! Accommodation coefficient for ELVOC
+      REAL, PARAMETER :: ALPHHOM= 1.0  ! Accommodation coefficient for HOM
       REAL, PARAMETER :: GAMMA_DMA = 1.0 ! GAMMA DMA
       REAL, PARAMETER :: C_MBTCA =  8.0, H_MBTCA = 12.0, O_MBTCA = 6.0
-      REAL, PARAMETER :: C_ELVOC = 10.0, H_ELVOC = 16.0, O_ELVOC = 9.0 
+      REAL, PARAMETER :: C_HOM = 10.0, H_HOM = 16.0, O_HOM = 9.0 
       REAL, PARAMETER :: SIG_AIR   = 19.7    ! Diffusion Volume of Air [ cm-3 ]
       REAL, PARAMETER :: SIG_SULF  = 75.     ! Diffusion Volume of H2SO4 [ cm-3 ]
       REAL, PARAMETER :: SIG_DMA   = 52.55   ! Diffusion Volume of DMA   [ cm-3 ]
       REAL, PARAMETER :: SIG_MBTCA = 191.58  ! Diffusion Volume of MBTCA [ cm-3 ]
-      REAL, PARAMETER :: SIG_ELVOC = 250.95  ! Diffusion Volume of ELVOC [ cm-3 ]
+      REAL, PARAMETER :: SIG_HOM = 250.95  ! Diffusion Volume of HOM [ cm-3 ]
       
       REAL, PARAMETER :: DIFFSULF = 9.36E-06  ! molecular diffusiviity for sulfuric acid
       REAL         DIFFCORR   ! Correction to DIFFSULF & DIFFORG for pressure
       REAL, SAVE ::DIFFV_SULF ! Correction to DIFFSULF & DIFFORG for pressure
       REAL, SAVE ::DIFFV_DMA  ! Correction to DIFFDMA & DIFFORG for pressure
       REAL, SAVE ::DIFFV_MBTCA! Correction to DIFFMBTCA & DIFFORG for pressure
-      REAL, SAVE ::DIFFV_ELVOC! Correction to DIFFELVOC & DIFFORG for pressure
+      REAL, SAVE ::DIFFV_HOM! Correction to DIFFHOM & DIFFORG for pressure
       REAL         DV_FAC     ! T and P Dependent diffusivity parameter
       REAL         DV_SO4     ! molecular diffusivity of H2SO4 vapor after correction for ambient conditions
       REAL         DV_DMA     ! molecular diffusivity of DMA vapor after correction for ambient conditions
       REAL         DV_MBTCA   ! molecular diffusivity of MBTCA vapor after correction for ambient conditions
-      REAL         DV_ELVOC   ! molecular diffusivity of ELVOC vapor after correction for ambient conditions
+      REAL         DV_HOM   ! molecular diffusivity of HOM vapor after correction for ambient conditions
       REAL, SAVE ::MV_H2SO4   ! molecular volume of H2SO4 vapor after correction for ambient conditions
       REAL, SAVE ::MV_DMA     ! molecular volume of DMA vapor after correction for ambient conditions
       REAL, SAVE ::MV_MBTCA   ! molecular volume of MBTCA vapor after correction for ambient conditions
-      REAL, SAVE ::MV_ELVOC   ! molecular volume of ELVOC vapor after correction for ambient conditions
+      REAL, SAVE ::MV_HOM   ! molecular volume of HOM vapor after correction for ambient conditions
       REAL, SAVE ::DM_H2SO4   ! molecular diameter of H2SO4 vapor after correction for ambient conditions
       REAL, SAVE ::DM_DMA     ! molecular diameter of DMA vapor after correction for ambient conditions
       REAL, SAVE ::DM_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
-      REAL, SAVE ::DM_ELVOC   ! molecular diameter of ELVOC vapor after correction for ambient conditions
+      REAL, SAVE ::DM_HOM   ! molecular diameter of HOM vapor after correction for ambient conditions
       REAL, SAVE ::RHO_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
-      REAL, SAVE ::RHO_ELVOC   ! molecular diameter of ELVOC vapor after correction for ambient conditions
+      REAL, SAVE ::RHO_HOM   ! molecular diameter of HOM vapor after correction for ambient conditions
 
 
 C *** Local Variables:
@@ -1002,13 +1002,13 @@ C *** Inputs to subroutine HCOND3
       REAL          CBAR_DMA      ! molecular velocity of DMA
       REAL, SAVE :: COFCBAR_MBTCA ! Temperature-independent coefficients
       REAL          CBAR_MBTCA    ! molecular velocity of MBTCA
-      REAL, SAVE :: COFCBAR_ELVOC ! Temperature-independent coefficients
-      REAL          CBAR_ELVOC    ! molecular velocity of DMA
+      REAL, SAVE :: COFCBAR_HOM ! Temperature-independent coefficients
+      REAL          CBAR_HOM    ! molecular velocity of DMA
       REAL, SAVE :: SIG_AIR_13    ! Cube root of Air Diffusion volume
       REAL, SAVE :: SIG_SULF_13   ! Cube root of H2SO4 Diffusion volume
       REAL, SAVE :: SIG_DMA_13    ! Cube root of DMA Diffusion volume
       REAL, SAVE :: SIG_MBTCA_13  ! Cube root of MBTCA Diffusion volume
-      REAL, SAVE :: SIG_ELVOC_13  ! Cube root of ELVOC Diffusion volume
+      REAL, SAVE :: SIG_HOM_13  ! Cube root of HOM Diffusion volume
       REAL, SAVE :: MASS_P
       REAL       :: Kn
       REAL       :: Cc
@@ -1029,7 +1029,7 @@ C *** Inputs to subroutine HCOND3
 C *** Outputs from HCOND3: size-dependent term in the condensational-growth 
 C     expressions defined in Equations A13-A14 of [Binkowski & Shankar,1995]
       REAL( 8 ) :: FCONC_SO4( N_MODE,2 )  ! All sizes 2nd and 3rd moments
-      REAL( 8 ) :: FCONC_ELVOC( N_MODE,2 )! All sizes 2nd and 3rd moments
+      REAL( 8 ) :: FCONC_HOM( N_MODE,2 )! All sizes 2nd and 3rd moments
       REAL( 8 ) :: FCONC_DMA( N_MODE,2 )  ! All sizes 2nd and 3rd moments
       REAL( 8 ) :: FCONC_OUT3( 2 )         ! Output for HCOND3, 2nd and 3rd moments
       REAL( 8 ) :: FCONC_OUT( 2 )         ! Output for HCOND3, 2nd and 3rd moments
@@ -1050,15 +1050,15 @@ C *** Variables for new particle formation:
       REAL XNH3               ! NH3 concentration [ ug/m**3 s ]     
       REAL XDMA               ! DMA concentration [ ug/m**3 s ]     
       REAL XMBTCA             ! MBTCA concentration [ ug/m**3 s ]     
-      REAL XELVOC             ! ELVOC concentration [ ug/m**3 s ]     
-      REAL ELVOARATE          ! ELVOA concentration in rate units [ ug/m**3 s ]     
+      REAL XHOM               ! HOM concentration [ ug/m**3 s ]     
+      REAL AHOMRATE           ! AHOM concentration in rate units [ ug/m**3 s ]     
       REAL( 8 ) :: ASURF      ! Aerosol Surfae Area [ m2/m3 ]
       REAL( 8 ) :: CS         ! Sulfuric Acid Condensation Sink [ s-1 ]
       REAL( 8 ) :: JSO4RATE   ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JNH3RATE   ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JDMARATE   ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JMBTCARATE ! particle mass production rate [ ug/m**3 s ]
-      REAL( 8 ) :: JELVOCRATE ! particle mass production rate [ ug/m**3 s ]
+      REAL( 8 ) :: JHOMRATE ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JRATE      ! particle number production rate [ # / m**3 s ]
       REAL( 8 ) :: JM2RATE    ! second moment production rate [ m**2 / m**3 s]
       REAL( 8 ) :: SCONDRATE  ! SO4 condensation rate [ ug/m**3 s ]
@@ -1154,7 +1154,7 @@ C *** Local Saved Variables
       REAL( 8 ), SAVE :: MWH2SO4        ! molecular weight for H2SO4
       REAL( 8 ), SAVE :: MWDMA          ! molecular weight for DMA4
       REAL( 8 ), SAVE :: MWMBTCA        ! molecular weight for MBTCA
-      REAL( 8 ), SAVE :: MWELVOC        ! molecular weight for ELVOC
+      REAL( 8 ), SAVE :: MWHOM        ! molecular weight for HOM
 
       REAL( 8 ), SAVE :: CFAC_ANA
       REAL( 8 ), SAVE :: CFAC_ASO4
@@ -1253,18 +1253,18 @@ C-----------------------------------------------------------------------
          DIFFV_DMA = 1.0d-4 * sqrt( 1. / MWDMA + 1. / MWAIR ) / 
      &                   ( SIG_DMA_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
 
-         ! ELVOC
-         SIG_ELVOC_13 = SIG_ELVOC ** (1./3.)
-         MWELVOC = PRECURSOR_MW( ELVOC_IDX ) ! molecular weight for H2SO4
-         RHO_ELVOC = 1000.0 *( 12.0 + 1.0 * H_ELVOC/C_ELVOC + 16.0 * O_ELVOC/C_ELVOC ) /
-     &                       ( 7.0 + 5.0 * H_ELVOC/C_ELVOC + 4.15 * O_ELVOC/C_ELVOC )
-         MV_ELVOC  = 1.0e-3 * MWELVOC / REAL( AVO * RHO_ELVOC,8 ) ! Volume of ELVOC Molecule [m**3]
-         DM_ELVOC  = MV_ELVOC ** ( 1./3. ) ! Diameter of ELVOC Molecule [ m ]
-         COFCBAR_ELVOC = SQRT( 8.0 * RGASUNIV / ( PI * MWELVOC * 1.0E-3 ) )
-         SIG_ELVOC_13 = ( SIG_ELVOC ) ** ( 1./3. )
+         ! HOM
+         SIG_HOM_13 = SIG_HOM ** (1./3.)
+         MWHOM = PRECURSOR_MW( HOM_IDX ) ! molecular weight for H2SO4
+         RHO_HOM = 1000.0 *( 12.0 + 1.0 * H_HOM/C_HOM + 16.0 * O_HOM/C_HOM ) /
+     &                       ( 7.0 + 5.0 * H_HOM/C_HOM + 4.15 * O_HOM/C_HOM )
+         MV_HOM  = 1.0e-3 * MWHOM / REAL( AVO * RHO_HOM,8 ) ! Volume of HOM Molecule [m**3]
+         DM_HOM  = MV_HOM ** ( 1./3. ) ! Diameter of HOM Molecule [ m ]
+         COFCBAR_HOM = SQRT( 8.0 * RGASUNIV / ( PI * MWHOM * 1.0E-3 ) )
+         SIG_HOM_13 = ( SIG_HOM ) ** ( 1./3. )
             ! Calculate diff_v  Fuller et al. (1966) method.
-         DIFFV_ELVOC = 1.0d-4 * sqrt( 1. / MWELVOC + 1. / MWAIR ) / 
-     &                   ( SIG_ELVOC_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
+         DIFFV_HOM = 1.0d-4 * sqrt( 1. / MWHOM + 1. / MWAIR ) / 
+     &                   ( SIG_HOM_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
 
          ! MBTCA
          SIG_MBTCA_13 = SIG_MBTCA ** (1./3.)
@@ -1304,7 +1304,7 @@ C     H+ concentration
 
       CBAR_SO4   = COFCBAR_SO4 * SQRT_TEMP
       CBAR_DMA   = COFCBAR_DMA * SQRT_TEMP
-      CBAR_ELVOC = COFCBAR_ELVOC * SQRT_TEMP
+      CBAR_HOM = COFCBAR_HOM * SQRT_TEMP
       CBAR_MBTCA = COFCBAR_MBTCA * SQRT_TEMP
 
 C *** Compute H2SO4 diffusivity, correct for temperature and pressure
@@ -1313,7 +1313,7 @@ C *** Compute H2SO4 diffusivity, correct for temperature and pressure
       DV_FAC   = AIRTEMP **1.75 / ( AIRPRES / STDATMPA )
       DV_SO4   = DIFFV_SULF * DV_FAC
       DV_DMA   = DIFFV_DMA * DV_FAC 
-      DV_ELVOC = DIFFV_ELVOC * DV_FAC 
+      DV_HOM = DIFFV_HOM * DV_FAC 
       DV_MBTCA = DIFFV_MBTCA * DV_FAC
 
       HPLUS = 0.0
@@ -1366,11 +1366,11 @@ C     Equations A13-A14 of Binkowski & Shankar (1995).
 
 
 	     CALL HCOND3( AM0( I ), AM1( I ), AM2( I ),
-     &                DV_ELVOC, ALPHELVOC, CBAR_ELVOC, FCONC_OUT3 )
+     &                DV_HOM, ALPHHOM, CBAR_HOM, FCONC_OUT3 )
          CALL HCOND4( AM0( I ), AM1( I ), AM2( I ),
-     &                DV_ELVOC, DV_P( I ), CBAR_ELVOC, CBAR_P( I ), 
-     &                DM_ELVOC, AEROMODE_DIAM( I ), FCONC_OUT )
-         FCONC_ELVOC( I, : ) = FCONC_OUT( : )
+     &                DV_HOM, DV_P( I ), CBAR_HOM, CBAR_P( I ), 
+     &                DM_HOM, AEROMODE_DIAM( I ), FCONC_OUT )
+         FCONC_HOM( I, : ) = FCONC_OUT( : )
          CONDSINK4_ELV( I ) = FCONC_OUT( 2 )
          CONDSINK3_ELV( I ) = FCONC_OUT3(2 )
 
@@ -1406,7 +1406,7 @@ C *** Initialize Variables
       JNH3RATE   = 0.0D0
       JDMARATE   = 0.0D0
       JMBTCARATE = 0.0D0
-      JELVOCRATE = 0.0D0
+      JHOMRATE = 0.0D0
 
 C *** Produce new particles only during time steps when the gas-phase 
 C     production rate of H2SO4 is non-zero
@@ -1426,16 +1426,16 @@ C     on Equations A21 and A23 of Binkowski & Shankar (1995).
          XH2SO4 = MAX( XH2SO4, CONMIN )
          PRECURSOR_CONC( SULF_IDX ) = REAL( XH2SO4, 8 )
 
-C *** Adjust ELVOC vapor concentration to an equilibrium value as well
+C *** Adjust HOM vapor concentration to an equilibrium value as well
          TMP = 0.0D0
          DO I = 1,N_MODE
-           TMP = TMP + FCONC_ELVOC( I,2 )
+           TMP = TMP + FCONC_HOM( I,2 )
          END DO
 
-         XELVOC = ELVOCRATE / TMP
-         XELVOC = MAX( XELVOC, CONMIN )
-         !XELVOC = PRECURSOR_CONC( ELVOC_IDX )
-         ELVOARATE = AEROSPC_CONC( AELVO1_IDX,IA_ACC )
+         XHOM = HOMRATE / TMP
+         XHOM = MAX( XHOM, CONMIN )
+         !XHOM = PRECURSOR_CONC( HOM_IDX )
+         AHOMRATE = AEROSPC_CONC( AHOM_IDX,IA_ACC )
 
 C *** Calculate new particle production rate for 0th, 2nd, & 3rd moments
 C     from several multicomponent pathways including:
@@ -1451,10 +1451,10 @@ C       Organic-Organic
 
          CALL NPF_MULTI ( REAL(CS), REAL( ASURF ), AIRRH, AIRPRES, 
      &                    AIRTEMP, XH2SO4, SO4RATE,
-     &                    XNH3, XDMA, XMBTCA, XELVOC, ELVOCRATE, ELVOARATE,
+     &                    XNH3, XDMA, XMBTCA, XHOM, HOMRATE, AHOMRATE,
      &                    JRATE, JM2RATE,
      &                    JSO4RATE, JNH3RATE, JDMARATE, JMBTCARATE,
-     &                    JELVOCRATE )
+     &                    JHOMRATE )
          
 C *** Calculate sulfate condensation rate as the gas-phase production 
 C     rate minus the new particle production rate, following Equation
@@ -1467,14 +1467,14 @@ C     New Particle Formation Rates that took Place
          PRECURSOR_CONC( DMA_IDX ) = XDMA - JDMARATE * DELT
          ! Take these species from the aerosol phase instead
          !PRECURSOR_CONC( MBTCA_IDX ) = XMBTCA - JMBTCARATE * DELT
-         !PRECURSOR_CONC( ELVOC_IDX ) = XELVOC - JELVOCRATE * DELT
+         !PRECURSOR_CONC( HOM_IDX ) = XHOM - JHOMRATE * DELT
          
          AM3 = 0.0
          DO IAER = 1,N_AEROSPC
 	       FACTOR = 1.0E-9 * f6pi / AEROSPC( IAER )%density
            AM3 = AM3 + AEROSPC_CONC( IAER, IA_NUC ) * FACTOR
          ENDDO
-         M3_NPF = (JNH3RATE/NH3RAT + JDMARATE + JMBTCARATE + JELVOCRATE)
+         M3_NPF = (JNH3RATE/NH3RAT + JDMARATE + JMBTCARATE + JHOMRATE)
      &             * DELT * 1.0E-9 * f6pi / 1400.0
 
          MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) *
@@ -1483,12 +1483,12 @@ C     New Particle Formation Rates that took Place
          AEROSPC_CONC( ANH4_IDX,IA_NUC ) = AEROSPC_CONC( ANH4_IDX, IA_NUC ) + JNH3RATE/NH3RAT*DELT
          AEROSPC_CONC( ADMA_IDX,IA_NUC ) = AEROSPC_CONC( ADMA_IDX, IA_NUC ) + JDMARATE*DELT
          AEROSPC_CONC( AMBTCA_IDX,IA_NUC ) = AEROSPC_CONC( AMBTCA_IDX, IA_NUC ) + JMBTCARATE*DELT
-         AEROSPC_CONC( AELVO1_IDX,IA_NUC ) = AEROSPC_CONC( AELVO1_IDX, IA_NUC ) + JELVOCRATE*DELT
+         AEROSPC_CONC( AHOM_IDX,IA_NUC ) = AEROSPC_CONC( AHOM_IDX, IA_NUC ) + JHOMRATE*DELT
 
-         ! The ELVOC and MBTCA have Already Been Condensed in ORGAER.
+         ! The HOM and MBTCA have Already Been Condensed in ORGAER.
          ! Take Their Mass from the Accumulation Mode.
          AEROSPC_CONC( AMBTCA_IDX,IA_ACC ) = AEROSPC_CONC( AMBTCA_IDX, IA_ACC ) - JMBTCARATE*DELT
-         AEROSPC_CONC( AELVO1_IDX,IA_ACC ) = AEROSPC_CONC( AELVO1_IDX, IA_ACC ) - JELVOCRATE*DELT
+         AEROSPC_CONC( AHOM_IDX,IA_ACC ) = AEROSPC_CONC( AHOM_IDX, IA_ACC ) - JHOMRATE*DELT
                                   
          !Update Number of Aerosols with New Particle Formation Tendency
          MOMENT0_CONC( IA_NUC ) = AM0( IA_NUC ) + JRATE * DELT

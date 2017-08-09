@@ -569,8 +569,8 @@ C     into precursr_conc in precursor_data
                CALL EXTRACT_PRECURSOR( CGRID( C,R,L,: ) )
 
 C *** Calculate SO4RATE stored in module
-               SO4RATE   = REAL( PRECURSOR_CONC( SULPRD_IDX ), 4 ) / DT
-               ELVOCRATE = REAL( PRECURSOR_CONC( ELVOC_IDX ), 4 ) / DT
+               SO4RATE = REAL( PRECURSOR_CONC( SULPRD_IDX ), 4 ) / DT
+               HOMRATE = REAL( PRECURSOR_CONC( HOM_IDX ), 4 ) / DT
  
                IF ( PHGRXN_IDX .GT. 0 ) THEN
 C *** Calculate PHG_RATE stored in module
@@ -714,7 +714,7 @@ C     diagnostic array (lowest vertical layer only)
                   TEMP_DATA( 77 ) = JDGASDIAG( 5 )        ! NH3 Ternary Change [ug/m3]
                   TEMP_DATA( 78 ) = JDGASDIAG( 6 )        ! DMA Glasoe Change [ug/m3] 
                   TEMP_DATA( 79 ) = JDGASDIAG( 7 )        ! MBTCA Paasonen Change [ug/m3] 
-                  TEMP_DATA( 80 ) = JDGASDIAG( 8 )        ! ELVOC Homogeneous Paasonen Change [ug/m3]
+                  TEMP_DATA( 80 ) = JDGASDIAG( 8 )        ! HOM Homogeneous Paasonen Change [ug/m3]
                   TEMP_DATA( 81 ) = CONDSINK4_SO4( 1 )        ! Nuc Mode Cond. Sink [s-1]
                   TEMP_DATA( 82 ) = CONDSINK4_SO4( 2 )        ! Aitken Mode Cond. Sink [s-1]
                   TEMP_DATA( 83 ) = CONDSINK4_SO4( 3 )        ! Accumulation Mode Cond. Sink [s-1]
