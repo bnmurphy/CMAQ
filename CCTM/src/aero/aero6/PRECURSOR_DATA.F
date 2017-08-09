@@ -86,8 +86,8 @@ C                    ---------   ---------- ------  ------
      & precursor_type( 'PAHNRXN', .True.  , .True., .False. ),
      & precursor_type( 'PAHHRXN', .True.  , .True., .False. ),
      & precursor_type( 'PCSOARXN',.True.  , .True., .False. ),
-     & precursor_type( 'DMA     ', .False. , .True.  ),
-     & precursor_type( 'HOM     ', .False. , .True.  ),
+     & precursor_type( 'DMA     ',.False. , .True., .False. ),
+     & precursor_type( 'HOM     ',.False. , .True., .False. ),
      & precursor_type( 'PHGRXN ', .True.  , .True., .False. )/)
 
 C Required species

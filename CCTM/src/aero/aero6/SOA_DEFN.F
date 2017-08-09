@@ -66,7 +66,7 @@ C-----------------------------------------------------------------------
       
       Implicit None
 
-      Integer, Parameter :: n_vapor_list = 30   ! # of potential partitioning SVOCs
+      Integer, Parameter :: n_vapor_list = 29   ! # of potential partitioning SVOCs
       Integer, Parameter :: n_orgprod    = 13   ! # of ROG rxn counter species
       Integer, Save      :: n_vapor             ! # of actual simulated SOA vapors
 
@@ -199,7 +199,6 @@ C mapping variables used for loading and unloading to CGRID array
       Character ( 16 ) :: tmpName
       Logical, Private, Save :: RXNS_eflag          = .False. ! error flag for RXNS modules used
       Logical, Private, Save :: SOA_eflag           = .False. ! error flag for soa_defn
-      Character ( 16 ) :: tmpName
      
 !     Integer, Save :: pfc = 0   ! possible false soabisect convergence counter
 
@@ -1166,9 +1165,6 @@ C Variables used in equilibrium partitioning calculations
       Real threshold         ! criterion for establishing gas/part equil.
       Logical check          ! flag to indicate if NEWT subroutine
                              ! converged to a spurious root
-      Real totaer            ! total aerosol-phase mass of each semivolaitle component
-      Real Phi               ! mass fraction of a semivolatile component
-                             ! in each mode
 
 C Variables for updating 2nd and 3rd moments
       Real(8) m0_init     ( n_mode-1 )  ! initial 0 moment, wet [ mom/m3 ]

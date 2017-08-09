@@ -501,7 +501,6 @@ C Indices of required species
       Integer :: aseacat_idx
       Integer :: adma_idx
       Integer :: ahom_idx
-      Integer :: ambtca_idx
 
 C Flag if optional species present
       Logical :: ae6isoa = .False.
@@ -863,7 +862,6 @@ C Find indices of required species
       aseacat_idx = findAero( req_seacat, .True. )
       adma_idx    = findAero( req_dma,    .False. )
       ahom_idx    = findAero( req_hom,    .False. )
-      ambtca_idx  = findAero( req_mbtca,  .False. )
 
       If ( Index( mechname, 'NVPOA' ) .Eq. 0 ) Then
          apoc_idx    = findAero( 'ALVPO1          ', .True. )
@@ -985,7 +983,6 @@ C Adjust Dust Emissions list for Organic Species, if running with semivolatile P
 #endif
             End Do
          End Do
->>>>>>> master
       End If
 
 #ifdef verbose_aero

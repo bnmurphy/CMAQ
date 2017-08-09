@@ -344,10 +344,6 @@ C     The VOLINORG subroutine includes the treatment of new particle
 C     production and a fully dynamic treatment of inorganic gas-to-
 C     particle mass transfer.
 
-C *** Compute H2SO4 diffusivity, correct for temperature and pressure
-      DIFFCORR = ( STDATMPA / AIRPRES ) * ( ONE_OVER_TICE * AIRTEMP ) ** 1.75
-      DV_SO4 = DIFFSULF * DIFFCORR
-
 C *** Update size parameters (distribution is wet from ORGAER)
       CALL GETPAR( LIMIT_Sg )
 
@@ -959,34 +955,27 @@ C *** Parameters:
       REAL, PARAMETER :: ALPHDMA = 1.0   ! Accommodation coefficient for DMA
       REAL, PARAMETER :: ALPHHOM= 1.0  ! Accommodation coefficient for HOM
       REAL, PARAMETER :: GAMMA_DMA = 1.0 ! GAMMA DMA
-      REAL, PARAMETER :: C_MBTCA =  8.0, H_MBTCA = 12.0, O_MBTCA = 6.0
       REAL, PARAMETER :: C_HOM = 10.0, H_HOM = 16.0, O_HOM = 9.0 
       REAL, PARAMETER :: SIG_AIR   = 19.7    ! Diffusion Volume of Air [ cm-3 ]
       REAL, PARAMETER :: SIG_SULF  = 75.     ! Diffusion Volume of H2SO4 [ cm-3 ]
       REAL, PARAMETER :: SIG_DMA   = 52.55   ! Diffusion Volume of DMA   [ cm-3 ]
-      REAL, PARAMETER :: SIG_MBTCA = 191.58  ! Diffusion Volume of MBTCA [ cm-3 ]
       REAL, PARAMETER :: SIG_HOM = 250.95  ! Diffusion Volume of HOM [ cm-3 ]
       
       REAL, PARAMETER :: DIFFSULF = 9.36E-06  ! molecular diffusiviity for sulfuric acid
       REAL         DIFFCORR   ! Correction to DIFFSULF & DIFFORG for pressure
       REAL, SAVE ::DIFFV_SULF ! Correction to DIFFSULF & DIFFORG for pressure
       REAL, SAVE ::DIFFV_DMA  ! Correction to DIFFDMA & DIFFORG for pressure
-      REAL, SAVE ::DIFFV_MBTCA! Correction to DIFFMBTCA & DIFFORG for pressure
       REAL, SAVE ::DIFFV_HOM! Correction to DIFFHOM & DIFFORG for pressure
       REAL         DV_FAC     ! T and P Dependent diffusivity parameter
       REAL         DV_SO4     ! molecular diffusivity of H2SO4 vapor after correction for ambient conditions
       REAL         DV_DMA     ! molecular diffusivity of DMA vapor after correction for ambient conditions
-      REAL         DV_MBTCA   ! molecular diffusivity of MBTCA vapor after correction for ambient conditions
       REAL         DV_HOM   ! molecular diffusivity of HOM vapor after correction for ambient conditions
       REAL, SAVE ::MV_H2SO4   ! molecular volume of H2SO4 vapor after correction for ambient conditions
       REAL, SAVE ::MV_DMA     ! molecular volume of DMA vapor after correction for ambient conditions
-      REAL, SAVE ::MV_MBTCA   ! molecular volume of MBTCA vapor after correction for ambient conditions
       REAL, SAVE ::MV_HOM   ! molecular volume of HOM vapor after correction for ambient conditions
       REAL, SAVE ::DM_H2SO4   ! molecular diameter of H2SO4 vapor after correction for ambient conditions
       REAL, SAVE ::DM_DMA     ! molecular diameter of DMA vapor after correction for ambient conditions
-      REAL, SAVE ::DM_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
       REAL, SAVE ::DM_HOM   ! molecular diameter of HOM vapor after correction for ambient conditions
-      REAL, SAVE ::RHO_MBTCA   ! molecular diameter of MBTCA vapor after correction for ambient conditions
       REAL, SAVE ::RHO_HOM   ! molecular diameter of HOM vapor after correction for ambient conditions
 
 
@@ -1000,14 +989,11 @@ C *** Inputs to subroutine HCOND3
       REAL          CBAR_SO4      ! molecular velocity of H2SO4                      
       REAL, SAVE :: COFCBAR_DMA   ! Temperature-independent coefficients
       REAL          CBAR_DMA      ! molecular velocity of DMA
-      REAL, SAVE :: COFCBAR_MBTCA ! Temperature-independent coefficients
-      REAL          CBAR_MBTCA    ! molecular velocity of MBTCA
       REAL, SAVE :: COFCBAR_HOM ! Temperature-independent coefficients
       REAL          CBAR_HOM    ! molecular velocity of DMA
       REAL, SAVE :: SIG_AIR_13    ! Cube root of Air Diffusion volume
       REAL, SAVE :: SIG_SULF_13   ! Cube root of H2SO4 Diffusion volume
       REAL, SAVE :: SIG_DMA_13    ! Cube root of DMA Diffusion volume
-      REAL, SAVE :: SIG_MBTCA_13  ! Cube root of MBTCA Diffusion volume
       REAL, SAVE :: SIG_HOM_13  ! Cube root of HOM Diffusion volume
       REAL, SAVE :: MASS_P
       REAL       :: Kn
@@ -1049,7 +1035,6 @@ C *** Variables for new particle formation:
       REAL XH2SO4             ! steady state H2SO4 concentration [ ug/m**3 s ]     
       REAL XNH3               ! NH3 concentration [ ug/m**3 s ]     
       REAL XDMA               ! DMA concentration [ ug/m**3 s ]     
-      REAL XMBTCA             ! MBTCA concentration [ ug/m**3 s ]     
       REAL XHOM               ! HOM concentration [ ug/m**3 s ]     
       REAL AHOMRATE           ! AHOM concentration in rate units [ ug/m**3 s ]     
       REAL( 8 ) :: ASURF      ! Aerosol Surfae Area [ m2/m3 ]
@@ -1057,7 +1042,6 @@ C *** Variables for new particle formation:
       REAL( 8 ) :: JSO4RATE   ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JNH3RATE   ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JDMARATE   ! particle mass production rate [ ug/m**3 s ]
-      REAL( 8 ) :: JMBTCARATE ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JHOMRATE ! particle mass production rate [ ug/m**3 s ]
       REAL( 8 ) :: JRATE      ! particle number production rate [ # / m**3 s ]
       REAL( 8 ) :: JM2RATE    ! second moment production rate [ m**2 / m**3 s]
@@ -1153,7 +1137,6 @@ C *** Local Saved Variables
       REAL( 8 ), SAVE :: HCLRAT         ! Mol. wt ratios HCL/CL 
       REAL( 8 ), SAVE :: MWH2SO4        ! molecular weight for H2SO4
       REAL( 8 ), SAVE :: MWDMA          ! molecular weight for DMA4
-      REAL( 8 ), SAVE :: MWMBTCA        ! molecular weight for MBTCA
       REAL( 8 ), SAVE :: MWHOM        ! molecular weight for HOM
 
       REAL( 8 ), SAVE :: CFAC_ANA
@@ -1211,11 +1194,9 @@ C-----------------------------------------------------------------------
          M3FAC_H2O  = 1.0D-9 * F6DPI / REAL( AEROSPC( AH2O_IDX )%DENSITY, 8 )
 
          MWH2SO4 = PRECURSOR_MW( SULF_IDX ) ! molecular weight for H2SO4
-         FAERH2SO4 = 1.0E-6 / MWH2SO4
 
          COFCBAR_SO4 = SQRT( 8.0 * RGASUNIV / ( PI * REAL( MWH2SO4,4 ) * 1.0E-3 ) )
          H2SO4RATM1 = AEROSPC_MW( ASO4_IDX ) / MWH2SO4
-         SO4FAC  = 1.0D-9 * F6DPI / REAL( AEROSPC( ASO4_IDX )%DENSITY, 8 )
          SOILFAC = 1.0D-9 * F6DPI / REAL( AEROSPC( ASOIL_IDX )%DENSITY, 8 )
          ANTHFAC = 1.0D-9 * F6DPI / REAL( AEROSPC( ACORS_IDX )%DENSITY, 8 )
 
@@ -1266,20 +1247,6 @@ C-----------------------------------------------------------------------
          DIFFV_HOM = 1.0d-4 * sqrt( 1. / MWHOM + 1. / MWAIR ) / 
      &                   ( SIG_HOM_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
 
-         ! MBTCA
-         SIG_MBTCA_13 = SIG_MBTCA ** (1./3.)
-         MWMBTCA   = PRECURSOR_MW( MBTCA_IDX ) ! molecular weight for H2SO4
-         RHO_MBTCA = 1000.0 *( 12.0 + 1.0 * H_MBTCA/C_MBTCA + 16.0 * O_MBTCA/C_MBTCA ) /
-     &                       ( 7.0 + 5.0 * H_MBTCA/C_MBTCA + 4.15 * O_MBTCA/C_MBTCA )    !kg m-3
-         MV_MBTCA  = 1.0e-3 * MWMBTCA / REAL( AVO * RHO_MBTCA,8 ) ! Volume of MBTCA Molecule [m**3]
-         DM_MBTCA  = MV_MBTCA ** ( 1./3. ) ! Diameter of MBTCA Molecule [ m ]
-         COFCBAR_MBTCA = SQRT( 8.0 * RGASUNIV / ( PI * MWMBTCA * 1.0E-3 ) )
-         SIG_MBTCA_13 = ( SIG_MBTCA ) ** ( 1./3. )
-            ! Calculate diff_v  Fuller et al. (1966) method.
-         DIFFV_MBTCA = 1.0d-4 * sqrt( 1. / MWMBTCA + 1. / MWAIR ) / 
-     &                   ( SIG_MBTCA_13 + SIG_AIR_13 ) ** 2  ! [ m**2 /sec ]
- 
-      
       END IF
 
 C *** Determine if Hybrid
@@ -1305,16 +1272,14 @@ C     H+ concentration
       CBAR_SO4   = COFCBAR_SO4 * SQRT_TEMP
       CBAR_DMA   = COFCBAR_DMA * SQRT_TEMP
       CBAR_HOM = COFCBAR_HOM * SQRT_TEMP
-      CBAR_MBTCA = COFCBAR_MBTCA * SQRT_TEMP
 
 C *** Compute H2SO4 diffusivity, correct for temperature and pressure
-      !DIFFCORR = ( STDATMPA / AIRPRES ) * ( AIRTEMP / 273.16 ) ** 1.75
-      !DV_SO4 = DIFFSULF * DIFFCORR
+      DIFFCORR = ( STDATMPA / AIRPRES ) * ( AIRTEMP / 273.16 ) ** 1.75
+      DV_SO4 = DIFFSULF * DIFFCORR
       DV_FAC   = AIRTEMP **1.75 / ( AIRPRES / STDATMPA )
       DV_SO4   = DIFFV_SULF * DV_FAC
       DV_DMA   = DIFFV_DMA * DV_FAC 
       DV_HOM = DIFFV_HOM * DV_FAC 
-      DV_MBTCA = DIFFV_MBTCA * DV_FAC
 
       HPLUS = 0.0
       DO I = 1, N_MODE
@@ -1405,7 +1370,6 @@ C *** Initialize Variables
       SCONDRATE  = 0.0D0
       JNH3RATE   = 0.0D0
       JDMARATE   = 0.0D0
-      JMBTCARATE = 0.0D0
       JHOMRATE = 0.0D0
 
 C *** Produce new particles only during time steps when the gas-phase 
@@ -1446,14 +1410,13 @@ C       H2SO4-Organic
 C       Organic-Organic
          XNH3 = PRECURSOR_CONC( NH3_IDX )
          XDMA = PRECURSOR_CONC( DMA_IDX )
-         XMBTCA = PRECURSOR_CONC( MBTCA_IDX )
          ASURF = SUM( MOMENT2_CONC( : ) ) * DPI 
 
          CALL NPF_MULTI ( REAL(CS), REAL( ASURF ), AIRRH, AIRPRES, 
      &                    AIRTEMP, XH2SO4, SO4RATE,
-     &                    XNH3, XDMA, XMBTCA, XHOM, HOMRATE, AHOMRATE,
+     &                    XNH3, XDMA, XHOM, HOMRATE, AHOMRATE,
      &                    JRATE, JM2RATE,
-     &                    JSO4RATE, JNH3RATE, JDMARATE, JMBTCARATE,
+     &                    JSO4RATE, JNH3RATE, JDMARATE, 
      &                    JHOMRATE )
          
 C *** Calculate sulfate condensation rate as the gas-phase production 
@@ -1466,7 +1429,6 @@ C     New Particle Formation Rates that took Place
          PRECURSOR_CONC( NH3_IDX ) = XNH3 - JNH3RATE * DELT
          PRECURSOR_CONC( DMA_IDX ) = XDMA - JDMARATE * DELT
          ! Take these species from the aerosol phase instead
-         !PRECURSOR_CONC( MBTCA_IDX ) = XMBTCA - JMBTCARATE * DELT
          !PRECURSOR_CONC( HOM_IDX ) = XHOM - JHOMRATE * DELT
          
          AM3 = 0.0
@@ -1474,7 +1436,7 @@ C     New Particle Formation Rates that took Place
 	       FACTOR = 1.0E-9 * f6pi / AEROSPC( IAER )%density
            AM3 = AM3 + AEROSPC_CONC( IAER, IA_NUC ) * FACTOR
          ENDDO
-         M3_NPF = (JNH3RATE/NH3RAT + JDMARATE + JMBTCARATE + JHOMRATE)
+         M3_NPF = (JNH3RATE/NH3RAT + JDMARATE + JHOMRATE)
      &             * DELT * 1.0E-9 * f6pi / 1400.0
 
          MOMENT2_CONC( IA_NUC ) = MOMENT2_CONC( IA_NUC ) *
@@ -1482,12 +1444,10 @@ C     New Particle Formation Rates that took Place
 
          AEROSPC_CONC( ANH4_IDX,IA_NUC ) = AEROSPC_CONC( ANH4_IDX, IA_NUC ) + JNH3RATE/NH3RAT*DELT
          AEROSPC_CONC( ADMA_IDX,IA_NUC ) = AEROSPC_CONC( ADMA_IDX, IA_NUC ) + JDMARATE*DELT
-         AEROSPC_CONC( AMBTCA_IDX,IA_NUC ) = AEROSPC_CONC( AMBTCA_IDX, IA_NUC ) + JMBTCARATE*DELT
          AEROSPC_CONC( AHOM_IDX,IA_NUC ) = AEROSPC_CONC( AHOM_IDX, IA_NUC ) + JHOMRATE*DELT
 
-         ! The HOM and MBTCA have Already Been Condensed in ORGAER.
+         ! The HOM have Already Been Condensed in ORGAER.
          ! Take Their Mass from the Accumulation Mode.
-         AEROSPC_CONC( AMBTCA_IDX,IA_ACC ) = AEROSPC_CONC( AMBTCA_IDX, IA_ACC ) - JMBTCARATE*DELT
          AEROSPC_CONC( AHOM_IDX,IA_ACC ) = AEROSPC_CONC( AHOM_IDX, IA_ACC ) - JHOMRATE*DELT
                                   
          !Update Number of Aerosols with New Particle Formation Tendency
@@ -2034,7 +1994,7 @@ C     net change in dry 2nd moment is production or loss
          !   Y = M2DRY_INIT( IMODE ) + DDRYM2DT * DELT
          !END IF
          
-         moment2_conc( IMODE ) = REAL( MAX( REAL( AEROMODE_MINM2( IMODE ), 8 ), Y, 4 )
+         moment2_conc( IMODE ) = REAL( MAX( REAL( AEROMODE_MINM2( IMODE ), 8 ), Y ), 4 )
       
       END DO
 
@@ -2063,7 +2023,7 @@ C *** Assign H+ Concentration to each Mode
       ELSE
           AEROSPC_CONC( AH3OP_IDX, IA_NUC:IA_ACC ) = CONMIN
       END IF
-      AEROSPC_CONC( AH3OP_IDX, IA_CRS ) = REAL( HPLUS( IA_CRS, 4 ) * AEROSPC_MW( AH3OP_IDX )  !Coarse mode H+ concentration
+      AEROSPC_CONC( AH3OP_IDX, IA_CRS ) = REAL( HPLUS( IA_CRS ), 4 ) * AEROSPC_MW( AH3OP_IDX )  !Coarse mode H+ concentration
 
 C *** Update the third moments, geometric mean diameters, geometric 
 C     standard deviations, modal mass totals, and modal particle 

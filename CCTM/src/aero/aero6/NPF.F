@@ -28,9 +28,9 @@ C routines for aerosol new particle formation
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE NPF_MULTI ( CS, ASURF, RH, PRESS, TEMP, XSA, SO4RATE,
-     &                       XNH3, XDMA, XMBTCA, XHOM, HOMRATE, AHOMRATE,
+     &                       XNH3, XDMA, XHOM, HOMRATE, AHOMRATE,
      &                       JRATE, M2RATE, DMDT_SO4_TOT, DMDT_NH3_TOT,
-     &                       DMDT_DMA_TOT, DMDT_MBTCA_TOT, DMDT_HOM_TOT)
+     &                       DMDT_DMA_TOT, DMDT_HOM_TOT)
  
       USE AERO_DATA
       USE AEROMET_DATA   ! Includes CONST.EXT
@@ -90,7 +90,6 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL, INTENT(IN)  :: XSA       ! H2SO4 volume concentration [ug/m3]
       REAL, INTENT(IN)  :: XNH3      ! NH3 volume concentration [ug/m3]
       REAL, INTENT(IN)  :: XDMA      ! DMA volume concentration [ug/m3]
-      REAL, INTENT(IN)  :: XMBTCA    ! MBTCA volume concentration [ug/m3]
       REAL, INTENT(IN)  :: XHOM      ! HOM volume concentration [ug/m3]
       REAL, INTENT(IN)  :: SO4RATE   ! H2SO4 production rate [ug/m3/s]
       REAL, INTENT(IN)  :: HOMRATE   ! HOM production rate [ug/m3/s]
@@ -103,7 +102,6 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL(8), INTENT(OUT) :: DMDT_SO4_TOT  ! NPF RATE [ ug / m**3 / sec ]
       REAL(8), INTENT(OUT) :: DMDT_NH3_TOT  ! NPF RATE [ ug / m**3 / sec ]
       REAL(8), INTENT(OUT) :: DMDT_DMA_TOT  ! NPF RATE [ ug / m**3 / sec ]
-      REAL(8), INTENT(OUT) :: DMDT_MBTCA_TOT  ! NPF RATE [ ug / m**3 / sec ]
       REAL(8), INTENT(OUT) :: DMDT_HOM_TOT  ! NPF RATE [ ug / m**3 / sec ]
 
 ! coefficient from Glasoe et al. (2014)
@@ -150,10 +148,10 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL(8)            :: DMDT_SO4_GLASOE, DMDT_SO4_PAAS2, DMDT_SO4_IMN
       REAL(8)            :: DMDT_HOM_PAAS2, DMDT_HOM_ORG, DMDT_HOM_IMN
       REAL(8)            :: DMDT_DMA, DMDT_XORG, DMDT_YORG
-      REAL(8)            :: DMDT_NH3, DMDT_MBTCA, DMDT_HOM
+      REAL(8)            :: DMDT_NH3, DMDT_HOM
       REAL(8)            :: SA_RO, DMA_RO, XORG_RO, YORG_RO
       REAL(8)            :: SA_MW, DMA_MW, XORG_MW, YORG_MW
-      REAL(8)            :: NH3_MW, MBTCA_MW, HOM_MW
+      REAL(8)            :: NH3_MW, HOM_MW, MBTCA_MW
       REAL(8)            :: M_GLASOE, M_PAAS2, M_PAAS3, M_RICCO, M_ORG
       REAL(8)            :: M3_GLASOE, M3_PAAS2, M3_PAAS3, M3_RICCO
       REAL(8)            :: M3_ORG
@@ -162,14 +160,14 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       REAL(8)            :: SA_M_BINARY, SA_M_TERNARY, SA_M_AMINE, SA_M_GLASOE, SA_M_PAAS2
       REAL(8)            :: SA_M_IMN
       REAL(8)            :: DMA_M_AMINE, DMA_M_GLASOE, XORG_M_PAAS2, YORG_M_PAAS3
-      REAL(8)            :: MBTCA_M_PAAS2, HOM_M_PAAS2, HOM_M_ORG, HOM_M_IMN
+      REAL(8)            :: HOM_M_PAAS2, HOM_M_ORG, HOM_M_IMN
       REAL(8)            :: NH3_M_TERNARY
       REAL(8)            :: M20_BINARY, M20_TERNARY, M20_AMINE, M20_IMNSO4, M20_IMNORG
       REAL(8)            :: M2_BINARY, M2_TERNARY, M2_AMINE, M2_GLASOE, M2_PAAS3
       REAL(8)            :: M2_PAAS2, M2_ORG, M2_RICCO, M2_IMN_SO4, M2_IMN_ORG
       REAL(8)            :: MWtot_GLASOE, MWtot_PAAS2, MWtot_PAAS3, MWtot_RICCO, MWtot_ORG
       REAL(8)            :: FAC0, FAC, FAC1, A1TOT
-      REAL(8)            :: DMA, XORG, YORG, NH3, MBTCA, HOM
+      REAL(8)            :: DMA, XORG, YORG, NH3, HOM
       REAL(8)            :: SASQRD, SAORGX, SA2ORGX, ORGYORGY
       REAL(8)            :: J0, J1, J2, J3, J4, J5, J6, J_PAAS3, J_RICCO, J_CGS, J_MKS
       REAL(8)            :: DIFF, A1DIFF, NORM_SO4, NORM_HOM
@@ -199,7 +197,6 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       J4 = 0.0
       J5 = 0.0
       J6 = 0.0
-      DMDT_MBTCA_TOT = 0.0
 
 ! Set key variable FAC0 to convert from ug/m3 to number/cm**3
       FAC0     = AVO * 1.0E-9 * 1.0E-6 
@@ -228,16 +225,14 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ! ideal)  [= kg / m3 ]
       MWtot_GLASOE = 2.0*SA_MW + DMA_MW
       RO_GLASOE    = ( 2.0*SA_MW*SA_RO + 1.0*DMA_MW*DMA_RO ) / MWtot_GLASOE
-      !MWtot_PAAS2  = SA_MW + MBTCA_MW
-      !RO_PAAS2    = ( 1.0*SA_MW*SA_RO + 1.0*MBTCA_MW*XORG_RO ) / MWtot_PAAS2
       MWtot_PAAS2  = SA_MW + HOM_MW
       RO_PAAS2     = ( 1.0*SA_MW*SA_RO + 1.0*HOM_MW*XORG_RO ) / MWtot_PAAS2
       !MWtot_PAAS3  = 2.0 * YORG_MW
       MWtot_PAAS3  = 2.0 * HOM_MW
       MWtot_ORG    = HOM_MW
       RO_ORG       = YORG_RO
-      MWtot_RICCO  = 2.0*SA_MW + MBTCA_MW
-      RO_RICCO     = ( 2.0*SA_MW*SA_RO + 1.0*MBTCA_MW*XORG_RO ) / MWtot_RICCO
+      MWtot_RICCO  = 2.0*SA_MW + HOM_MW
+      RO_RICCO     = ( 2.0*SA_MW*SA_RO + 1.0*HOM_MW*XORG_RO ) / MWtot_RICCO
 
 ! Calculate the mass of each new particle and the mass of each species
 ! per particle
@@ -256,7 +251,6 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SA_M_GLASOE  = SA_MW *  2.0/MWtot_GLASOE * M_GLASOE 
       SA_M_PAAS2   = SA_MW *  1.0/MWtot_PAAS2  * M_PAAS2   ![ug/particle]
       DMA_M_GLASOE = DMA_MW*  1.0/MWtot_GLASOE * M_GLASOE  ![ug/particle]
-      !MBTCA_M_PAAS2 = MBTCA_MW* 1.0/MWtot_PAAS2  * M_PAAS2    ![ug/particle]
       HOM_M_PAAS2= HOM_MW* 1.0/MWtot_PAAS2 * M_PAAS2   ![ug/particle]
       !HOM_M_PAAS3= HOM_MW* 2.0/MWtot_PAAS3 * M_PAAS3   ![ug/particle]
       HOM_M_ORG  = HOM_MW* 1.0/MWtot_ORG   * M_ORG     ![ug/particle]
@@ -265,7 +259,6 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       A1TOT    = XSA      * FAC0 / SA_MW    ! total number of SA 
       NH3      = XNH3     * FAC0 / NH3_MW   ! total number of DMA 
       DMA      = XDMA     * FAC0 / DMA_MW   ! total number of DMA 
-      MBTCA    = XMBTCA   * FAC0 / MBTCA_MW ! total number of MBTCA
       HOM    = XHOM   * FAC0 / HOM_MW ! total number of HOM
       HOM    = MIN( MAX( HOM, 1.0D4 ), 1.0D9 )
       !DIFF     = A1TOT - DMA
@@ -313,7 +306,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       !SAORGX   = A1DIFF   * MBTCA  !For Paasonen et al. (2010) J2
       SAORGX   = A1TOT   * HOM  !For Paasonen et al. (2010) J2
       ORGYORGY = HOM    * HOM  !For Paasonen et al. (2010) J3
-      SA2ORGX  = A1TOT**2 * MBTCA  !For Riccobono et al. (2014) J1_Ricco
+      SA2ORGX  = A1TOT**2 * HOM  !For Riccobono et al. (2014) J1_Ricco
 
 ! Calculate NPF Number Concentration rates in [ N / m**3 / sec ]
       J3       = (1.0E6) * KPAAS_2  * SAORGX         ! For Paasonen et al. (2010) J3
@@ -359,7 +352,6 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ! Calculate the Mass Change for the other Species Involved
       DMDT_NH3_TOT   = J1 * NH3_M_TERNARY  ![ug/m3/s]
       DMDT_DMA_TOT   = J2 * DMA_M_AMINE    ![ug/m3/s]
-      !DMDT_MBTCA_TOT = J3 * MBTCA_M_PAAS2 ![ug/m3/s]
       DMDT_HOM_TOT = J3 * HOM_M_PAAS2 + J4 * HOM_M_ORG 
      &               + J6 * HOM_M_IMN    ![ug/m3/s]
 
@@ -439,7 +431,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       JDGASDIAG(4) = DMDT_SO4_PAAS2
       JDGASDIAG(5) = DMDT_NH3_TOT
       JDGASDIAG(6) = DMDT_DMA_TOT
-      JDGASDIAG(7) = DMDT_MBTCA_TOT
+      JDGASDIAG(7) = 0.0
       JDGASDIAG(8) = DMDT_HOM_TOT
 
        
