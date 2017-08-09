@@ -152,8 +152,8 @@ C 09/17/14 change by Kathleen Fahey - see Revision History, above
 C Geometric standard deviation of emitted particles in each mode, as
 C described in paragraph #14 of Binkowski & Roselle (2003)
 C 09/17/14 change by Kathleen Fahey - see Revision History, above
-      Real, Parameter :: sgem( n_mode ) = (/ 1.4, 1.7, 1.7, 2.2 /)
-      Real, Parameter :: def_sigma_g( n_mode ) = (/ 1.40, 1.70, 2.0, 2.2 /)       ! default background sigma-g for each mode
+      Real,    Parameter :: sgem( n_mode ) = (/ 1.4, 1.7, 1.7, 2.2 /)
+      Real,    Parameter :: def_sigma_g( n_mode ) = (/ 1.40, 1.70, 2.0, 2.2 /)       ! default background sigma-g for each mode
       Real,    Parameter :: min_sigma_g = 1.05
       Real,    Parameter :: max_sigma_g = 2.5001
       Real,    Save      :: def_l2sg( n_mode ), max_l2sg, min_l2sg   
@@ -548,7 +548,6 @@ C                  ----------  -------  -------- -------  ------
      &   mode_type('NUMACC ', 'SRFACC ', conmin,  conmin, conmin),
      &   mode_type('NUMCOR ', 'SRFCOR ', conmin,  conmin, conmin)/)
 
-
       Real          :: moment0_conc( n_mode )     ! 0th moment concentration
       Real          :: moment1_conc( n_mode )     ! 1st moment concentration
       Real          :: moment2_conc( n_mode )     ! 2nd moment concentration
@@ -902,14 +901,14 @@ C Adjust Dust Emissions list for Organic Species, if running with semivolatile P
       If ( Index( mechname, 'NVPOA' ) .Eq. 0 ) Then
          ! Find Indices for Nonvolatile Organics
          Do idust = 1, ndust_list
-            If ( Index( dust_spc_list( idust )%name( 2 ), 'APOCJ' ) .Gt. 0 ) dust_org1 = idust
-            If ( Index( dust_spc_list( idust )%name( 2 ), 'APNCOMJ') .Gt. 0 ) dust_org2 = idust
+            If ( Index( dust_spc_list( idust )%name( IA_ACC ), 'APOCJ' ) .Gt. 0 ) dust_org1 = idust
+            If ( Index( dust_spc_list( idust )%name( IA_ACC ), 'APNCOMJ') .Gt. 0 ) dust_org2 = idust
          End Do
 
          ! Compute Total Organic Dust Scale Factor and O:C Ratio
          ! The dust OM:OC should equal 1.4 if it consistent with Simon and Bhave (2011).
-         dust_POC = dust_spc_list( dust_org1 )%spcfac( 2 )
-         dust_PNC = dust_spc_list( dust_org2 )%spcfac( 2 )
+         dust_POC = dust_spc_list( dust_org1 )%spcfac( IA_ACC )
+         dust_PNC = dust_spc_list( dust_org2 )%spcfac( IA_ACC )
          dust_OMOC = ( dust_POC + dust_PNC ) / dust_POC
          dust_OC = 12.0 / 15.0 * dust_OMOC - 14.0 / 15.0
 
@@ -923,10 +922,10 @@ C Adjust Dust Emissions list for Organic Species, if running with semivolatile P
          dust_OOA = 1.0 / ( 1.0 + ( dust_OC - OOA_OC ) / ( POA_OC - dust_OC ) )
 
          ! Assign new names and speciation to dust table
-         dust_spc_list( dust_org1 )%name( 2 ) = 'ALVPO1J'
-         dust_spc_list( dust_org2 )%name( 2 ) = 'ALVOO2J'
-         dust_spc_list( dust_org1 )%spcfac( 2 ) = dust_POA * ( dust_POC + dust_PNC )
-         dust_spc_list( dust_org2 )%spcfac( 2 ) = dust_OOA * ( dust_POC + dust_PNC )
+         dust_spc_list( dust_org1 )%name( IA_ACC ) = 'ALVPO1J'
+         dust_spc_list( dust_org2 )%name( IA_ACC ) = 'ALVOO2J'
+         dust_spc_list( dust_org1 )%spcfac( IA_ACC ) = dust_POA * ( dust_POC + dust_PNC )
+         dust_spc_list( dust_org2 )%spcfac( IA_ACC ) = dust_OOA * ( dust_POC + dust_PNC )
       End If
 
 ! Determine map between aero_spc dust emissions and the dust emission listndust_spc

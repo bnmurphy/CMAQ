@@ -199,6 +199,7 @@ C mapping variables used for loading and unloading to CGRID array
       Character ( 16 ) :: tmpName
       Logical, Private, Save :: RXNS_eflag          = .False. ! error flag for RXNS modules used
       Logical, Private, Save :: SOA_eflag           = .False. ! error flag for soa_defn
+      Character ( 16 ) :: tmpName
      
 !     Integer, Save :: pfc = 0   ! possible false soabisect convergence counter
 
@@ -531,8 +532,12 @@ C aerosol modes.
      &      'soa_defn: vapor species'
 #endif     
          Do spc = 1, n_vapor
-             
            If ( vaporspc( spc )%soa_name .Ne. ' ' ) Then
+#ifdef verbose_soa
+             Write( logdev,'( 5x, a20, i4 )' ) Trim(vaporspc( spc )%soa_name) // ':', 
+     &                                       soa_aeroMap( spc )
+#endif
+             If( soa_aeroMap( spc ) .Lt. 1 ) write(logdev,99904) Trim( vaporspc( spc )%name )
              Do imode = ia_nuc, ia_crs
                tmpName = trim(vaporspc( spc )%soa_name) // size_subscript( imode )
                If ( soa_aeroMap( spc ) .EQ. 0 ) Then
@@ -567,6 +572,10 @@ C (aerospc is used inside findAero).
            If ( orgprod( spc )%aerospc .Ne. ' ' ) Then
              Do imode = ia_nuc, ia_crs
                tmpName = trim( orgprod( spc )%aerospc ) // size_subscript( imode )
+#ifdef verbose_soa
+               Write( logdev,'( 5x, a20, i4 )' ) Trim(orgprod( spc )%aerospc) // ':', 
+     &                                       orgprod_aeroMap( spc )
+#endif               
                If ( orgprod_aeroMap( spc ) .EQ. 0 ) Then
                  orgprod_aeroMap( spc ) = findAero( tmpName, .False. )
                End If
@@ -1501,7 +1510,7 @@ C Constrain caer to values between conmin and ctotf
             If ( soa_aeroMap( i ) .Lt. 1 ) Cycle
             indx = soa_aeroMap( i )
             aerospc_conc( indx, 1:n_mode ) = conmin
-            Do im = 1, n_mode
+            Do im = ia_nuc, ia_acc
               If ( .Not. aero_missing( indx,im ) ) Then
                   caer( i ) =  conmin + caer( i )
               End If

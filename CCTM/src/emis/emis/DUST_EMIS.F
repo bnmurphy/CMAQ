@@ -1279,24 +1279,24 @@ C 2nd moment multiplied by PI to obtain the surface area emissions rate.
 
                n = n + 8
 
-! accum and coarse mode number density emissions
+               ! accum and coarse mode number density emissions
                diagv( n+1 ) = dustoutn( ia_acc,c,r )
                diagv( n+2 ) = dustoutn( ia_crs,c,r )
-! accum and coarse mode surface area density emissions
+               ! accum and coarse mode surface area density emissions
                diagv( n+3 ) = dustouts( ia_acc,c,r )
                diagv( n+4 ) = dustouts( ia_crs,c,r )
               
                n = n + 4
                m = 0
                do v = 1, ndust_spc
-                  if ( trim( dust_spc( v )%name( 2 ) ) .ne. ' ' ) then  ! accum. mode mass emissions
+                  if ( trim( dust_spc( v )%name( ia_ait ) ) .ne. ' ' ) then  ! accum. mode mass emissions
                      m = m + 1
                      diagv( m+n ) = dustoutm( v,ia_acc,c,r )
                   end if
                end do
 
                do v = 1, ndust_spc
-                  if ( trim( dust_spc( v )%name( 3 ) ) .ne. ' ' ) then  ! coarse mode mass emissions
+                  if ( trim( dust_spc( v )%name( ia_acc ) ) .ne. ' ' ) then  ! coarse mode mass emissions
                      m = m + 1
                      diagv( m+n ) = dustoutm( v,ia_crs,c,r )
                   end if
