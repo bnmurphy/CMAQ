@@ -29,15 +29,11 @@ C**********************************************************************
 C
 C  FUNCTION:  To solve for the concentration of NO3 and N2O5
 C
-C  PRECONDITIONS: For the CB05e51 family of mechanisms
+C  PRECONDITIONS: For the CB05E51 family of mechanisms
 C
 C  KEY SUBROUTINES/FUNCTIONS CALLED: None
 C
-<<<<<<< HEAD
-C  REVISION HISTORY: Created by EBI solver program, June 29, 2016
-=======
-C  REVISION HISTORY: Created by EBI solver program, May 26, 2017
->>>>>>> master
+C  REVISION HISTORY: Created by EBI solver program, Aug  9, 2017
 C
 C   18 Jul 14 B.Hutzell: revised to use real(8) variables
 C**********************************************************************
