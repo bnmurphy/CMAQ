@@ -256,6 +256,7 @@ C *** flag for PMDIAG and APMDIAG file [F], default
       LOGICAL, SAVE :: APMDIAG
       LOGICAL, SAVE :: AVISDIAG
 
+
 C *** first pass flag
       LOGICAL, SAVE :: FIRSTIME = .TRUE.
       LOGICAL, SAVE :: FIRST_CTM_VIS_1 = .TRUE.
