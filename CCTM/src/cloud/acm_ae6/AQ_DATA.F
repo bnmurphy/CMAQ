@@ -138,15 +138,15 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 C... Additional Aerosol surrogate species to add to aerosol list
       Type ( sur_aer_type ), private :: addsrgaer( naddaer ) = (/
-C                         Nucltn      Aitken           Accum            Coarse        Background MolWt  Density
-C                      ----------   -------------    -------------    -------------    ---------- -----  ------
-!    & sur_aer_type((/'          ','             ', '             ', 'CACO3        '/),   0.0,    100.1, 2200.0),
-!    & sur_aer_type((/'          ','             ', '             ', 'MGCO3        '/),   0.0,     84.3, 2200.0),
-!    & sur_aer_type((/'          ','             ', '             ', 'A3FE         '/),   0.0,     55.8, 2000.0),
-!    & sur_aer_type((/'          ','             ', '             ', 'B2MN         '/),   0.0,     54.9, 2000.0),
-!    & sur_aer_type((/'          ','             ', '             ', 'K            '/),   0.0,     39.1, 2200.0),
-     & sur_aer_type((/'NUM_NUCLN ','NUM_AITKEN   ', 'NUM_ACCUM    ', 'NUM_COARSE   '/),   0.0,      0.0,    1.0),
-     & sur_aer_type((/'SRF_NUCLN ','SRF_AITKEN   ', 'SRF_ACCUM    ', 'SRF_COARSE   '/),   0.0,      0.0,    1.0)/)
+C                         Nucltn      Aitken        Accum         Coarse        Background MolWt  Density
+C                      ----------   ----------    ----------    ----------    ---------- -----  ------
+!    & sur_aer_type((/'          ','          ', '          ', 'CACO3     '/),   0.0,    100.1, 2200.0),
+!    & sur_aer_type((/'          ','          ', '          ', 'MGCO3     '/),   0.0,     84.3, 2200.0),
+!    & sur_aer_type((/'          ','          ', '          ', 'A3FE      '/),   0.0,     55.8, 2000.0),
+!    & sur_aer_type((/'          ','          ', '          ', 'B2MN      '/),   0.0,     54.9, 2000.0),
+!    & sur_aer_type((/'          ','          ', '          ', 'K         '/),   0.0,     39.1, 2200.0),
+     & sur_aer_type((/'NUM_NUCLN ','NUM_AITKEN', 'NUM_ACCUM ', 'NUM_COARSE'/),   0.0,      0.0,    1.0),
+     & sur_aer_type((/'SRF_NUCLN ','SRF_AITKEN', 'SRF_ACCUM ', 'SRF_COARSE'/),   0.0,      0.0,    1.0)/)
 
 C...TX species added to Aerosol surrogate if not found in AE namelist file      
       Type ( sur_aer_type ), private :: srgaer_addtx( nadd_tx ) = (/

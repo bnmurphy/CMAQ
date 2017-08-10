@@ -257,7 +257,7 @@ C                  ---------   ---------   ---------   ---------      --------  
      & dist_type((/'ADMAH    ','ADMAI    ','ADMAJ    ','         '/),'             ',es_0),
      & dist_type((/'AHOMH    ','AHOMI    ','AHOMJ    ','         '/),'             ',es_0),
 
-       ! The following species are associated with the Multi-Pollutant Code
+      ! The following species are associated with the Multi-Pollutant Code
      & dist_type((/'         ','ANII     ','ANIJ     ','         '/), 'NICKEL_F     ',es_fin),   
      & dist_type((/'         ','         ','         ','ANIK     '/), 'NICKEL_C     ',es_cor),   
      & dist_type((/'         ','ACR_VII  ','ACR_VIJ  ','         '/), 'CHROMHEX_F   ',es_fin), 
@@ -304,108 +304,108 @@ C                                  | Tracer      |
 C                          NoM2Wet | | Charge    | OM           
 C                Min_Con Density | | |  | Visdx  |  |  OptSurr  
 C                ------- ------- + + +  + ----- --- +  -------- 
-     & prop_type(cm_so4, 1800.0, F,F,F,-2, 2.2, 4.8,F,'SOLUTE'),  
-     & prop_type(cm_set, 1800.0, F,F,F,-1, 2.4, 5.1,F,'SOLUTE'),
-     & prop_type(cm_set, 2200.0, F,F,F,-1, 1.7, 1.7,F,'SOLUTE'),
-     & prop_type(cm_set, 1800.0, F,F,F, 1, 0.0, 0.0,F,'SOLUTE'),
-     & prop_type(cm_set, 2200.0, F,F,F, 1, 1.7, 1.7,F,'SOLUTE'),
-     & prop_type(cm_set, 2200.0, F,F,F, 2, 1.0, 1.0,F,'DUST  '),
-     & prop_type(cm_set, 2200.0, F,F,F, 1, 1.0, 1.0,F,'DUST  '),
-     & prop_type(cm_set, 2200.0, F,F,F, 2, 1.0, 1.0,F,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),  
-     & prop_type(cm_set, 2200.0, F,F,F, 0,10.0,10.0,F,'SOOT  '),
-     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),
-     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),
-     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),
-     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),
-     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),
-     & prop_type(cm_set, 1000.0, T,F,F, 0, 0.0, 0.0,F,'WATER '),
-     & prop_type(cm_set, 1000.0, T,F,T, 0, 0.0, 0.0,F,'WATER '),
-     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),   
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),  
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1330.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1240.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1240.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1450.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),     
-     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),  
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1550.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),     
-     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),  
-     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 2600.0, F,F,F, 0, 0.6, 0.6,F,'DUST  '),
-     & prop_type(cm_cor, 2200.0, F,F,F, 0, 0.6, 0.6,F,'DUST  '),
-     & prop_type(cm_cor, 2200.0, F,F,F, 1, 1.7, 1.7,F,'SOLUTE'),
-                                                                                                                                  
-       ! Associated with ae6i                                                                                                     
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),     
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),  
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-                                                                                                                                  
-       ! ae6i and cb6                                                                                                             
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),
-                                                                                                                                  
-       ! Semivolatile POA                                                                                                         
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),   
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),  
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-       ! pcSOA                                                                                                                    
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-       ! Organics for ultrafine particle formation                                                           
-     & prop_type(cm_set,  670.0, F,F,F, 1, 4.0, 0.0,F,'SOLUTE'),
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),
-
+     & prop_type(cm_so4, 1800.0, F,F,F,-2, 2.2, 4.8,F,'SOLUTE'),      ! ASO4J    
+     & prop_type(cm_set, 1800.0, F,F,F,-1, 2.4, 5.1,F,'SOLUTE'),      ! ANO3J    
+     & prop_type(cm_set, 2200.0, F,F,F,-1, 1.7, 1.7,F,'SOLUTE'),      ! ACLJ     
+     & prop_type(cm_set, 1800.0, F,F,F, 1, 0.0, 0.0,F,'SOLUTE'),      ! ANH4J    
+     & prop_type(cm_set, 2200.0, F,F,F, 1, 1.7, 1.7,F,'SOLUTE'),      ! ANAJ     
+     & prop_type(cm_set, 2200.0, F,F,F, 2, 1.0, 1.0,F,'DUST  '),      ! AMGJ     
+     & prop_type(cm_set, 2200.0, F,F,F, 1, 1.0, 1.0,F,'DUST  '),      ! AKJ      
+     & prop_type(cm_set, 2200.0, F,F,F, 2, 1.0, 1.0,F,'DUST  '),      ! ACAJ     
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! APOCJ    
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! APNCOMJ  
+     & prop_type(cm_set, 2200.0, F,F,F, 0,10.0,10.0,F,'SOOT  '),      ! AECJ     
+     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),      ! AFEJ     
+     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),      ! AALJ     
+     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),      ! ASIJ     
+     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),      ! ATIJ     
+     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),      ! AMNJ     
+     & prop_type(cm_set, 1000.0, T,F,F, 0, 0.0, 0.0,F,'WATER '),      ! AH2OJ    
+     & prop_type(cm_set, 1000.0, T,F,T, 0, 0.0, 0.0,F,'WATER '),      ! AH3OPJ   
+     & prop_type(cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  '),      ! AOTHRJ   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AALK1J   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AALK2J   
+     & prop_type(cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AXYL1J   
+     & prop_type(cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AXYL2J   
+     & prop_type(cm_set, 1330.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! AXYL3J   
+     & prop_type(cm_set, 1240.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! ATOL1J   
+     & prop_type(cm_set, 1240.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! ATOL2J   
+     & prop_type(cm_set, 1450.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! ATOL3J   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! ABNZ1J   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! ABNZ2J   
+     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! ABNZ3J   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! ATRP1J   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! ATRP2J   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AISO1J   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AISO2J   
+     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! AISO3J   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! ASQTJ    
+     & prop_type(cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! APAH1J   
+     & prop_type(cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! APAH2J   
+     & prop_type(cm_set, 1550.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! APAH3J   
+     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! AOLGAJ   
+     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! AOLGBJ   
+     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! AORGCJ   
+     & prop_type(cm_set, 2600.0, F,F,F, 0, 0.6, 0.6,F,'DUST  '),      ! ASOIL         
+     & prop_type(cm_cor, 2200.0, F,F,F, 0, 0.6, 0.6,F,'DUST  '),      ! ACORS         
+     & prop_type(cm_cor, 2200.0, F,F,F, 1, 1.7, 1.7,F,'SOLUTE'),      ! ASEACAT         
+                                                                                                                                           
+       ! Associated with ae6i                                                                                                              
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AMTNO3J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AISOPNNJ 
+     & prop_type(cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  '),      ! AMTHYDJ  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AIETETJ  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AIEOSJ   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! ADIMJ    
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AIMGAJ   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AIMOSJ   
+                                                                                                                                           
+       ! ae6i and cb6                                                                                                                      
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  '),      ! AGLYJ    
+                                                                                                                                           
+       ! Semivolatile POA                                                                                                                  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ALVPO1J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ASVPO1J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ASVPO2J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ASVPO3J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! AIVPO1J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ALVOO1J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ALVOO2J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ASVOO1J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ASVOO2J  
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ASVOO3J  
+       ! pcSOA                                                                                                                       
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! APCSOJ
+       ! Organics for ultrafine particle formation                                                                    
+     & prop_type(cm_set,  670.0, F,F,F, 1, 4.0, 0.0,F,'SOLUTE'),      ! ADMAJ   
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! AHOMJ         
+                                                                       
        ! The following species are associated with the Multi-Pollutant code
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),   
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),  
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),   
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),  
-     & prop_type(cm_set, 2000.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 1800.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 1800.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),   
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),  
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '), 
-     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ') 
-     & /)                                                                                                                          
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ANIJ     
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ANIK     
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ACR_VIJ               
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ACR_VIK  
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ACR_IIIJ              
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ACR_IIIK 
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ABEJ                  
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ABEK     
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! APBJ                  
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! APBK     
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ADE_OTHRJ             
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ADE_ECJ               
+     & prop_type(cm_set, 2000.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ADE_OCJ               
+     & prop_type(cm_set, 1800.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ADE_NO3J              
+     & prop_type(cm_set, 1800.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ADE_SO4J              
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ADE_K    
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ACDJ                  
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ACDK     
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! AMN_HAPSJ             
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! AMN_HAPSK
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! APHGJ                 
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! APHGK    
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! AASJ                  
+     & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ')       ! AASK     
+     & /)                                                                                                                                   
  
       Type spcs_type
          Character( 16 ) :: name( n_mode )       ! names of aerosol species for each mode
@@ -423,133 +423,10 @@ C                ------- ------- + + +  + ----- --- +  --------
          Real            :: emis_split( n_mode ) ! minimum concentration values for each mode
       End Type spcs_type
 
-C      ! Master List of Aerosol Species and Properties
-      Type( spcs_type ), Parameter :: aerolist( n_aerolist ) = (/
-     &                  aerolist_dist%name,
-     &                  aerolist_prop%min_conc,
-     &                  aerolist_prop%density,
-     &                  aerolist_prop%no_M2WET,
-     &                  aerolist_prop%nonVol_soa,
-     &                  aerolist_prop%tracer,
-     &                  aerolist_prop%charge,
-     &                  aerolist_prop%visual_idx,
-     &                  aerolist_prop%visual_idx_large,
-     &                  aerolist_prop%om,
-     &                  aerolist_prop%optic_surr,
-     &                  aerolist_dist%emis,
-     &                  aerolist_dist%emis_split /)
+C     ! Master List of Aerosol Species and Properties
+ !     Type( spcs_type ), Parameter :: aerolist( n_aerolist ) = (/
+      Type( spcs_type ) :: aerolist( n_aerolist ) 
 
-
-C      ! Master List of Aerosol Species and Properties
-C      Type( spcs_type ), Parameter :: aerolist( n_aerolist ) = (/
-C                                                                          nonVolSOA         Visidx_Large
-C                                                                                |    Charge       |            
-C                  ------------------Name-----------------               NoM2Wet |Tracer|          | OM            Emissions
-C                   Nuc      Aitken    Accum     Coarse     Min_Concs Density |  |  |   | Visidx   |  |  OptSurr   Emis   Splits
-C                  --------- --------- --------- ---------  --------- ------- +  +  +   + ------ --- +  -------- -------- ------
-C     & spcs_type((/'ASO4H    ','ASO4I    ','ASO4J    ','ASO4K    '/), cm_so4, 1800.0, F,F,F,-2, 2.2, 4.8,F,'SOLUTE','PSO4         ',es_ufin),  !1
-C     & spcs_type((/'ANO3H    ','ANO3I    ','ANO3J    ','ANO3K    '/), cm_set, 1800.0, F,F,F,-1, 2.4, 5.1,F,'SOLUTE','PNO3         ',es_ufin),
-C    & spcs_type((/'         ','ACLI     ','ACLJ     ','ACLK     '/), cm_set, 2200.0, F,F,F,-1, 1.7, 1.7,F,'SOLUTE','PCL          ',es_fin),
-C    & spcs_type((/'ANH4H    ','ANH4I    ','ANH4J    ','ANH4K    '/), cm_set, 1800.0, F,F,F, 1, 0.0, 0.0,F,'SOLUTE','PNH4         ',es_ufin),
-C    & spcs_type((/'         ','ANAI     ','ANAJ     ','         '/), cm_set, 2200.0, F,F,F, 1, 1.7, 1.7,F,'SOLUTE','PNA          ',es_fin),
-C    & spcs_type((/'         ','         ','AMGJ     ','         '/), cm_set, 2200.0, F,F,F, 2, 1.0, 1.0,F,'DUST  ','PMG          ',es_acc),
-C    & spcs_type((/'         ','         ','AKJ      ','         '/), cm_set, 2200.0, F,F,F, 1, 1.0, 1.0,F,'DUST  ','PK           ',es_acc),
-C    & spcs_type((/'         ','         ','ACAJ     ','         '/), cm_set, 2200.0, F,F,F, 2, 1.0, 1.0,F,'DUST  ','PCA          ',es_acc),
-C    & spcs_type((/'         ','APOCI    ','APOCJ    ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','POC          ',es_fin),
-C    & spcs_type((/'         ','APNCOMI  ','APNCOMJ  ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','PNCOM        ',es_fin),   !10
-C    & spcs_type((/'         ','AECI     ','AECJ     ','         '/), cm_set, 2200.0, F,F,F, 0,10.0,10.0,F,'SOOT  ','PEC          ',es_fin),
-C    & spcs_type((/'         ','         ','AFEJ     ','         '/), cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  ','PFE          ',es_acc),
-C    & spcs_type((/'         ','         ','AALJ     ','         '/), cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  ','PAL          ',es_acc),
-C    & spcs_type((/'         ','         ','ASIJ     ','         '/), cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  ','PSI          ',es_acc),
-C    & spcs_type((/'         ','         ','ATIJ     ','         '/), cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  ','PTI          ',es_acc),
-C    & spcs_type((/'         ','         ','AMNJ     ','         '/), cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  ','PMN          ',es_acc),
-C    & spcs_type((/'AH2OH    ','AH2OI    ','AH2OJ    ','AH2OK    '/), cm_set, 1000.0, T,F,F, 0, 0.0, 0.0,F,'WATER ','PH2O         ',es_ufin),
-C    & spcs_type((/'AH3OPH   ','AH3OPI   ','AH3OPJ   ','AH3OPK   '/), cm_set, 1000.0, T,F,T, 0, 0.0, 0.0,F,'WATER ','             ',es_0),
-C    & spcs_type((/'         ','AOTHRI   ','AOTHRJ   ','         '/), cm_set, 2200.0, F,F,F, 0, 1.0, 1.0,F,'DUST  ','PMOTHR       ',es_fin),   
-C    & spcs_type((/'         ','         ','AALK1J   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),     !20
-C    & spcs_type((/'         ','         ','AALK2J   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AXYL1J   ','         '/), cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AXYL2J   ','         '/), cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'AXYL3H   ','AXYL3I   ','AXYL3J   ','         '/), cm_set, 1330.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','ATOL1J   ','         '/), cm_set, 1240.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','ATOL2J   ','         '/), cm_set, 1240.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'ATOL3H   ','ATOL3I   ','ATOL3J   ','         '/), cm_set, 1450.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','ABNZ1J   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','ABNZ2J   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),     
-C    & spcs_type((/'ABNZ3H   ','ABNZ3I   ','ABNZ3J   ','         '/), cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),     !30
-C    & spcs_type((/'         ','         ','ATRP1J   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','ATRP2J   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AISO1J   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AISO2J   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'AISO3H   ','AISO3I   ','AISO3J   ','         '/), cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'ASQTH    ','ASQTI    ','ASQTJ    ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','APAH1J   ','         '/), cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','APAH2J   ','         '/), cm_set, 1480.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'APAH3H   ','APAH3I   ','APAH3J   ','         '/), cm_set, 1550.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),     
-C    & spcs_type((/'         ','         ','AOLGAJ   ','         '/), cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),     !40
-C    & spcs_type((/'         ','         ','AOLGBJ   ','         '/), cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AORGCJ   ','         '/), cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','         ','ASOIL    '/), cm_set, 2600.0, F,F,F, 0, 0.6, 0.6,F,'DUST  ','             ',es_cor),
-C    & spcs_type((/'         ','         ','         ','ACORS    '/), cm_cor, 2200.0, F,F,F, 0, 0.6, 0.6,F,'DUST  ','PMC          ',es_cor),
-C    & spcs_type((/'         ','         ','         ','ASEACAT  '/), cm_cor, 2200.0, F,F,F, 1, 1.7, 1.7,F,'SOLUTE','             ',es_cor),
-C                                                                                                                                 
-C      ! Associated with ae6i                                                                                                     
-C    & spcs_type((/'         ','         ','AMTNO3J  ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AISOPNNJ ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AMTHYDJ  ','         '/), cm_set, 1400.0, F,T,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AIETETJ  ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),     
-C    & spcs_type((/'         ','         ','AIEOSJ   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),     !50
-C    & spcs_type((/'         ','         ','ADIMJ    ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AIMGAJ   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','AIMOSJ   ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C                                                                                                                                 
-C      ! ae6i and cb6                                                                                                             
-C    & spcs_type((/'         ','         ','AGLYJ    ','         '/), cm_set, 1400.0, F,F,F, 0, 2.8, 6.1,T,'DUST  ','             ',es_0),
-C                                                                                                                                 
-C      ! Semivolatile POA                                                                                                         
-C    & spcs_type((/'ALVPO1H  ','ALVPO1I  ','ALVPO1J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','POC          ',es_ufin),
-C    & spcs_type((/'         ','ASVPO1I  ','ASVPO1J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','POC          ',es_fin),
-C    & spcs_type((/'         ','ASVPO2I  ','ASVPO2J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','POC          ',es_fin),
-C    & spcs_type((/'         ','         ','ASVPO3J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','POC          ',es_acc),
-C    & spcs_type((/'         ','         ','AIVPO1J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','POC          ',es_acc),   
-C    & spcs_type((/'ALVOO1H  ','ALVOO1I  ','ALVOO1J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','             ',es_0),     !60
-C    & spcs_type((/'ALVOO2H  ','ALVOO2I  ','ALVOO2J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','ASVOO1I  ','ASVOO1J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','ASVOO2I  ','ASVOO2J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','             ',es_0),
-C    & spcs_type((/'         ','         ','ASVOO3J  ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','             ',es_0),
-C      ! pcSOA                                                                                                                    
-C    & spcs_type((/'APCSOH   ','APCSOI   ','APCSOJ   ','         '/), cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','             ',es_0),
-C      ! Organics for ultrafine particle formation                                                                                
-C    & spcs_type((/'ADMAH    ','ADMAI    ','ADMAJ    ','          '/),cm_set,  670.0, F,F,F, 1, 4.0, 0.0,F,'SOLUTE','             ',es_0),
-C    & spcs_type((/'AHOMH    ','AHOMI    ','AHOMJ    ','          '/),cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  ','             ',es_0),
-C
-C      ! The following species are associated with the Multi-Pollutant code
-C    & spcs_type((/'         ','ANII     ','ANIJ     ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','NICKEL_F     ',es_fin),   
-C    & spcs_type((/'         ','         ','         ','ANIK     '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','NICKEL_C     ',es_cor),   !70
-C    & spcs_type((/'         ','ACR_VII  ','ACR_VIJ  ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','CHROMHEX_F   ',es_fin), 
-C    & spcs_type((/'         ','         ','         ','ACR_VIK  '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','CHROMHEX_C   ',es_cor), 
-C    & spcs_type((/'         ','ACR_IIII ','ACR_IIIJ ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','CHROMTRI_F   ',es_fin), 
-C    & spcs_type((/'         ','         ','         ','ACR_IIIK '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','CHROMTRI_C   ',es_cor), 
-C    & spcs_type((/'         ','ABEI     ','ABEJ     ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','BERYLLIUM_F  ',es_fin), 
-C    & spcs_type((/'         ','         ','         ','ABEK     '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','BERYLLIUM_C  ',es_cor), 
-C    & spcs_type((/'         ','APBI     ','APBJ     ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','LEAD_F       ',es_fin), 
-C    & spcs_type((/'         ','         ','         ','APBK     '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','LEAD_C       ',es_cor), 
-C    & spcs_type((/'         ','ADE_OTHRI','ADE_OTHRJ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','DIESEL_PMFINE',es_fin),   
-C    & spcs_type((/'         ','ADE_ECI  ','ADE_ECJ  ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','DIESEL_PMEC  ',es_fin),   !80
-C    & spcs_type((/'         ','ADE_OCI  ','ADE_OCJ  ','         '/), cm_set, 2000.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','DIESEL_PMOC  ',es_fin), 
-C    & spcs_type((/'         ','         ','ADE_NO3J ','         '/), cm_set, 1800.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','DIESEL_PMNO3 ',es_acc), 
-C    & spcs_type((/'         ','         ','ADE_SO4J ','         '/), cm_set, 1800.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','DIESEL_PMSO4 ',es_acc), 
-C    & spcs_type((/'         ','         ','         ','ADE_K    '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','DIESEL_PMC   ',es_cor), 
-C    & spcs_type((/'         ','ACDI     ','ACDJ     ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','CADMIUM_F    ',es_fin), 
-C    & spcs_type((/'         ','         ','         ','ACDK     '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','CADMIUM_C    ',es_cor), 
-C    & spcs_type((/'         ','AMN_HAPSI','AMN_HAPSJ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','MANGANESE_F  ',es_fin), 
-C    & spcs_type((/'         ','         ','         ','AMN_HAPSK'/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','MANGANESE_C  ',es_cor),   
-C    & spcs_type((/'         ','APHGI    ','APHGJ    ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','PHGI         ',es_fin), 
-C    & spcs_type((/'         ','         ','         ','APHGK    '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','             ',es_0),     !90
-C    & spcs_type((/'         ','AASI     ','AASJ     ','         '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','ARSENIC_F    ',es_fin), 
-C    & spcs_type((/'         ','         ','         ','AASK     '/), cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  ','ARSENIC_C    ',es_cor) 
-C    & /)                                                                                                                          
- 
       ! Create Array of Aerosol Species to Be Filled with Species Requested By User
       Type( spcs_type ), Allocatable, Save :: aerospc ( : )
 
@@ -613,34 +490,34 @@ C maximum number of chemical species in windblown dust aerosol
 
        
       Type( emis_table ) :: dust_spc_list( ndust_list ) = (/
-C                    --description--           -------- name --------             -------- spcfac --------
-C                                        Nuc    Aitken     accum       coarse          Nuc  Aitken  accum   coarse
-     &   emis_table( 'Sulfate       ', (/'  ','         ','ASO4J    ','ASO4K    '/), (/ 0.0, 0.0, 0.02250, 0.02655/) ),   ! Sulfate
-     &   emis_table( 'Nitrate       ', (/'  ','         ','ANO3J    ','ANO3K    '/), (/ 0.0, 0.0, 0.00020, 0.00160/) ),   ! Nitrate
-     &   emis_table( 'Chlorine      ', (/'  ','         ','ACLJ     ','ACLK     '/), (/ 0.0, 0.0, 0.00945, 0.01190/) ),   ! Chlorine
-     &   emis_table( 'Ammonium      ', (/'  ','         ','ANH4J    ','         '/), (/ 0.0, 0.0, 0.00005, 0.0    /) ),   ! Ammonium
-     &   emis_table( 'Sodium        ', (/'  ','         ','ANAJ     ','         '/), (/ 0.0, 0.0, 0.03935, 0.0    /) ),   ! Sodium
-     &   emis_table( 'Calcium       ', (/'  ','         ','ACAJ     ','         '/), (/ 0.0, 0.0, 0.07940, 0.0    /) ),   ! Calcium
-     &   emis_table( 'Magnesium     ', (/'  ','         ','AMGJ     ','         '/), (/ 0.0, 0.0, 0.01900, 0.0    /) ),   ! Magnesium
-     &   emis_table( 'Potassium     ', (/'  ','         ','AKJ      ','         '/), (/ 0.0, 0.0, 0.03770, 0.0    /) ),   ! Potassium
-     &   emis_table( 'Org. Carbon   ', (/'  ','         ','APOCJ    ','         '/), (/ 0.0, 0.0, 0.01075, 0.0    /) ),   ! Organic Carbon
-     &   emis_table( 'NonCarbon Org.', (/'  ','         ','APNCOMJ  ','         '/), (/ 0.0, 0.0, 0.00430, 0.0    /) ),   ! Non-Carbon Organic Matter
-     &   emis_table( 'Black Carbon  ', (/'  ','         ','AECJ     ','         '/), (/ 0.0, 0.0, 0.0,     0.0    /) ),   ! Black or Elemental Carbon
-     &   emis_table( 'Iron          ', (/'  ','         ','AFEJ     ','         '/), (/ 0.0, 0.0, 0.03355, 0.0    /) ),   ! Iron
-     &   emis_table( 'Aluminum      ', (/'  ','         ','AALJ     ','         '/), (/ 0.0, 0.0, 0.05695, 0.0    /) ),   ! Aluminum
-     &   emis_table( 'Silcon        ', (/'  ','         ','ASIJ     ','         '/), (/ 0.0, 0.0, 0.19425, 0.0    /) ),   ! Silicon
-     &   emis_table( 'Titanum       ', (/'  ','         ','ATIJ     ','         '/), (/ 0.0, 0.0, 0.00280, 0.0    /) ),   ! Titanium
-     &   emis_table( 'Manganese     ', (/'  ','         ','AMNJ     ','         '/), (/ 0.0, 0.0, 0.00115, 0.0    /) ),   ! Manganese
-     &   emis_table( 'Water         ', (/'  ','         ','AH2OJ    ','AH2OK    '/), (/ 0.0, 0.0, 0.00541, 0.00637/) ),   ! Water
-     &   emis_table( 'Undefined Mass', (/'  ','         ','AOTHRJ   ','         '/), (/ 0.0, 0.0, 0.48319, 0.0    /) ),   ! Other
-     &   emis_table( 'Non-Anion Dust', (/'  ','         ','         ','ASOIL    '/), (/ 0.0, 0.0, 0.0,     0.95358/) ),   ! Non-Anion Dust
-     &   emis_table( 'Air Toxics Mn ', (/'  ','         ','AMN_HAPSJ','AMN_HAPSK'/), (/ 0.0, 0.0, 0.00041, 0.00041/) ),   ! Air toxics Manganese J and K mode
-     &   emis_table( 'Nickel        ', (/'  ','         ','ANIJ     ','ANIK     '/), (/ 0.0, 0.0, 2.0E-05, 2.0E-05/) ),   ! Nickel J and K mode
-     &   emis_table( 'Chromium III  ', (/'  ','         ','ACR_IIIJ ','ACR_IIIK '/), (/ 0.0, 0.0, 5.6E-05, 5.6E-05/) ),   ! Trivalent Chromium J and K mode
-     &   emis_table( 'Arsenic       ', (/'  ','         ','AASJ     ','AASK     '/), (/ 0.0, 0.0, 5.5E-06, 5.5E-06/) ),   ! Arsenic J and K mode
-     &   emis_table( 'Lead          ', (/'  ','         ','APBJ     ','APBK     '/), (/ 0.0, 0.0, 1.6E-05, 1.6E-05/) ),   ! Lead J and K mode
-     &   emis_table( 'Cadmium       ', (/'  ','         ','ACDJ     ','ACDK     '/), (/ 0.0, 0.0, 9.7E-08, 9.7E-08/) ),   ! Cadmium J and K mode
-     &   emis_table( 'Mercury       ', (/'  ','         ','APHGJ    ','APHGK    '/), (/ 0.0, 0.0, 1.4E-08, 1.4E-08/) ) /) ! Mercury J and K mode
+C                    --description--                -------- name --------                     -------- spcfac --------
+C                                        Nuc           Aitken     accum       coarse          Nuc  Aitken  accum   coarse
+     &   emis_table( 'Sulfate       ', (/'         ','         ','ASO4J    ','ASO4K    '/), (/ 0.0, 0.0, 0.02250, 0.02655/) ),   ! Sulfate
+     &   emis_table( 'Nitrate       ', (/'         ','         ','ANO3J    ','ANO3K    '/), (/ 0.0, 0.0, 0.00020, 0.00160/) ),   ! Nitrate
+     &   emis_table( 'Chlorine      ', (/'         ','         ','ACLJ     ','ACLK     '/), (/ 0.0, 0.0, 0.00945, 0.01190/) ),   ! Chlorine
+     &   emis_table( 'Ammonium      ', (/'         ','         ','ANH4J    ','         '/), (/ 0.0, 0.0, 0.00005, 0.0    /) ),   ! Ammonium
+     &   emis_table( 'Sodium        ', (/'         ','         ','ANAJ     ','         '/), (/ 0.0, 0.0, 0.03935, 0.0    /) ),   ! Sodium
+     &   emis_table( 'Calcium       ', (/'         ','         ','ACAJ     ','         '/), (/ 0.0, 0.0, 0.07940, 0.0    /) ),   ! Calcium
+     &   emis_table( 'Magnesium     ', (/'         ','         ','AMGJ     ','         '/), (/ 0.0, 0.0, 0.01900, 0.0    /) ),   ! Magnesium
+     &   emis_table( 'Potassium     ', (/'         ','         ','AKJ      ','         '/), (/ 0.0, 0.0, 0.03770, 0.0    /) ),   ! Potassium
+     &   emis_table( 'Org. Carbon   ', (/'         ','         ','APOCJ    ','         '/), (/ 0.0, 0.0, 0.01075, 0.0    /) ),   ! Organic Carbon
+     &   emis_table( 'NonCarbon Org.', (/'         ','         ','APNCOMJ  ','         '/), (/ 0.0, 0.0, 0.00430, 0.0    /) ),   ! Non-Carbon Organic Matter
+     &   emis_table( 'Black Carbon  ', (/'         ','         ','AECJ     ','         '/), (/ 0.0, 0.0, 0.0,     0.0    /) ),   ! Black or Elemental Carbon
+     &   emis_table( 'Iron          ', (/'         ','         ','AFEJ     ','         '/), (/ 0.0, 0.0, 0.03355, 0.0    /) ),   ! Iron
+     &   emis_table( 'Aluminum      ', (/'         ','         ','AALJ     ','         '/), (/ 0.0, 0.0, 0.05695, 0.0    /) ),   ! Aluminum
+     &   emis_table( 'Silcon        ', (/'         ','         ','ASIJ     ','         '/), (/ 0.0, 0.0, 0.19425, 0.0    /) ),   ! Silicon
+     &   emis_table( 'Titanum       ', (/'         ','         ','ATIJ     ','         '/), (/ 0.0, 0.0, 0.00280, 0.0    /) ),   ! Titanium
+     &   emis_table( 'Manganese     ', (/'         ','         ','AMNJ     ','         '/), (/ 0.0, 0.0, 0.00115, 0.0    /) ),   ! Manganese
+     &   emis_table( 'Water         ', (/'         ','         ','AH2OJ    ','AH2OK    '/), (/ 0.0, 0.0, 0.00541, 0.00637/) ),   ! Water
+     &   emis_table( 'Undefined Mass', (/'         ','         ','AOTHRJ   ','         '/), (/ 0.0, 0.0, 0.48319, 0.0    /) ),   ! Other
+     &   emis_table( 'Non-Anion Dust', (/'         ','         ','         ','ASOIL    '/), (/ 0.0, 0.0, 0.0,     0.95358/) ),   ! Non-Anion Dust
+     &   emis_table( 'Air Toxics Mn ', (/'         ','         ','AMN_HAPSJ','AMN_HAPSK'/), (/ 0.0, 0.0, 0.00041, 0.00041/) ),   ! Air toxics Manganese J and K mode
+     &   emis_table( 'Nickel        ', (/'         ','         ','ANIJ     ','ANIK     '/), (/ 0.0, 0.0, 2.0E-05, 2.0E-05/) ),   ! Nickel J and K mode
+     &   emis_table( 'Chromium III  ', (/'         ','         ','ACR_IIIJ ','ACR_IIIK '/), (/ 0.0, 0.0, 5.6E-05, 5.6E-05/) ),   ! Trivalent Chromium J and K mode
+     &   emis_table( 'Arsenic       ', (/'         ','         ','AASJ     ','AASK     '/), (/ 0.0, 0.0, 5.5E-06, 5.5E-06/) ),   ! Arsenic J and K mode
+     &   emis_table( 'Lead          ', (/'         ','         ','APBJ     ','APBK     '/), (/ 0.0, 0.0, 1.6E-05, 1.6E-05/) ),   ! Lead J and K mode
+     &   emis_table( 'Cadmium       ', (/'         ','         ','ACDJ     ','ACDK     '/), (/ 0.0, 0.0, 9.7E-08, 9.7E-08/) ),   ! Cadmium J and K mode
+     &   emis_table( 'Mercury       ', (/'         ','         ','APHGJ    ','APHGK    '/), (/ 0.0, 0.0, 1.4E-08, 1.4E-08/) ) /) ! Mercury J and K mode
 
       Type( emis_table ), Allocatable :: dust_spc( : )
         
@@ -653,23 +530,23 @@ C number of chemical species in seawater aerosol composition
       integer, parameter :: nsea_spc = 15
 
       Type( emis_table ), Parameter :: sea_spc( nsea_spc ) = (/
-C                     -description--            -------- name --------                -------- spcfac --------
-C                                        Nuc    Aitken    accum     coarse             Nuc Aitken  accum   coarse
-     &   emis_table( 'Sulfate       ', (/' ','         ','ASO4J    ','ASO4K    '/), (/ 0.0, 0.0, 0.07760, 0.07760/) ),   ! Sulfate
-     &   emis_table( 'Chlorine      ', (/' ','         ','ACLJ     ','ACLK     '/), (/ 0.0, 0.0, 0.55380, 0.55380/) ),   ! Chlorine
-     &   emis_table( 'Sodium        ', (/' ','         ','ANAJ     ','         '/), (/ 0.0, 0.0, 0.30860, 0.0    /) ),   ! Sodium
-     &   emis_table( 'Calcium       ', (/' ','         ','ACAJ     ','         '/), (/ 0.0, 0.0, 0.01180, 0.0    /) ),   ! Calcium
-     &   emis_table( 'Magnesium     ', (/' ','         ','AMGJ     ','         '/), (/ 0.0, 0.0, 0.03680, 0.0    /) ),   ! Magnesium
-     &   emis_table( 'Potassium     ', (/' ','         ','AKJ      ','         '/), (/ 0.0, 0.0, 0.01140, 0.0    /) ),   ! Potassium
-     &   emis_table( 'SeaSalt_Cation', (/' ','         ','         ','ASEACAT  '/), (/ 0.0, 0.0, 0.0    , 0.36860/) ),   ! Sea-Salt Cations
-     &   emis_table( 'Chromium IV   ', (/' ','         ','ACR_VIJ  ','ACR_VIK  '/), (/ 0.0, 0.0, 5.95E-9, 5.95E-9/) ),   ! accumaltion and coarse mode Hexavalent Chromium
-     &   emis_table( 'Nickel        ', (/' ','         ','ANIJ     ','ANIK     '/), (/ 0.0, 0.0, 1.34E-8, 1.34E-8/) ),   ! accumaltion and coarse mode Nickle
-     &   emis_table( 'Arsenic       ', (/' ','         ','AASJ     ','AASK     '/), (/ 0.0, 0.0, 4.93E-8, 4.93E-8/) ),   ! accumaltion and coarse mode Arsenic
-     &   emis_table( 'Beryllium     ', (/' ','         ','ABEJ     ','ABEK     '/), (/ 0.0, 0.0, 5.2E-11, 5.2E-11/) ),   ! accumaltion and coarse mode Beryllium
-     &   emis_table( 'Mercury       ', (/' ','         ','APHGJ    ','APHGK    '/), (/ 0.0, 0.0, 5.8E-11, 5.8E-11/) ),   ! accumaltion and coarse mode Mercury
-     &   emis_table( 'Lead          ', (/' ','         ','APBJ     ','APBK     '/), (/ 0.0, 0.0, 6.0E-11, 6.0E-11/) ),   ! accumaltion and coarse mode Lead
-     &   emis_table( 'Cadmium       ', (/' ','         ','ACDJ     ','ACDK     '/), (/ 0.0, 0.0, 1.93E-9, 1.93E-9/) ),   ! accumaltion and coarse mode cadmium
-     &   emis_table( 'Air Toxics Mn ', (/' ','         ','AMN_HAPSJ','AMN_HAPSK'/), (/ 0.0, 0.0, 4.7E-11, 4.7E-11/) ) /) ! accumaltion and coarse mode Air toxics Manganese
+C                     -description--                 -------- name --------                     -------- spcfac --------
+C                                            Nuc        Aitken    accum     coarse             Nuc Aitken  accum   coarse
+     &   emis_table( 'Sulfate       ', (/'         ','         ','ASO4J    ','ASO4K    '/), (/ 0.0, 0.0, 0.07760, 0.07760/) ),   ! Sulfate
+     &   emis_table( 'Chlorine      ', (/'         ','         ','ACLJ     ','ACLK     '/), (/ 0.0, 0.0, 0.55380, 0.55380/) ),   ! Chlorine
+     &   emis_table( 'Sodium        ', (/'         ','         ','ANAJ     ','         '/), (/ 0.0, 0.0, 0.30860, 0.0    /) ),   ! Sodium
+     &   emis_table( 'Calcium       ', (/'         ','         ','ACAJ     ','         '/), (/ 0.0, 0.0, 0.01180, 0.0    /) ),   ! Calcium
+     &   emis_table( 'Magnesium     ', (/'         ','         ','AMGJ     ','         '/), (/ 0.0, 0.0, 0.03680, 0.0    /) ),   ! Magnesium
+     &   emis_table( 'Potassium     ', (/'         ','         ','AKJ      ','         '/), (/ 0.0, 0.0, 0.01140, 0.0    /) ),   ! Potassium
+     &   emis_table( 'SeaSalt_Cation', (/'         ','         ','         ','ASEACAT  '/), (/ 0.0, 0.0, 0.0    , 0.36860/) ),   ! Sea-Salt Cations
+     &   emis_table( 'Chromium IV   ', (/'         ','         ','ACR_VIJ  ','ACR_VIK  '/), (/ 0.0, 0.0, 5.95E-9, 5.95E-9/) ),   ! accumaltion and coarse mode Hexavalent Chromium
+     &   emis_table( 'Nickel        ', (/'         ','         ','ANIJ     ','ANIK     '/), (/ 0.0, 0.0, 1.34E-8, 1.34E-8/) ),   ! accumaltion and coarse mode Nickle
+     &   emis_table( 'Arsenic       ', (/'         ','         ','AASJ     ','AASK     '/), (/ 0.0, 0.0, 4.93E-8, 4.93E-8/) ),   ! accumaltion and coarse mode Arsenic
+     &   emis_table( 'Beryllium     ', (/'         ','         ','ABEJ     ','ABEK     '/), (/ 0.0, 0.0, 5.2E-11, 5.2E-11/) ),   ! accumaltion and coarse mode Beryllium
+     &   emis_table( 'Mercury       ', (/'         ','         ','APHGJ    ','APHGK    '/), (/ 0.0, 0.0, 5.8E-11, 5.8E-11/) ),   ! accumaltion and coarse mode Mercury
+     &   emis_table( 'Lead          ', (/'         ','         ','APBJ     ','APBK     '/), (/ 0.0, 0.0, 6.0E-11, 6.0E-11/) ),   ! accumaltion and coarse mode Lead
+     &   emis_table( 'Cadmium       ', (/'         ','         ','ACDJ     ','ACDK     '/), (/ 0.0, 0.0, 1.93E-9, 1.93E-9/) ),   ! accumaltion and coarse mode cadmium
+     &   emis_table( 'Air Toxics Mn ', (/'         ','         ','AMN_HAPSJ','AMN_HAPSK'/), (/ 0.0, 0.0, 4.7E-11, 4.7E-11/) ) /) ! accumaltion and coarse mode Air toxics Manganese
  
       Real, Allocatable, Save :: aerospc_ssf( :,: )
 
@@ -939,10 +816,32 @@ C Local Variables:
       logdev      = setup_logdev()
       mole_weight = 0.0
 
+      ! Compile all aerosol names and properties into the aerolist
+      ! structure
+      Do spc = 1, n_aerolist
+        aerolist( spc )%name = aerolist_dist( spc )%name
+        aerolist( spc )%emis_split = aerolist_dist( spc )%emis_split
+        aerolist( spc )%min_conc   = aerolist_prop( spc )%min_conc
+      Enddo
+
+      aerolist%emis       = aerolist_dist%emis 
+      aerolist%density    = aerolist_prop%density
+      aerolist%no_M2WET   = aerolist_prop%no_M2WET
+      aerolist%nonVol_soa = aerolist_prop%nonVol_soa
+      aerolist%tracer     = aerolist_prop%tracer
+      aerolist%charge     = aerolist_prop%charge
+      aerolist%visual_idx = aerolist_prop%visual_idx
+      aerolist%visual_idx_large = aerolist_prop%visual_idx_large
+      aerolist%om         = aerolist_prop%om
+      aerolist%optic_surr = aerolist_prop%optic_surr 
+
+      ! Initialize Counters
       n_aerospc      = 0   ! Number of Used Aerosol Chemical Species
       aerolist_map   = 0   ! Pointer from aerolist to CGRID
       aerospc_tolist = 0   ! Pointer from aerospc to aerolist
       AE_eflag       = .False.
+
+      ! Calculate the square of the natural log of the mode widths
       max_l2sg       = ( LOG( max_sigma_g ) ) ** 2
       min_l2sg       = ( LOG( min_sigma_g ) ) ** 2
       def_l2sg( : )  = ( LOG( def_sigma_g( : ) ) ) ** 2
@@ -1982,7 +1881,7 @@ C *** environment variable for ACDC
          WRITE( LOGDEV, '(5X, A, I9)' ) XMSG, 0
       END IF
  
-      if ( ACDC == .FALSE. ) return
+      if ( ACDC .EQV. .FALSE. ) return
 
 ! Open Amine NPF Table
       funit = getefile( "ACDC_AMINE_FILE", .TRUE., .TRUE., PNAME )
@@ -2016,7 +1915,7 @@ C *** environment variable for ACDC
 
         if ( flteq( CS, 2.0E-01 ) ) then
           CS1 = ACDC_DMA( IAC, IDM, ITK, ICS-1 )
-	      !Renormalize table entry so that DCS==1.0
+          !Renormalize table entry so that DCS==1.0
           ACDC_DMA( IAC, IDM, ITK, ICS ) = CS1 + 5.0*( JVAL - CS1 )
         else
           ACDC_DMA( IAC, IDM, ITK, ICS ) = JVAL
