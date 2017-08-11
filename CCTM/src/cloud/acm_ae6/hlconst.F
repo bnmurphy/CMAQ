@@ -114,7 +114,7 @@ C...........INCLUDES and their descriptions
 
 C...........PARAMETERS and their descriptions:
 
-      INTEGER, PARAMETER :: MXSPCS = 201     ! Number of substances
+      INTEGER, PARAMETER :: MXSPCS = 202     ! Number of substances
       INTEGER, PARAMETER :: MXDSPCS = 19     ! Number of dissociating species
 
 C...pointers for the dissociation constants (array B and D)
@@ -373,14 +373,15 @@ C...  Atmospheric Chemistry and Physics, 1997
       DATA SUBNAME(191), A(191), E(191) / 'ICL             ', 1.10E+02, 0.0E+00 /   ! Wagman et al. (1982)
       DATA SUBNAME(192), A(192), E(192) / 'DMS             ', 4.80E-01, 3.1E+03 /   ! ROLF SANDERS COMPILATION (1999)/De Bryuyn et al. (1995)
       DATA SUBNAME(193), A(193), E(193) / 'MSA             ', 7.70E+04, 0.0E+00 /   ! Meylan and Howard (1991), inverse of the value is used due to unit conversion
-      DATA SUBNAME(194), A(194), E(194) / 'XYLENE          ', 1.90E-01, 4.2E+03  / ! .35/.3/.35 m/o/p, Sander ACP 2015, Staudinger and Roberts (2001) for m; Fogg and Sangster (2003) for o and p
-      DATA SUBNAME(195), A(195), E(195) / 'ETHYLBENZENE    ', 1.42E-01, 4.8E+03 / ! Sander ACP 2015, Fogg Sangster (2003)
-      DATA SUBNAME(196), A(196), E(196) / 'ACRYACID        ', 3.141E+03, 0.0E+00 / ! Sander ACP 2015, Lide Frederikse (1995)
-      DATA SUBNAME(197), A(197), E(197) / 'ACETONITRILE    ', 5.269E+01, 4.0E+03 / ! Sander ACP 2015, Sander et al (2011)
-      DATA SUBNAME(198), A(198), E(198) / 'CHLOROPRENE     ', 4.760E+00, 0.0E+00 / ! Sander ACP 2015, Mackay et al. (1993)
-      DATA SUBNAME(199), A(199), E(199) / 'METHCHLORIDE    ', 1.320E-01, 3.3E+03 / ! Sander ACP 2015, Sander et al. (2011)
-      DATA SUBNAME(200), A(200), E(200) / 'CARBSULFIDE     ', 2.130E-02, 3.3E+03 / ! Sander ACP 2015, Warneck Williams (2012)
-      DATA SUBNAME(201), A(201), E(201) / '6_NITRO_O_CRESOL', 2.938E+01, 0.0E+00 / ! 6-methyl-2-nitrophenol from Sander ACP 2015, Tremp et. al (1992)
+      DATA SUBNAME(194), A(194), E(194) / 'DIMETHYLAMINE   ', 3.14E+01, 4.0E+03 /   ! Dimethylamine (NIST)
+      DATA SUBNAME(195), A(195), E(195) / 'XYLENE          ', 1.90E-01, 4.2E+03  / ! .35/.3/.35 m/o/p, Sander ACP 2015, Staudinger and Roberts (2001) for m; Fogg and Sangster (2003) for o and p
+      DATA SUBNAME(196), A(196), E(196) / 'ETHYLBENZENE    ', 1.42E-01, 4.8E+03 / ! Sander ACP 2015, Fogg Sangster (2003)
+      DATA SUBNAME(197), A(197), E(197) / 'ACRYACID        ', 3.141E+03, 0.0E+00 / ! Sander ACP 2015, Lide Frederikse (1995)
+      DATA SUBNAME(198), A(198), E(198) / 'ACETONITRILE    ', 5.269E+01, 4.0E+03 / ! Sander ACP 2015, Sander et al (2011)
+      DATA SUBNAME(199), A(199), E(199) / 'CHLOROPRENE     ', 4.760E+00, 0.0E+00 / ! Sander ACP 2015, Mackay et al. (1993)
+      DATA SUBNAME(200), A(200), E(200) / 'METHCHLORIDE    ', 1.320E-01, 3.3E+03 / ! Sander ACP 2015, Sander et al. (2011)
+      DATA SUBNAME(201), A(201), E(201) / 'CARBSULFIDE     ', 2.130E-02, 3.3E+03 / ! Sander ACP 2015, Warneck Williams (2012)
+      DATA SUBNAME(202), A(202), E(202) / '6_NITRO_O_CRESOL', 2.938E+01, 0.0E+00 / ! 6-methyl-2-nitrophenol from Sander ACP 2015, Tremp et. al (1992)
 
       DATA B( LSO2   ), D( LSO2   ) / 1.30E-02,  1.96E+03 /  ! SO2*H2O<=>HSO3+H     : Smith and Martell (1976)
       DATA B( LHSO3  ), D( LHSO3  ) / 6.60E-08,  1.50E+03 /  ! HSO3<=>SO3+H         : Smith and Martell (1976)
