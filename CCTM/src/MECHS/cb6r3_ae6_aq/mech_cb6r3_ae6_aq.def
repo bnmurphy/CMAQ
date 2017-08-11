@@ -256,10 +256,10 @@ REACTIONS[CM] =
 ! added TRPRXN to TERP+ O, OH, O3 and NO3
 <R171> TERP + O = 0.15*ALDX + 5.12*PAR + TRPRXN  # 3.60E-11;
 <R172> TERP + OH = 0.75*XO2H + 0.5*XO2 + 0.25*XO2N + 1.5*RO2 + 0.28*FORM 
-              + 1.66*PAR + 0.47*ALDX  + TRPRXN # 1.50E-11@-449;
+              + 1.66*PAR + 0.47*ALDX  + TRPRXN + 0.0044*HOM # 1.50E-11@-449;
 <R173> TERP + O3 = 0.57*OH + 0.07*XO2H + 0.69*XO2 + 0.18*XO2N + 0.94*RO2
                  + 0.24*FORM + 0.001*CO + 7.0*PAR + 0.21*ALDX + 0.39*CXO3  
-                 + TRPRXN # 1.20E-15@821;
+                 + TRPRXN + 0.034*HOM # 1.20E-15@821;
 <R174> TERP + NO3 = 0.47*NO2 + 0.28*XO2H + 0.75*XO2 + 0.25*XO2N + 1.28*RO2 
                   + 0.47*ALDX + 0.53*NTR2 + TRPRXN # 3.70E-12@-175;
 ! added BENZRO2 as tracer for SOA products from BENZENE - used later to account
@@ -469,6 +469,9 @@ REACTIONS[CM] =
 <OLIG_PAH2>       APAH2J = 1.4286*AOLGAJ # 9.48816E-6;
 <OLIG_ALK1>       AALK1J = 1.7143*AOLGAJ # 9.48816E-6;
 <OLIG_ALK2>       AALK2J = 1.7143*AOLGAJ # 9.48816E-6;
+
+!Oxidation of DMA
+<DMA>   DMA    + OH       = OH             # 2.89e-11 @ 58.94;
 
 ! Formation of Potential Combustion SOA (pcSOA)
 <PCSOA>  PCVOC + OH       = OH  + PCSOARXN  # 1.25E-11;

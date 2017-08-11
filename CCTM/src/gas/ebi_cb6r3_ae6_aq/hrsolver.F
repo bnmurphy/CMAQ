@@ -34,9 +34,8 @@ C  PRECONDITIONS: For the CB6R3 family of mechanisms
 C
 C  KEY SUBROUTINES/FUNCTIONS CALLED:  HRRATES, HRG1, HRG2, HRG3
 C                                     HRG4, HRPRODLOSS
-C                                     DEGRADE
 C
-C  REVISION HISTORY: Created by EBI solver program, Mar 10, 2017
+C  REVISION HISTORY: Created by EBI solver program, Aug 10, 2017
 C   21 Jun 10 J.Young: convert for Namelist redesign
 C   18 Jul 14 B.Hutzell: revised 1) to use the RXNS_DATA and RXNS_FUNCTION
 C                        modules instead of include files and 2) to use
@@ -93,7 +92,6 @@ C..SCRATCH LOCAL VARIABLES:
 #ifdef hrdebug
       INTEGER N               ! Loop index
 #endif
-      INTEGER M               ! species index
       INTEGER EBI             ! Loop index
       INTEGER NBKUPS          ! No. of times time step reduced
       INTEGER ERR             ! Allocate error flag
@@ -103,7 +101,6 @@ C..SCRATCH LOCAL VARIABLES:
       LOGICAL MXFL               ! hit MAXPRED flag
 
       REAL( 8 ) DTC              ! Time step to take
-      REAL( 8 ) DTG         ! Time step in degrade routines, sec
       REAL( 8 ) FXDLOSS          ! Total loss due to negative stoichiometry
       REAL( 8 ) VARLOSS          ! Loss excluding negative stoichiometry
 
@@ -120,15 +117,6 @@ C..SCRATCH LOCAL VARIABLES:
       LOGICAL, SAVE  :: LOPEN = .FALSE.
 #endif
 
-      INTERFACE ! for degrade algorithm
-        SUBROUTINE DEGRADE( CBLK, DT, JDATE, JTIME, LOGDEV )
-          REAL( 8 ), INTENT( IN ) :: CBLK( : )      ! array holding species concentrations
-          REAL( 8 ), INTENT( IN ) :: DT             ! time step for integrations [sec]
-          INTEGER,   INTENT( IN ) :: JDATE          ! current model date , coded YYYYDDD
-          INTEGER,   INTENT( IN ) :: JTIME          ! current model time , coded HHMMSS
-          INTEGER,   INTENT( IN ) :: LOGDEV         ! unit number for the log
-        END SUBROUTINE
-      END INTERFACE
 
 C**********************************************************************
 
@@ -282,17 +270,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
      &                     / ( YC( S ) + LOSS( S ) * DTC ) )
                END DO
 
-c..Special treatment of PAR because of negative product stoichiometry
-               IF( PNEG( PAR ) .GT. 0.0D0 ) THEN
-                  FXDLOSS = PNEG( PAR ) * DTC
-                  IF( FXDLOSS .GE. YC0( PAR ) + PROD( PAR ) * DTC ) THEN
-                     YCP( PAR ) = 0.0D0
-                  ELSE
-                     VARLOSS = MAX( LOSS( PAR ) - PNEG( PAR ) , ZERO )
-                     YCP( PAR ) = ( YC0( PAR ) + PROD( PAR ) * DTC  - 
-     &             FXDLOSS ) / ( 1.0D0 + VARLOSS * DTC / YC( PAR ) )
-                  END IF
-               END IF
+
+
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 c  Check for convergence
@@ -343,14 +322,6 @@ c++++++++++++++++++++++++Debug section++++++++++++++++++++++++++++++++++
 c++++++++++++++++++++++++Debug section++++++++++++++++++++++++++++++++++
 
                IF( LEBI_CONV ) THEN
-
-                  DTG = 60.0D0 * DTC
-                  DO S = 1, NUMB_MECH_SPC
-                     M = CGRID_INDEX( S )
-                     YCCELL( M ) = YC( S )
-                  END DO
-                  IF(CALL_DEG)CALL DEGRADE(YCCELL, DTG, JDATE, JTIME, LOGDEV) ! :WTH Call degradation routine
-
                  CYCLE SUBSTEP_EBI ! solve for next sub time-step
                END IF
 
@@ -416,6 +387,7 @@ c++++++++++++++++++++++++Debug section++++++++++++++++++++++++++++++++++
       END DO TSTEP_EBI
 
       RETURN
+
 
 91000 FORMAT( 'WARNING: EBI solver in cell (',2(I4,','),I4,') Init.Conc. for ',
      &         A16, ' = ', ES12.4,' ppmV')

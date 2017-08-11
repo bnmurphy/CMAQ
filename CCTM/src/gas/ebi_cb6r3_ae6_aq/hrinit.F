@@ -34,7 +34,7 @@ C  RETURN VALUES: None
 C
 C  KEY SUBROUTINES/FUNCTIONS CALLED: None
 C
-C  REVISION HISTORY: Created by EBI solver program, Mar 10, 2017
+C  REVISION HISTORY: Created by EBI solver program, Aug 10, 2017
 C   21 Jun 10 J.Young:   convert for Namelist redesign
 C   18 Jul 14 B.Hutzell: revised to use the RXNS_DATA and RXNS_FUNCTION
 C                        modules instead of include files
@@ -81,7 +81,6 @@ C***********************************************************************
      &          YCP(  N_SPEC),
      &          PROD( N_SPEC),
      &          LOSS( N_SPEC),
-     &          PNEG( N_SPEC),
      &          STAT = IOS )
 
        IF ( IOS .NE. 0 ) THEN
@@ -141,16 +140,11 @@ C***********************************************************************
        NING1 = 4
        NING2 = 4
 
-       ALLOCATE( YCCELL( MODEL_SPECIES), STAT = IOS )  ! array for degradation routines
-       IF ( IOS .NE. 0 ) THEN
-          MSG = 'Error allocating YCCELL '
-          CALL M3EXIT( PNAME, 0, 0, MSG, XSTAT1 )
-       END IF
 
 
 c..Allocate and define ebi species
 
-      N_EBISP  = 136
+      N_EBISP  = 138
       ALLOCATE( EBISP( N_EBISP ), STAT = IOS ) 
       IF ( IOS .NE. 0 ) THEN
          MSG = 'Error allocating EBISP' 
@@ -210,89 +204,91 @@ c..Allocate and define ebi species
       EBISP(  51 ) = EPX2
       EBISP(  52 ) = TERP
       EBISP(  53 ) = TRPRXN
-      EBISP(  54 ) = BENZENE
-      EBISP(  55 ) = CRES
-      EBISP(  56 ) = BZO2
-      EBISP(  57 ) = OPEN
-      EBISP(  58 ) = BENZRO2
-      EBISP(  59 ) = TOL
-      EBISP(  60 ) = TO2
-      EBISP(  61 ) = TOLRO2
-      EBISP(  62 ) = XOPN
-      EBISP(  63 ) = XYLMN
-      EBISP(  64 ) = XLO2
-      EBISP(  65 ) = XYLRO2
-      EBISP(  66 ) = NAPH
-      EBISP(  67 ) = PAHRO2
-      EBISP(  68 ) = CRO
-      EBISP(  69 ) = CAT1
-      EBISP(  70 ) = CRON
-      EBISP(  71 ) = OPAN
-      EBISP(  72 ) = ECH4
-      EBISP(  73 ) = CL2
-      EBISP(  74 ) = CL
-      EBISP(  75 ) = HOCL
-      EBISP(  76 ) = CLO
-      EBISP(  77 ) = FMCL
-      EBISP(  78 ) = HCL
-      EBISP(  79 ) = CLNO2
-      EBISP(  80 ) = TOLNRXN
-      EBISP(  81 ) = TOLHRXN
-      EBISP(  82 ) = XYLNRXN
-      EBISP(  83 ) = XYLHRXN
-      EBISP(  84 ) = BNZNRXN
-      EBISP(  85 ) = BNZHRXN
-      EBISP(  86 ) = SESQ
-      EBISP(  87 ) = SESQRXN
-      EBISP(  88 ) = PAHNRXN
-      EBISP(  89 ) = PAHHRXN
-      EBISP(  90 ) = SOAALK
-      EBISP(  91 ) = ALKRXN
-      EBISP(  92 ) = H2NO3PIJ
-      EBISP(  93 ) = H2NO3PK
-      EBISP(  94 ) = ACLI
-      EBISP(  95 ) = ACLJ
-      EBISP(  96 ) = ACLK
-      EBISP(  97 ) = AISO3J
-      EBISP(  98 ) = AGLYJ
-      EBISP(  99 ) = AXYL1J
-      EBISP( 100 ) = AOLGAJ
-      EBISP( 101 ) = AXYL2J
-      EBISP( 102 ) = ATOL1J
-      EBISP( 103 ) = ATOL2J
-      EBISP( 104 ) = ABNZ1J
-      EBISP( 105 ) = ABNZ2J
-      EBISP( 106 ) = ATRP1J
-      EBISP( 107 ) = AOLGBJ
-      EBISP( 108 ) = ATRP2J
-      EBISP( 109 ) = AISO1J
-      EBISP( 110 ) = AISO2J
-      EBISP( 111 ) = ASQTJ
-      EBISP( 112 ) = APAH1J
-      EBISP( 113 ) = APAH2J
-      EBISP( 114 ) = AALK1J
-      EBISP( 115 ) = AALK2J
-      EBISP( 116 ) = PCVOC
-      EBISP( 117 ) = PCSOARXN
-      EBISP( 118 ) = VLVPO1
-      EBISP( 119 ) = VSVPO1
-      EBISP( 120 ) = VSVPO2
-      EBISP( 121 ) = VSVPO3
-      EBISP( 122 ) = VIVPO1
-      EBISP( 123 ) = VLVOO1
-      EBISP( 124 ) = VLVOO2
-      EBISP( 125 ) = VSVOO2
-      EBISP( 126 ) = VSVOO3
-      EBISP( 127 ) = VSVOO1
-      EBISP( 128 ) = FORM_PRIMARY
-      EBISP( 129 ) = ALD2_PRIMARY
-      EBISP( 130 ) = BUTADIENE13
-      EBISP( 131 ) = ACROLEIN
-      EBISP( 132 ) = ACRO_PRIMARY
-      EBISP( 133 ) = TOLU
-      EBISP( 134 ) = HG
-      EBISP( 135 ) = HGIIAER
-      EBISP( 136 ) = HGIIGAS
+      EBISP(  54 ) = HOM
+      EBISP(  55 ) = BENZENE
+      EBISP(  56 ) = CRES
+      EBISP(  57 ) = BZO2
+      EBISP(  58 ) = OPEN
+      EBISP(  59 ) = BENZRO2
+      EBISP(  60 ) = TOL
+      EBISP(  61 ) = TO2
+      EBISP(  62 ) = TOLRO2
+      EBISP(  63 ) = XOPN
+      EBISP(  64 ) = XYLMN
+      EBISP(  65 ) = XLO2
+      EBISP(  66 ) = XYLRO2
+      EBISP(  67 ) = NAPH
+      EBISP(  68 ) = PAHRO2
+      EBISP(  69 ) = CRO
+      EBISP(  70 ) = CAT1
+      EBISP(  71 ) = CRON
+      EBISP(  72 ) = OPAN
+      EBISP(  73 ) = ECH4
+      EBISP(  74 ) = CL2
+      EBISP(  75 ) = CL
+      EBISP(  76 ) = HOCL
+      EBISP(  77 ) = CLO
+      EBISP(  78 ) = FMCL
+      EBISP(  79 ) = HCL
+      EBISP(  80 ) = CLNO2
+      EBISP(  81 ) = TOLNRXN
+      EBISP(  82 ) = TOLHRXN
+      EBISP(  83 ) = XYLNRXN
+      EBISP(  84 ) = XYLHRXN
+      EBISP(  85 ) = BNZNRXN
+      EBISP(  86 ) = BNZHRXN
+      EBISP(  87 ) = SESQ
+      EBISP(  88 ) = SESQRXN
+      EBISP(  89 ) = PAHNRXN
+      EBISP(  90 ) = PAHHRXN
+      EBISP(  91 ) = SOAALK
+      EBISP(  92 ) = ALKRXN
+      EBISP(  93 ) = H2NO3PIJ
+      EBISP(  94 ) = H2NO3PK
+      EBISP(  95 ) = ACLI
+      EBISP(  96 ) = ACLJ
+      EBISP(  97 ) = ACLK
+      EBISP(  98 ) = AISO3J
+      EBISP(  99 ) = AGLYJ
+      EBISP( 100 ) = AXYL1J
+      EBISP( 101 ) = AOLGAJ
+      EBISP( 102 ) = AXYL2J
+      EBISP( 103 ) = ATOL1J
+      EBISP( 104 ) = ATOL2J
+      EBISP( 105 ) = ABNZ1J
+      EBISP( 106 ) = ABNZ2J
+      EBISP( 107 ) = ATRP1J
+      EBISP( 108 ) = AOLGBJ
+      EBISP( 109 ) = ATRP2J
+      EBISP( 110 ) = AISO1J
+      EBISP( 111 ) = AISO2J
+      EBISP( 112 ) = ASQTJ
+      EBISP( 113 ) = APAH1J
+      EBISP( 114 ) = APAH2J
+      EBISP( 115 ) = AALK1J
+      EBISP( 116 ) = AALK2J
+      EBISP( 117 ) = DMA
+      EBISP( 118 ) = PCVOC
+      EBISP( 119 ) = PCSOARXN
+      EBISP( 120 ) = VLVPO1
+      EBISP( 121 ) = VSVPO1
+      EBISP( 122 ) = VSVPO2
+      EBISP( 123 ) = VSVPO3
+      EBISP( 124 ) = VIVPO1
+      EBISP( 125 ) = VLVOO1
+      EBISP( 126 ) = VLVOO2
+      EBISP( 127 ) = VSVOO2
+      EBISP( 128 ) = VSVOO3
+      EBISP( 129 ) = VSVOO1
+      EBISP( 130 ) = FORM_PRIMARY
+      EBISP( 131 ) = ALD2_PRIMARY
+      EBISP( 132 ) = BUTADIENE13
+      EBISP( 133 ) = ACROLEIN
+      EBISP( 134 ) = ACRO_PRIMARY
+      EBISP( 135 ) = TOLU
+      EBISP( 136 ) = HG
+      EBISP( 137 ) = HGIIAER
+      EBISP( 138 ) = HGIIGAS
 
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -364,6 +360,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       RTOL( EPX2         ) = 5.0D-04
       RTOL( TERP         ) = 5.0D-04
       RTOL( TRPRXN       ) = 1.0D+00
+      RTOL( HOM          ) = 5.0D-04
       RTOL( BENZENE      ) = 5.0D-04
       RTOL( CRES         ) = 5.0D-04
       RTOL( BZO2         ) = 5.0D-04
@@ -426,6 +423,7 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
       RTOL( APAH2J       ) = 5.0D-04
       RTOL( AALK1J       ) = 5.0D-04
       RTOL( AALK2J       ) = 5.0D-04
+      RTOL( DMA          ) = 5.0D-04
       RTOL( PCVOC        ) = 5.0D-04
       RTOL( PCSOARXN     ) = 5.0D-04
       RTOL( VLVPO1       ) = 5.0D-04
