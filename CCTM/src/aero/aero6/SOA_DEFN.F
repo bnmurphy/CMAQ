@@ -532,19 +532,15 @@ C aerosol modes.
 #endif     
          Do spc = 1, n_vapor
            If ( vaporspc( spc )%soa_name .Ne. ' ' ) Then
-#ifdef verbose_soa
-             Write( logdev,'( 5x, a20, i4 )' ) Trim(vaporspc( spc )%soa_name) // ':', 
-     &                                       soa_aeroMap( spc )
-#endif
-             If( soa_aeroMap( spc ) .Lt. 1 ) write(logdev,99904) Trim( vaporspc( spc )%name )
+             !Search through modes to find at least one aerosol entry for this
+             !species
              Do imode = ia_nuc, ia_crs
                tmpName = trim(vaporspc( spc )%soa_name) // size_subscript( imode )
-               If ( soa_aeroMap( spc ) .EQ. 0 ) Then
-                 soa_aeroMap( spc ) = findAero( tmpName, .False. )
-               End If
+               soa_aeroMap( spc ) = findAero( tmpName, .False. )
              End Do
+             If( soa_aeroMap( spc ) .Ge. 1 ) write(logdev,99904) Trim( vaporspc( spc )%name )
  
-             If ( soa_aeroMap( spc ) .EQ. 0 ) Then
+             If ( soa_aeroMap( spc ) .Eq. 0 ) Then
                 !Exit since this species from the master namelist is not
                 !in the aero_data table
                 Write( xmsg,'( A19,I3,A42 )' ) ' *** Organic Vapor ', spc,
@@ -571,15 +567,11 @@ C (aerospc is used inside findAero).
            If ( orgprod( spc )%aerospc .Ne. ' ' ) Then
              Do imode = ia_nuc, ia_crs
                tmpName = trim( orgprod( spc )%aerospc ) // size_subscript( imode )
-#ifdef verbose_soa
-               Write( logdev,'( 5x, a20, i4 )' ) Trim(orgprod( spc )%aerospc) // ':', 
-     &                                       orgprod_aeroMap( spc )
-#endif               
-               If ( orgprod_aeroMap( spc ) .EQ. 0 ) Then
-                 orgprod_aeroMap( spc ) = findAero( tmpName, .False. )
-               End If
+               orgprod_aeroMap( spc ) = findAero( tmpName, .False. )
              End Do
-             If ( orgprod_aeroMap( spc ) .EQ. 0 ) Then
+             If( orgprod_aeroMap( spc ) .Ge. 1 ) write(logdev,99905) Trim( orgprod( spc )%name )
+             
+             If ( orgprod_aeroMap( spc ) .Eq. 0 ) Then
                !Exit since this species from the master namelist is not
                !in the aero_data table
                Write( xmsg,'( A33,I3,A42 )' ) ' *** Nonvolatile Organic Product ', spc,

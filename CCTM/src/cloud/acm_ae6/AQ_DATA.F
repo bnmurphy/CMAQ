@@ -445,7 +445,7 @@ C...Initialize aerosol surrogate species from AERO_DATA table
 
          ! Skip H2O, H2OP, and SOIL species
          If ( var .Eq. ah2o_idx .Or. var .Eq. ah3op_idx ) Then
-              write(xmsg,'(4(A,1x))')'Skipping AQ surrogate for AEROSPC ',
+              write(xmsg,'(5(A,1x))')'Skipping AQ surrogate for AEROSPC ',
      &                               aerospc( spc-nadd_tx )%name( 1:n_mode )
               Call m3warn( 'aq_data_init', 0, 0, xmsg )
               Cycle
