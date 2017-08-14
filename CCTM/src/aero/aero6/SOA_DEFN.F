@@ -536,7 +536,8 @@ C aerosol modes.
              !species
              Do imode = ia_nuc, ia_crs
                tmpName = trim(vaporspc( spc )%soa_name) // size_subscript( imode )
-               soa_aeroMap( spc ) = findAero( tmpName, .False. )
+               if ( soa_aeroMap( spc ) .Eq. 0 ) 
+     &              soa_aeroMap( spc ) = findAero( tmpName, .False. )
              End Do
              If( soa_aeroMap( spc ) .Ge. 1 ) write(logdev,99904) Trim( vaporspc( spc )%name )
  
@@ -567,7 +568,8 @@ C (aerospc is used inside findAero).
            If ( orgprod( spc )%aerospc .Ne. ' ' ) Then
              Do imode = ia_nuc, ia_crs
                tmpName = trim( orgprod( spc )%aerospc ) // size_subscript( imode )
-               orgprod_aeroMap( spc ) = findAero( tmpName, .False. )
+               if ( orgprod_aeroMap( spc ) .Eq. 0 ) 
+     &              orgprod_aeroMap( spc ) = findAero( tmpName, .False. )
              End Do
              If( orgprod_aeroMap( spc ) .Ge. 1 ) write(logdev,99905) Trim( orgprod( spc )%name )
              
