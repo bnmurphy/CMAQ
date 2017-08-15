@@ -256,6 +256,8 @@ C *** flag for PMDIAG and APMDIAG file [F], default
       LOGICAL, SAVE :: APMDIAG
       LOGICAL, SAVE :: AVISDIAG
 
+C *** String for locating New Particle Formation LookUp Tables
+      CHARACTER( 255 ), SAVE :: IMNBHNtable
 
 C *** first pass flag
       LOGICAL, SAVE :: FIRSTIME = .TRUE.
@@ -475,7 +477,8 @@ C *** Read Data in ACDC LookUp Tables for NPF Rate Calculation
          CALL read_ACDC
  
 C *** Read Data in Ion-Pair Formation LookUp Tables for IMN Rate Calculation
-         CALL READJIMN( 'IMNBHNtable' )
+         CALL NAMEVAL( 'IMNBHNtable', IMNBHNtable )
+         CALL READJIMN( IMNBHNtable  )
  
       END IF    ! FIRSTIME
 

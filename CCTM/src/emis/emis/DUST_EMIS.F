@@ -455,7 +455,7 @@ C Build the complete diagnostic name array                     n for MODIS NOAH
             end do
 
 C...append diagnostic variables with mass emissions species
-            do j = 2, n_mode
+            do j = ia_acc, n_mode
                do i = 1, ndust_spc
                   n = len_trim( dust_spc( i )%name( j ) )
                   if( n .lt. 1  )cycle ! assumes cmaq species names atleast one character long
@@ -474,11 +474,11 @@ C...append diagnostic variables with mass emissions species
                   end if
                   diagnm( idiag )%units = 'g/m**3/s'
                   Select Case( j ) ! assumes only two aerosol modes dust emissions
-!                    Case( 1 )
+!                    Case( ia_ait )
 !                       diagnm( idiag )%desc = 'aitken mode' 
-                    Case( 2 )
+                    Case( ia_acc )
                        diagnm( idiag )%desc = 'accumulation mode' 
-                    Case( 3 )
+                    Case( ia_crs )
                        diagnm( idiag )%desc = 'coarse mode' 
 !                    Case Default 
 !                       diagnm( idiag )%des = 'Undefined mode ' 
@@ -1174,7 +1174,7 @@ C---Vert-to-Horiz dust flux ratio : Kang et al. [JGR, 2011] : Eq. (12)
                         call m3exit( pname, jdate, jtime, xmsg, xstat1 )
                      end if
 
-                     dust_em( c,r ) = dust_em( c,r ) + qam( c,r,m )
+                     dust_em( c,r ) = dust_em( c,r ) + qam( c,r,m )     ! [g/m**3/s]
 
                   end do   ! m landuse
  
@@ -1202,9 +1202,9 @@ C --------- ###### End Main Loop ##### ---------
          do r = 1, my_nrows
          do c = 1, my_ncols
 
-C J/K mass emis rate [g/s]  (edust( 1 ) not used)
-            edust( ia_acc ) = fracmj * dust_em( c,r )
-            edust( ia_crs ) = fracmk * dust_em( c,r )
+C J/K mass emis rate [g/s]  (edust( 1 and 2 ) not used)
+            edust( ia_acc ) = fracmj * dust_em( c,r )  ! [g/m**3/s]
+            edust( ia_crs ) = fracmk * dust_em( c,r )  ! [g/m**3/s]
 
             do v = 1, ndust_spc
                dustoutm( v,ia_nuc,c,r ) = 0.0

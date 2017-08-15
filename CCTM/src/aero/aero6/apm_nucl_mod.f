@@ -341,13 +341,13 @@
 ! 2. Yu, F.,Updated H2SO4-H2O binary homogeneous nucleation rate look-up tables, 
 !      J. Geophy. Res.,113, D24201, doi:10.1029/2008JD010527, 2008.
 !
-        CHARACTER(LEN=11)   :: DATA_DIR_1x1a
+        CHARACTER(LEN=255)   :: DATA_DIR_1x1a
         INTEGER :: IC, IRH, IT, IQ, IS 
         REAL*8  :: C11,Q11,S11
 
 !       CHARACTER*2 YPATH
 !       YPATH = './'
-        CHARACTER*80 YPATH
+        CHARACTER*400 YPATH
 
         DATA_DIR_1x1= DATA_DIR_1x1a
         YPATH = TRIM(DATA_DIR_1x1)//'/APM_201011/IMN_LT/'
@@ -544,7 +544,7 @@
                       !YQ(91,203): Q for maglat = 90, p = 1015 mb
                       !YQ(L,K):    Q for maglat = L-1,p = K*5 mb
 
-      CHARACTER*80 YPATH
+      CHARACTER*400 YPATH
 
       YPATH = TRIM(DATA_DIR_1x1)//'/APM_201011/'
 
