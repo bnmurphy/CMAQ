@@ -518,7 +518,7 @@ REACTIONS[CM] =
                              + 0.250*CXO3  
                              + 0.250*PAR              # 3.6E-11;
 ! XO2 from isoprene is explicitly represented as ISOPO2 and ISOPN
-<R158> ISOP + OH = ISOPO2 + ISOPRXN # 2.70E-11@-390;
+<R158> ISOP + OH = ISOPO2 + ISOPRXN + 0.030*IHOM # 2.70E-11@-390;
 ! reactions 158a through 158b added based on CB6r2
 <R158a> ISOPO2 + NO = 0.1*NTRM + 0.9*NO2 + 0.673*FORM + 0.9*ISPD + 0.9*HO2
                 # 2.39E-12@-365;
@@ -533,7 +533,8 @@ REACTIONS[CM] =
                              + 0.266*OH    
                              + 0.200*MACO3 
                              + 0.150*ALDX  
-                             + 0.350*PAR  
+                             + 0.350*PAR
+                             + 0.010*IHOM
                              + 0.066*CO               # 7.86E-15 @ 1912;
 ! change NTR to NTRM to represent multifunctional nitrates
 ! Carter shows reaction rate similar to beta isomer
@@ -600,7 +601,7 @@ REACTIONS[CM] =
                              + 0.280*FORM
                              + 1.66* PAR 
                              + 0.470*ALDX
-                             + 0.0044*HOM
+                             + 0.0050*THOM
                              + TRPRXN               # 1.5E-11 @ -449.;
 < R166a>  XO2T + NO          = NTRM                 # 2.6E-12 @ -365;
 < R166b>  XO2T + HO2         = ROOH                     # 7.5E-13 @ -700;
@@ -616,7 +617,7 @@ REACTIONS[CM] =
                              + 7.000*PAR   
                              + 0.210*ALDX 
                              + 0.390*CXO3
-                             + 0.034*HOM
+                             + 0.0228*THOM
                              + TRPRXN               # 1.2E-15 @  821.;
 !  assume that the nitrate has an OH on it
 !  replace XO2N with XO2T

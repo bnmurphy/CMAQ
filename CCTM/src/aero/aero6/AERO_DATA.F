@@ -113,7 +113,7 @@ C----------------------------------------------------------------------
 
 C Number of aerosol species and modes
 
-      Integer, Parameter :: n_aerolist = 91     ! number of aero species
+      Integer, Parameter :: n_aerolist = 92     ! number of aero species
       Integer, Parameter :: n_mode = 4          ! number of modes
 
       Integer, Parameter :: ia_nuc = 1          ! 1 = Nucleation Mode 
@@ -255,7 +255,8 @@ C                  ---------   ---------   ---------   ---------      --------  
      & dist_type((/'APCSOH   ','APCSOI   ','APCSOJ   ','         '/), '             ',es_0),
        ! Organics for ultrafine particle formation                                  
      & dist_type((/'ADMAH    ','ADMAI    ','ADMAJ    ','         '/),'             ',es_0),
-     & dist_type((/'AHOMH    ','AHOMI    ','AHOMJ    ','         '/),'             ',es_0),
+     & dist_type((/'AIHOMH   ','AIHOMI   ','AIHOMJ   ','         '/),'             ',es_0),
+     & dist_type((/'ATHOMH   ','ATHOMI   ','ATHOMJ   ','         '/),'             ',es_0),
 
       ! The following species are associated with the Multi-Pollutant Code
      & dist_type((/'         ','ANII     ','ANIJ     ','         '/), 'NICKEL_F     ',es_fin),   
@@ -378,7 +379,8 @@ C                ------- ------- + + +  + ----- --- +  --------
      & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! APCSOJ
        ! Organics for ultrafine particle formation                                                                    
      & prop_type(cm_set,  670.0, F,F,F, 1, 4.0, 0.0,F,'SOLUTE'),      ! ADMAJ   
-     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! AHOMJ         
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! AIHOMJ         
+     & prop_type(cm_set, 1400.0, F,F,F, 0, 4.0, 6.1,T,'DUST  '),      ! ATHOMJ         
                                                                        
        ! The following species are associated with the Multi-Pollutant code
      & prop_type(cm_set, 2200.0, F,F,T, 0, 0.0, 0.0,F,'DUST  '),      ! ANIJ     
@@ -609,7 +611,7 @@ C Required species
       Character( 16 ), Private, Parameter :: req_cors   = 'ACORS'
       Character( 16 ), Private, Parameter :: req_seacat = 'ASEACAT'
       Character( 16 ), Private, Parameter :: req_dma    = 'ADMA'
-      Character( 16 ), Private, Parameter :: req_hom    = 'AHOM'
+      Character( 16 ), Private, Parameter :: req_thom   = 'ATHOM'
 
 C Indices of required species
       Integer :: aso4_idx
@@ -630,7 +632,7 @@ C Indices of required species
       Integer :: acors_idx
       Integer :: aseacat_idx
       Integer :: adma_idx
-      Integer :: ahom_idx
+      Integer :: athom_idx
 
 C Flag if optional species present
       Logical :: ae6isoa = .False.
@@ -1013,7 +1015,7 @@ C Find indices of required species
       acors_idx   = findAero( req_cors,   .True. )
       aseacat_idx = findAero( req_seacat, .True. )
       adma_idx    = findAero( req_dma,    .False. )
-      ahom_idx    = findAero( req_hom,    .False. )
+      athom_idx   = findAero( req_thom,    .False. )
 
       If ( Index( mechname, 'NVPOA' ) .Eq. 0 ) Then
          apoc_idx    = findAero( 'ALVPO1          ', .True. )

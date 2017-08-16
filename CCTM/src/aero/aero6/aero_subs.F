@@ -1399,7 +1399,7 @@ C *** Adjust HOM vapor concentration to an equilibrium value as well
          XHOM = HOMRATE / TMP
          XHOM = MAX( XHOM, CONMIN )
          !XHOM = PRECURSOR_CONC( HOM_IDX )
-         AHOMRATE = AEROSPC_CONC( AHOM_IDX,IA_ACC )
+         AHOMRATE = AEROSPC_CONC( ATHOM_IDX,IA_ACC )
 
 C *** Calculate new particle production rate for 0th, 2nd, & 3rd moments
 C     from several multicomponent pathways including:
@@ -1444,11 +1444,11 @@ C     New Particle Formation Rates that took Place
 
          AEROSPC_CONC( ANH4_IDX,IA_NUC ) = AEROSPC_CONC( ANH4_IDX, IA_NUC ) + JNH3RATE/NH3RAT*DELT
          AEROSPC_CONC( ADMA_IDX,IA_NUC ) = AEROSPC_CONC( ADMA_IDX, IA_NUC ) + JDMARATE*DELT
-         AEROSPC_CONC( AHOM_IDX,IA_NUC ) = AEROSPC_CONC( AHOM_IDX, IA_NUC ) + JHOMRATE*DELT
+         AEROSPC_CONC( ATHOM_IDX,IA_NUC) = AEROSPC_CONC( ATHOM_IDX, IA_NUC) + JHOMRATE*DELT
 
          ! The HOM have Already Been Condensed in ORGAER.
          ! Take Their Mass from the Accumulation Mode.
-         AEROSPC_CONC( AHOM_IDX,IA_ACC ) = AEROSPC_CONC( AHOM_IDX, IA_ACC ) - JHOMRATE*DELT
+         AEROSPC_CONC( ATHOM_IDX,IA_ACC) = AEROSPC_CONC( ATHOM_IDX, IA_ACC) - JHOMRATE*DELT
                                   
          !Update Number of Aerosols with New Particle Formation Tendency
          MOMENT0_CONC( IA_NUC ) = AM0( IA_NUC ) + JRATE * DELT

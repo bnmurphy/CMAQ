@@ -66,7 +66,7 @@ C-----------------------------------------------------------------------
       
       Implicit None
 
-      Integer, Parameter :: n_vapor_list = 29   ! # of potential partitioning SVOCs
+      Integer, Parameter :: n_vapor_list = 30   ! # of potential partitioning SVOCs
       Integer, Parameter :: n_orgprod    = 13   ! # of ROG rxn counter species
       Integer, Save      :: n_vapor             ! # of actual simulated SOA vapors
 
@@ -106,7 +106,8 @@ C                  -------    -------  --------  -------  ------    --   ----   
      & vapor_type('SV_ISO2 ', 0.0288,   0.6170,  40.0E3, 'AISO2  ', 'B',  5.0, 'ISOPRXN '),
      & vapor_type('SV_SQT  ', 1.5370,  24.9840,  40.0E3, 'ASQT   ', 'B', 15.0, 'SESQRXN '),
      & vapor_type('LV_PCSOG', 1.0   ,   1.0e-5,  40.0E3, 'APCSO  ', 'A', 10.0, 'PCSOARXN'),
-     & vapor_type('HOM     ', 0.0000,   1.6E-1, 110.0E3, 'AHOM   ', 'B', 10.0, '        '),
+     & vapor_type('IHOM    ', 0.0000,   1.6E-1, 110.0E3, 'AHOM   ', 'B', 10.0, '        '),
+     & vapor_type('THOM    ', 0.0000,   1.6E-1, 110.0E3, 'AHOM   ', 'B', 10.0, '        '),
      & vapor_type('VLVPO1  ', 0.0000,    1.e-1,  96.0E3, 'ALVPO1 ', 'A',  0.0, '        '),
      & vapor_type('VSVPO1  ', 0.0000,    1.e+0,  85.0E3, 'ASVPO1 ', 'A',  0.0, '        '),
      & vapor_type('VSVPO2  ', 0.0000,    1.e+1,  74.0E3, 'ASVPO2 ', 'A',  0.0, '        '),
@@ -1096,7 +1097,7 @@ C Local variables:
       Logical, Save :: first_time = .True.
       Integer, Save :: logdev
       Character( 300 ) :: xmsg
-      Integer       :: i, im, indx, ihom
+      Integer       :: i, im, indx, indx_thom
 
       Real, Save :: mwpoa                     ! Molecular weight of POA [ g/mol ]
 
@@ -1197,7 +1198,7 @@ C Set unit conversion and inverse mw constants
          mwpoa = aerospc_mw( apoc_idx )
 
          dm_org = ( 1.0e-3 * 250.0 / AVO 
-     &             / aerospc( ahom_idx )%density ) ** (1./3.)
+     &             / aerospc( athom_idx )%density ) ** (1./3.)
 
       End If ! first_time
 
@@ -1273,8 +1274,8 @@ C species.
       ! Find Growth Rates for HOM and use that for all other
       ! nonvolatile condensation
       Do i = 1, n_vapor
-          If ( vaporspc( i )%name .EQ. 'HOM' ) Then
-              ihom = i
+          If ( vaporspc( i )%name .EQ. 'THOM' ) Then
+              indx_thom = i
           End If
       End Do
 
@@ -1283,7 +1284,7 @@ C species.
            If ( orgprod_aeroMap( i ) .Gt. 0 ) Then
               aerospc_conc( orgprod_aeroMap( i ),im ) =
      &          aerospc_conc( orgprod_aeroMap( i ),im )
-     &          + orgprod( i )%alphaH * drog( i ) * GR3FRAC( ihom,im )
+     &          + orgprod( i )%alphaH * drog( i ) * GR3FRAC( indx_thom,im )
            End If
         End Do
       End Do
