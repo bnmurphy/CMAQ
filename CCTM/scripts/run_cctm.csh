@@ -302,7 +302,7 @@ while ($TODAYJ <= $STOP_DAY )  #>Compare dates in terms of YYYYJJJ
      setenv BIOSEASON  $IN_BEISpath/bioseason.12US1.2006.09apr2012_bench.nc #> ignore season switch file if BIOSW_YN = N
      setenv SUMMER_YN  N     #> Use summer normalized emissions? [ default: Y ]
      setenv PX_VERSION Y     #> MCIP is PX version? [ default: N ]
-     setenv INITIAL_RUN Y    #> non-existent or not using SOILINP [ default: N ]; default uses SOILINP
+     #setenv INITIAL_RUN Y    #> non-existent or not using SOILINP [ default: N ]; default uses SOILINP
      setenv SOILINP    $OUTDIR/CCTM_SOILOUT_${RUNID}_${YESTERDAY}.nc
                              #> Biogenic NO soil input file; ignore if INITIAL_RUN = Y
   endif
@@ -332,6 +332,15 @@ while ($TODAYJ <= $STOP_DAY )  #>Compare dates in terms of YYYYJJJ
      setenv E2C_SOIL ${E2C_Soilfile}
      setenv E2C_FERT ${E2C_Fertfile}
      setenv BELD4_LU ${B4LU_file}
+  endif
+
+  #> New Particle Formation Lookup Tables
+  #> Data is output from the Atmospheric Cluster Dynamics Code
+  #> University of Helsinki; Helsinki, Finland
+  if ( $CTM_ACDC == 'Y' ) then
+    setenv ACDC_TER_FILE   ${WORKDIR}/ACDC_H2SO4_NH3_RH.txt
+    setenv ACDC_AMINE_FILE ${WORKDIR}/ACDC_H2SO4_DMA.txt
+    setenv IMNBHNtable     ${WORKDIR}/IMNBHNtable
   endif
 
 # =====================================================================
