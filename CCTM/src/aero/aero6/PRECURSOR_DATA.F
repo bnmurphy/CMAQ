@@ -50,7 +50,7 @@ C-----------------------------------------------------------------------
 
       Implicit None
 
-      Integer, Parameter :: n_precursor = 26   ! # of precursors
+      Integer, Parameter :: n_precursor = 27   ! # of precursors
 
       Type precursor_type
          Character( 16 ) :: name               ! species name
@@ -86,8 +86,9 @@ C                    ---------   ---------- ------  ------
      & precursor_type( 'PAHNRXN', .True.  , .True., .False. ),
      & precursor_type( 'PAHHRXN', .True.  , .True., .False. ),
      & precursor_type( 'PCSOARXN',.True.  , .True., .False. ),
-     & precursor_type( 'DMA     ',.False. , .True., .False. ),
-     & precursor_type( 'HOM     ',.False. , .True., .False. ),
+     & precursor_type( 'DMA     ',.False. , .True., .True.  ),
+     & precursor_type( 'IHOM    ',.False. , .True., .False. ),
+     & precursor_type( 'THOM    ',.False. , .True., .True.  ),
      & precursor_type( 'PHGRXN ', .True.  , .True., .False. )/)
 
 C Required species
@@ -102,7 +103,7 @@ C Required species
       Character( 16 ), Private, Parameter :: req_OH     = 'OH'
       Character( 16 ), Private, Parameter :: req_PHGRXN = 'PHGRXN'
       Character( 16 ), Private, Parameter :: req_DMA    = 'DMA'
-      Character( 16 ), Private, Parameter :: req_HOM    = 'HOM'
+      Character( 16 ), Private, Parameter :: req_THOM   = 'THOM'
 
 
 C Indices of required species
@@ -117,7 +118,7 @@ C Indices of required species
       Integer :: OH_idx
       Integer :: PHGRXN_idx
       Integer :: DMA_idx
-      Integer :: HOM_idx
+      Integer :: THOM_idx
 
 
       Real( 8 ) :: precursor_mw( n_precursor )   ! mol wt from cgrid_spcs [g/mol]
@@ -126,7 +127,7 @@ C Indices of required species
 
       Real    :: so4rate                       ! sulfate gas-phase production rate [ug/m^3*s]
       Real    :: phg_rate                      ! particulate mercury gas-phase production rate [ug/m^3*s]
-      Real    :: homrate                       ! HOM gas-phase production rate [ug/m^3*s]
+      Real    :: thomrate                      ! HOM gas-phase production rate [ug/m^3*s]
 
 C Private variables for loading and unloading to CGRID array
       Integer          :: precursor_map( n_precursor )  ! pointers to CGRID
@@ -208,7 +209,7 @@ C Find indices of required species
       NH3_idx    = findPrecursor( req_NH3,    .true.)
       OH_idx     = findPrecursor( req_OH,     .true.)
       DMA_idx    = findPrecursor( req_DMA,    .true.)
-      HOM_idx    = findPrecursor( req_HOM,    .true.)
+      THOM_idx   = findPrecursor( req_THOM,   .true.)
       If( ae6hg )then
          PHGRXN_idx = findPrecursor( req_phgrxn,  .false.)
          If(   precursor_map( PHGRXN_idx ) .Lt. 1  )Then

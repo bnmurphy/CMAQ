@@ -323,9 +323,9 @@ C ------------------ begin body of AERO_DRIVER -------------------------
          LOGDEV = INIT3()
 
          IF ( INDEX(MECHNAME, 'SAPRC07TIC_AE6I_AQ') .GT. 0 ) THEN
-            NUM_PMDIAG_SPC = 98
+            NUM_PMDIAG_SPC = 104
          ELSE
-            NUM_PMDIAG_SPC = 96
+            NUM_PMDIAG_SPC = 102
          END IF
 
          CALL GET_ENVLIST ( APMDIAG_BLEV_ELEV, N, V_LIST )
@@ -575,8 +575,8 @@ C     into precursr_conc in precursor_data
                CALL EXTRACT_PRECURSOR( CGRID( C,R,L,: ) )
 
 C *** Calculate SO4RATE stored in module
-               SO4RATE = REAL( PRECURSOR_CONC( SULPRD_IDX ), 4 ) / DT
-               HOMRATE = REAL( PRECURSOR_CONC( HOM_IDX ), 4 ) / DT
+               SO4RATE  = REAL( PRECURSOR_CONC( SULPRD_IDX ), 4 ) / DT
+               THOMRATE = REAL( PRECURSOR_CONC( THOM_IDX ), 4 ) / DT
  
                IF ( PHGRXN_IDX .GT. 0 ) THEN
 C *** Calculate PHG_RATE stored in module
@@ -737,10 +737,16 @@ C     diagnostic array (lowest vertical layer only)
                   TEMP_DATA( 94 ) = CONDSINK3_ELV( 2 )        ! Aitken Mode Cond. Sink [s-1]
                   TEMP_DATA( 95 ) = CONDSINK3_ELV( 3 )        ! Accumulation Mode Cond. Sink [s-1]
                   TEMP_DATA( 96 ) = CONDSINK3_ELV( 4 )        ! Coarse Mode Cond. Sink [s-1]
+                  TEMP_DATA( 97 ) = JDIAG(10 )                ! Sulfuric Acid PSSA Conc. [molec cm-3]
+                  TEMP_DATA( 98 ) = JDIAG(11 )                ! Sulfuric Acid Production Rate [molec cm-3 s-1]
+                  TEMP_DATA( 99 ) = JDIAG(12 )                ! Sulfuric Acid Production Rate [ug m-3 s-1]
+                  TEMP_DATA( 100) = SUM(CONDSINK4_SO4( : ) )  ! Sulfuric Acid Cond. Sink [s-1]
+                  TEMP_DATA( 101) = JDIAG(13 )                ! Ion-Pair Production Rate
+                  TEMP_DATA( 102) = JDIAG(14 )                ! Sulfuric Acid Consumed by NPF [ug m-3 s-1]
 
                   IF ( NUM_PMDIAG_SPC .GT. 96 ) THEN ! AERO6i
-                     TEMP_DATA( 97 ) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
-                     TEMP_DATA( 98 ) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
+                     TEMP_DATA( 103) = KPARTIEPOX( C,R,L )      ! coarse CLNO2 heterorxn yield
+                     TEMP_DATA( 104) = GAMMA_IMAE( C,R,L )  ! IEPOX heterorxn uptake coeff
                   END IF
                END IF
 

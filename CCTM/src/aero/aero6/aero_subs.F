@@ -1036,7 +1036,7 @@ C *** Variables for new particle formation:
       REAL XNH3               ! NH3 concentration [ ug/m**3 s ]     
       REAL XDMA               ! DMA concentration [ ug/m**3 s ]     
       REAL XHOM               ! HOM concentration [ ug/m**3 s ]     
-      REAL AHOMRATE           ! AHOM concentration in rate units [ ug/m**3 s ]     
+      REAL ATHOMRATE          ! ATHOM concentration in rate units [ ug/m**3 s ]     
       REAL( 8 ) :: ASURF      ! Aerosol Surfae Area [ m2/m3 ]
       REAL( 8 ) :: CS         ! Sulfuric Acid Condensation Sink [ s-1 ]
       REAL( 8 ) :: JSO4RATE   ! particle mass production rate [ ug/m**3 s ]
@@ -1236,7 +1236,7 @@ C-----------------------------------------------------------------------
 
          ! HOM
          SIG_HOM_13 = SIG_HOM ** (1./3.)
-         MWHOM = PRECURSOR_MW( HOM_IDX ) ! molecular weight for H2SO4
+         MWHOM = PRECURSOR_MW( THOM_IDX ) ! molecular weight for H2SO4
          RHO_HOM = 1000.0 *( 12.0 + 1.0 * H_HOM/C_HOM + 16.0 * O_HOM/C_HOM ) /
      &                       ( 7.0 + 5.0 * H_HOM/C_HOM + 4.15 * O_HOM/C_HOM )
          MV_HOM  = 1.0e-3 * MWHOM / REAL( AVO * RHO_HOM,8 ) ! Volume of HOM Molecule [m**3]
@@ -1396,10 +1396,10 @@ C *** Adjust HOM vapor concentration to an equilibrium value as well
            TMP = TMP + FCONC_HOM( I,2 )
          END DO
 
-         XHOM = HOMRATE / TMP
+         XHOM = THOMRATE / TMP
          XHOM = MAX( XHOM, CONMIN )
-         !XHOM = PRECURSOR_CONC( HOM_IDX )
-         AHOMRATE = AEROSPC_CONC( ATHOM_IDX,IA_ACC )
+         !XHOM = PRECURSOR_CONC( THOM_IDX )
+         ATHOMRATE = AEROSPC_CONC( ATHOM_IDX,IA_ACC )
 
 C *** Calculate new particle production rate for 0th, 2nd, & 3rd moments
 C     from several multicomponent pathways including:
@@ -1414,7 +1414,7 @@ C       Organic-Organic
 
          CALL NPF_MULTI ( REAL(CS), REAL( ASURF ), AIRRH, AIRPRES, 
      &                    AIRTEMP, XH2SO4, SO4RATE,
-     &                    XNH3, XDMA, XHOM, HOMRATE, AHOMRATE,
+     &                    XNH3, XDMA, XHOM, THOMRATE, ATHOMRATE,
      &                    JRATE, JM2RATE,
      &                    JSO4RATE, JNH3RATE, JDMARATE, 
      &                    JHOMRATE )
@@ -1429,7 +1429,7 @@ C     New Particle Formation Rates that took Place
          PRECURSOR_CONC( NH3_IDX ) = XNH3 - JNH3RATE * DELT
          PRECURSOR_CONC( DMA_IDX ) = XDMA - JDMARATE * DELT
          ! Take these species from the aerosol phase instead
-         !PRECURSOR_CONC( HOM_IDX ) = XHOM - JHOMRATE * DELT
+         !PRECURSOR_CONC( THOM_IDX ) = XHOM - JHOMRATE * DELT
          
          AM3 = 0.0
          DO IAER = 1,N_AEROSPC

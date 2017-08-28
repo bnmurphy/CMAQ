@@ -318,7 +318,7 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ! Calculate Ion-Mediated NPF Rates
       CALL ION_MEDIATED_NPF( A1TOT, HOM, PRESS, TEMP, RH, ASURF, 
      &                       J5, J6, SA_M_IMN, HOM_M_IMN, 
-     &                       M20_IMNSO4, M20_IMNORG )
+     &                       M20_IMNSO4, M20_IMNORG, ION_RATE )
 
 ! Calculate Sulfate Mass Change to Each Chemical Species [ ug / m3 / s ]
       DMDT_SO4_BINARY  = J0 * SA_M_BINARY
@@ -369,17 +369,17 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
          J6 = DMDT_HOM_IMN     / HOM_M_IMN
       END IF
       !Normalize HOM by total available AHOM
-      IF ( DMDT_HOM_TOT .GT. AHOMRATE ) THEN
-         NORM_HOM = AHOMRATE / DMDT_HOM_TOT
-         DMDT_HOM_PAAS2   = J3 * HOM_M_PAAS2   * NORM_HOM
-         DMDT_HOM_ORG     = J4 * HOM_M_ORG     * NORM_HOM
-         DMDT_HOM_IMN     = J6 * HOM_M_IMN     * NORM_HOM
-         DMDT_HOM_TOT = AHOMRATE
-
-         J3 = DMDT_HOM_PAAS2   / HOM_M_PAAS2
-         J4 = DMDT_HOM_ORG     / HOM_M_ORG
-         J6 = DMDT_HOM_IMN     / HOM_M_IMN
-      END IF
+      !IF ( DMDT_HOM_TOT .GT. AHOMRATE ) THEN
+      !   NORM_HOM = AHOMRATE / DMDT_HOM_TOT
+      !   DMDT_HOM_PAAS2   = J3 * HOM_M_PAAS2   * NORM_HOM
+      !   DMDT_HOM_ORG     = J4 * HOM_M_ORG     * NORM_HOM
+      !   DMDT_HOM_IMN     = J6 * HOM_M_IMN     * NORM_HOM
+      !   DMDT_HOM_TOT = AHOMRATE
+      !
+      !   J3 = DMDT_HOM_PAAS2   / HOM_M_PAAS2
+      !   J4 = DMDT_HOM_ORG     / HOM_M_ORG
+      !   J6 = DMDT_HOM_IMN     / HOM_M_IMN
+      !END IF
  
 ! Calculate the Mass Change for the other Species Involved
       DMDT_SO4_PAAS2   = J3 * SA_M_PAAS2     ![ug/m3/s]
@@ -433,6 +433,11 @@ C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       JDGASDIAG(6) = DMDT_DMA_TOT
       JDGASDIAG(7) = 0.0
       JDGASDIAG(8) = DMDT_HOM_TOT
+      JDIAG(10) = A1TOT     !molec cm-3
+      JDIAG(11) = A1TOT*CS  !molec cm-3 s-1
+      JDIAG(12) = XSA*CS    !ug m-3 s-1
+      JDIAG(13) = ION_RATE  !N cm-3 s-1
+      JDIAG(14) = DMDT_SO4_TOT  !ug m-3 s-1
 
        
       RETURN
@@ -952,7 +957,7 @@ C.. Calculate Temporary Interpolating Variables
       QRH = 1.0 - PRH
       QCS = 1.0 - PCS
 
-C.. Calculate New Particle Formation Rate
+C.. Calculate New Particle Formation Rate in Log10 space
       JNUC = PAC * PNH * PTK * PRH * PCS * ACDC_Tern( IAC, INH, ITK, IRH, ICS ) +   
      &       PAC * PNH * PTK * PRH * QCS * ACDC_Tern( IAC, INH, ITK, IRH, JCS ) +   
      &       PAC * PNH * PTK * QRH * PCS * ACDC_Tern( IAC, INH, ITK, JRH, ICS ) +   
@@ -987,8 +992,9 @@ C.. Calculate New Particle Formation Rate
      &       QAC * QNH * QTK * QRH * QCS * ACDC_Tern( JAC, JNH, JTK, JRH, JCS )    
 
 
-C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] by multiplying it by 1.0E6  
-      DNDT = DBLE(JNUC) * 1.0D06  ! (1/(m**3 s))
+C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] by 
+C.. converting from log10 and multiplying it by 1.0E6  
+      DNDT = ( 10.D0 ** DBLE(JNUC) ) * 1.0D06  ! (1/(m**3 s))
 
 C.. Calculate NPF second moment [m2]
       m20  = ( 1.D-9*REAL(d20,8) ) ** 2 * exp( 2.D0 * ( log( sg ))**2 )
@@ -1145,8 +1151,9 @@ C.. Calculate New Particle Formation Rate (particle cm-3 s-1)
      &       QAC * QNH * QTK * QCS * ACDC_DMA( JAC, JNH, JTK, JCS ) 
 
 
-C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] 
-      DNDT = DBLE(JNUC) * 1.0D06  ! (1/(m**3 s))
+C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] by
+C.. converting from log10 and multiplying it by 1.0E6  
+      DNDT = ( 10.D0 ** DBLE(JNUC) ) * 1.0D06  ! (1/(m**3 s))
 
       RETURN    
       END SUBROUTINE ACDC_AMINE 
@@ -1154,7 +1161,7 @@ C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s]
 
 C:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE ION_MEDIATED_NPF (  H2SO4in, HOMin, PRESSin, TEMPin, RHin, ASURFin, 
-     &                       J5, J6, sulfmass, HOMmass, J5_2m, J6_2m )
+     &                       J5, J6, sulfmass, HOMmass, J5_2m, J6_2m, ION_RATE )
 
       USE AEROMET_DATA   ! Includes CONST.EXT
       USE PRECURSOR_DATA, ONLY : PRECURSOR_MW, SULF_IDX, DMA_IDX 
@@ -1185,6 +1192,7 @@ C.. Outputs:
       REAL(8), INTENT( OUT ) :: HOMmass  ! mass of HOM used to make new particle [ug]
       REAL(8), INTENT( OUT ) :: J5_2m      ! new-particle diameter squared [m**2]
       REAL(8), INTENT( OUT ) :: J6_2m      ! new-particle diameter squared [m**2]
+      REAL(8), INTENT( OUT ) :: ION_RATE   ! Ion-Pair formation Rate [ ions/cm3 ]
 
 C.. Parameters
       CHARACTER( 16 ), PARAMETER :: PNAME = 'NPF_IMN'                 
@@ -1206,7 +1214,6 @@ C.. Sub-Module Input Parameters
       REAL, PARAMETER :: sg = 1.3  !Width of new modes, assumption
 
 C.. Ion-Pair Formation Rates
-      REAL(8) :: ION_RATE  ! Ion-Pair formation Rate [ ions/cm3 ]
       REAL(8) :: ION_RATE_WATER  ! Ion-Pair formation Rate [ ions/cm3 ]
       REAL(8) :: ION_RATE_LAND  ! Ion-Pair formation Rate [ ions/cm3 ]
 

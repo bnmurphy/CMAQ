@@ -34,7 +34,7 @@ c-----------------------------------------------------------------------
           CHARACTER (LEN = 80) :: SPC_DESC
         END TYPE PMDIAG_SPC_RECORD_TYPE
 
-        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(98) = (/
+        TYPE (PMDIAG_SPC_RECORD_TYPE), PARAMETER :: PMDIAG_SPC_RECORD(104) = (/
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVNUC        ', 5, 'na              ', 'NPF mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVATKN       ', 5, 'na              ', 'Aitken mode standard deviation (dry and wet)' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'STDEVACC        ', 5, 'na              ', 
@@ -134,9 +134,15 @@ c-----------------------------------------------------------------------
      &    PMDIAG_SPC_RECORD_TYPE( 'CS_ATKN_3ELV    ', 5, 's-1             ', 'Aitken mode Cond. Sink' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'CS_ACC_3ELV     ', 5, 's-1             ', 'Accumulation mode Cond. Sink' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'CS_COR_3ELV     ', 5, 's-1             ', 'Coarse mode Cond. Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'SULF_PSSA       ', 5, 'molec cm-3      ', 'Sulfuric Acid PSSA Conc.' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'SULF_RATE_MOLEC ', 5, 'molec cm-3 s-1  ', 'Sulfuric Acid Production Rate' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'SULF_RATE_MASS  ', 5, 'ug m-3 s-1      ', 'Sulfuric Acid Production Rate' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'SULF_CS         ', 5, 's-1             ', 'Sulfuric Acid Condensation Sink' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'Ion_Rate        ', 5, 'N cm-3 s-1      ', 'Ion Pair Production Rate' ),
+     &    PMDIAG_SPC_RECORD_TYPE( 'SULF_NPF        ', 5, 'ug m-3 s-1      ', 'Sulfuric Acid NPF Consumption Rate' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'k_prtcl_iepox   ', 5, '1/s             ', 'IEPOX pseudo particle phase reaction rate const' ),
      &    PMDIAG_SPC_RECORD_TYPE( 'GAMMA_IMAE      ', 5, 'na              ', 'IMAE heterogeneous uptake coefficient' ) /)
 
-        INTEGER :: A_PMDIAG_SPC_MAP (98), NUM_PMDIAG_SPC
+        INTEGER :: A_PMDIAG_SPC_MAP (104), NUM_PMDIAG_SPC
 
       END MODULE PMDIAG_DATA_MODULE

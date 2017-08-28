@@ -108,8 +108,8 @@
 
       CHARACTER( 32 ), PARAMETER :: MECHNAME = 'CB05E51_AE6_AQ'
 
-      INTEGER, PARAMETER :: N_GAS_CHEM_SPC = 136
-      INTEGER, PARAMETER :: NUMB_MECH_SPC  = 157
+      INTEGER, PARAMETER :: N_GAS_CHEM_SPC = 137
+      INTEGER, PARAMETER :: NUMB_MECH_SPC  = 158
 
       CHARACTER( 16 ) :: GAS_CHEM_SPC( N_GAS_CHEM_SPC )
       CHARACTER( 16 ) :: CHEMISTRY_SPC( NUMB_MECH_SPC )
@@ -188,78 +188,79 @@
       DATA GAS_CHEM_SPC(  62 ) / 'ISOP            ' /
       DATA GAS_CHEM_SPC(  63 ) / 'ISPD            ' /
       DATA GAS_CHEM_SPC(  64 ) / 'ISOPRXN         ' /
-      DATA GAS_CHEM_SPC(  65 ) / 'NTRM            ' /
-      DATA GAS_CHEM_SPC(  66 ) / 'MACO3           ' /
-      DATA GAS_CHEM_SPC(  67 ) / 'NTRI            ' /
-      DATA GAS_CHEM_SPC(  68 ) / 'TERP            ' /
-      DATA GAS_CHEM_SPC(  69 ) / 'TRPRXN          ' /
-      DATA GAS_CHEM_SPC(  70 ) / 'XO2T            ' /
-      DATA GAS_CHEM_SPC(  71 ) / 'HOM             ' /
-      DATA GAS_CHEM_SPC(  72 ) / 'SO2             ' /
-      DATA GAS_CHEM_SPC(  73 ) / 'SULF            ' /
-      DATA GAS_CHEM_SPC(  74 ) / 'SULRXN          ' /
-      DATA GAS_CHEM_SPC(  75 ) / 'ETOH            ' /
-      DATA GAS_CHEM_SPC(  76 ) / 'ETHA            ' /
-      DATA GAS_CHEM_SPC(  77 ) / 'CL2             ' /
-      DATA GAS_CHEM_SPC(  78 ) / 'CL              ' /
-      DATA GAS_CHEM_SPC(  79 ) / 'HOCL            ' /
-      DATA GAS_CHEM_SPC(  80 ) / 'CLO             ' /
-      DATA GAS_CHEM_SPC(  81 ) / 'FMCL            ' /
-      DATA GAS_CHEM_SPC(  82 ) / 'HCL             ' /
-      DATA GAS_CHEM_SPC(  83 ) / 'CLNO2           ' /
-      DATA GAS_CHEM_SPC(  84 ) / 'TOLNRXN         ' /
-      DATA GAS_CHEM_SPC(  85 ) / 'TOLHRXN         ' /
-      DATA GAS_CHEM_SPC(  86 ) / 'XYLNRXN         ' /
-      DATA GAS_CHEM_SPC(  87 ) / 'XYLHRXN         ' /
-      DATA GAS_CHEM_SPC(  88 ) / 'BENZENE         ' /
-      DATA GAS_CHEM_SPC(  89 ) / 'BENZRO2         ' /
-      DATA GAS_CHEM_SPC(  90 ) / 'BNZNRXN         ' /
-      DATA GAS_CHEM_SPC(  91 ) / 'BNZHRXN         ' /
-      DATA GAS_CHEM_SPC(  92 ) / 'SESQ            ' /
-      DATA GAS_CHEM_SPC(  93 ) / 'SESQRXN         ' /
-      DATA GAS_CHEM_SPC(  94 ) / 'PAHNRXN         ' /
-      DATA GAS_CHEM_SPC(  95 ) / 'PAHHRXN         ' /
-      DATA GAS_CHEM_SPC(  96 ) / 'SOAALK          ' /
-      DATA GAS_CHEM_SPC(  97 ) / 'ALKRXN          ' /
-      DATA GAS_CHEM_SPC(  98 ) / 'MAPAN           ' /
-      DATA GAS_CHEM_SPC(  99 ) / 'NALKO2          ' /
-      DATA GAS_CHEM_SPC( 100 ) / 'NTRCN           ' /
-      DATA GAS_CHEM_SPC( 101 ) / 'NTRCNOH         ' /
-      DATA GAS_CHEM_SPC( 102 ) / 'NTRPX           ' /
-      DATA GAS_CHEM_SPC( 103 ) / 'NOHO2           ' /
-      DATA GAS_CHEM_SPC( 104 ) / 'NCNO2           ' /
-      DATA GAS_CHEM_SPC( 105 ) / 'NCNOHO2         ' /
-      DATA GAS_CHEM_SPC( 106 ) / 'NTRMO2          ' /
-      DATA GAS_CHEM_SPC( 107 ) / 'NTRIO2          ' /
-      DATA GAS_CHEM_SPC( 108 ) / 'H2NO3PIJ        ' /
-      DATA GAS_CHEM_SPC( 109 ) / 'H2NO3PK         ' /
-      DATA GAS_CHEM_SPC( 110 ) / 'DMA             ' /
-      DATA GAS_CHEM_SPC( 111 ) / 'PCVOC           ' /
-      DATA GAS_CHEM_SPC( 112 ) / 'PCSOARXN        ' /
-      DATA GAS_CHEM_SPC( 113 ) / 'VLVPO1          ' /
-      DATA GAS_CHEM_SPC( 114 ) / 'VSVPO1          ' /
-      DATA GAS_CHEM_SPC( 115 ) / 'VSVPO2          ' /
-      DATA GAS_CHEM_SPC( 116 ) / 'VSVPO3          ' /
-      DATA GAS_CHEM_SPC( 117 ) / 'VIVPO1          ' /
-      DATA GAS_CHEM_SPC( 118 ) / 'VLVOO1          ' /
-      DATA GAS_CHEM_SPC( 119 ) / 'VLVOO2          ' /
-      DATA GAS_CHEM_SPC( 120 ) / 'VSVOO2          ' /
-      DATA GAS_CHEM_SPC( 121 ) / 'VSVOO3          ' /
-      DATA GAS_CHEM_SPC( 122 ) / 'VSVOO1          ' /
-      DATA GAS_CHEM_SPC( 123 ) / 'FORM_PRIMARY    ' /
-      DATA GAS_CHEM_SPC( 124 ) / 'ALD2_PRIMARY    ' /
-      DATA GAS_CHEM_SPC( 125 ) / 'BUTADIENE13     ' /
-      DATA GAS_CHEM_SPC( 126 ) / 'ACROLEIN        ' /
-      DATA GAS_CHEM_SPC( 127 ) / 'ACRO_PRIMARY    ' /
-      DATA GAS_CHEM_SPC( 128 ) / 'TOLU            ' /
-      DATA GAS_CHEM_SPC( 129 ) / 'MXYL            ' /
-      DATA GAS_CHEM_SPC( 130 ) / 'OXYL            ' /
-      DATA GAS_CHEM_SPC( 131 ) / 'PXYL            ' /
-      DATA GAS_CHEM_SPC( 132 ) / 'APIN            ' /
-      DATA GAS_CHEM_SPC( 133 ) / 'BPIN            ' /
-      DATA GAS_CHEM_SPC( 134 ) / 'HG              ' /
-      DATA GAS_CHEM_SPC( 135 ) / 'HGIIAER         ' /
-      DATA GAS_CHEM_SPC( 136 ) / 'HGIIGAS         ' /
+      DATA GAS_CHEM_SPC(  65 ) / 'IHOM            ' /
+      DATA GAS_CHEM_SPC(  66 ) / 'NTRM            ' /
+      DATA GAS_CHEM_SPC(  67 ) / 'MACO3           ' /
+      DATA GAS_CHEM_SPC(  68 ) / 'NTRI            ' /
+      DATA GAS_CHEM_SPC(  69 ) / 'TERP            ' /
+      DATA GAS_CHEM_SPC(  70 ) / 'TRPRXN          ' /
+      DATA GAS_CHEM_SPC(  71 ) / 'XO2T            ' /
+      DATA GAS_CHEM_SPC(  72 ) / 'THOM            ' /
+      DATA GAS_CHEM_SPC(  73 ) / 'SO2             ' /
+      DATA GAS_CHEM_SPC(  74 ) / 'SULF            ' /
+      DATA GAS_CHEM_SPC(  75 ) / 'SULRXN          ' /
+      DATA GAS_CHEM_SPC(  76 ) / 'ETOH            ' /
+      DATA GAS_CHEM_SPC(  77 ) / 'ETHA            ' /
+      DATA GAS_CHEM_SPC(  78 ) / 'CL2             ' /
+      DATA GAS_CHEM_SPC(  79 ) / 'CL              ' /
+      DATA GAS_CHEM_SPC(  80 ) / 'HOCL            ' /
+      DATA GAS_CHEM_SPC(  81 ) / 'CLO             ' /
+      DATA GAS_CHEM_SPC(  82 ) / 'FMCL            ' /
+      DATA GAS_CHEM_SPC(  83 ) / 'HCL             ' /
+      DATA GAS_CHEM_SPC(  84 ) / 'CLNO2           ' /
+      DATA GAS_CHEM_SPC(  85 ) / 'TOLNRXN         ' /
+      DATA GAS_CHEM_SPC(  86 ) / 'TOLHRXN         ' /
+      DATA GAS_CHEM_SPC(  87 ) / 'XYLNRXN         ' /
+      DATA GAS_CHEM_SPC(  88 ) / 'XYLHRXN         ' /
+      DATA GAS_CHEM_SPC(  89 ) / 'BENZENE         ' /
+      DATA GAS_CHEM_SPC(  90 ) / 'BENZRO2         ' /
+      DATA GAS_CHEM_SPC(  91 ) / 'BNZNRXN         ' /
+      DATA GAS_CHEM_SPC(  92 ) / 'BNZHRXN         ' /
+      DATA GAS_CHEM_SPC(  93 ) / 'SESQ            ' /
+      DATA GAS_CHEM_SPC(  94 ) / 'SESQRXN         ' /
+      DATA GAS_CHEM_SPC(  95 ) / 'PAHNRXN         ' /
+      DATA GAS_CHEM_SPC(  96 ) / 'PAHHRXN         ' /
+      DATA GAS_CHEM_SPC(  97 ) / 'SOAALK          ' /
+      DATA GAS_CHEM_SPC(  98 ) / 'ALKRXN          ' /
+      DATA GAS_CHEM_SPC(  99 ) / 'MAPAN           ' /
+      DATA GAS_CHEM_SPC( 100 ) / 'NALKO2          ' /
+      DATA GAS_CHEM_SPC( 101 ) / 'NTRCN           ' /
+      DATA GAS_CHEM_SPC( 102 ) / 'NTRCNOH         ' /
+      DATA GAS_CHEM_SPC( 103 ) / 'NTRPX           ' /
+      DATA GAS_CHEM_SPC( 104 ) / 'NOHO2           ' /
+      DATA GAS_CHEM_SPC( 105 ) / 'NCNO2           ' /
+      DATA GAS_CHEM_SPC( 106 ) / 'NCNOHO2         ' /
+      DATA GAS_CHEM_SPC( 107 ) / 'NTRMO2          ' /
+      DATA GAS_CHEM_SPC( 108 ) / 'NTRIO2          ' /
+      DATA GAS_CHEM_SPC( 109 ) / 'H2NO3PIJ        ' /
+      DATA GAS_CHEM_SPC( 110 ) / 'H2NO3PK         ' /
+      DATA GAS_CHEM_SPC( 111 ) / 'DMA             ' /
+      DATA GAS_CHEM_SPC( 112 ) / 'PCVOC           ' /
+      DATA GAS_CHEM_SPC( 113 ) / 'PCSOARXN        ' /
+      DATA GAS_CHEM_SPC( 114 ) / 'VLVPO1          ' /
+      DATA GAS_CHEM_SPC( 115 ) / 'VSVPO1          ' /
+      DATA GAS_CHEM_SPC( 116 ) / 'VSVPO2          ' /
+      DATA GAS_CHEM_SPC( 117 ) / 'VSVPO3          ' /
+      DATA GAS_CHEM_SPC( 118 ) / 'VIVPO1          ' /
+      DATA GAS_CHEM_SPC( 119 ) / 'VLVOO1          ' /
+      DATA GAS_CHEM_SPC( 120 ) / 'VLVOO2          ' /
+      DATA GAS_CHEM_SPC( 121 ) / 'VSVOO2          ' /
+      DATA GAS_CHEM_SPC( 122 ) / 'VSVOO3          ' /
+      DATA GAS_CHEM_SPC( 123 ) / 'VSVOO1          ' /
+      DATA GAS_CHEM_SPC( 124 ) / 'FORM_PRIMARY    ' /
+      DATA GAS_CHEM_SPC( 125 ) / 'ALD2_PRIMARY    ' /
+      DATA GAS_CHEM_SPC( 126 ) / 'BUTADIENE13     ' /
+      DATA GAS_CHEM_SPC( 127 ) / 'ACROLEIN        ' /
+      DATA GAS_CHEM_SPC( 128 ) / 'ACRO_PRIMARY    ' /
+      DATA GAS_CHEM_SPC( 129 ) / 'TOLU            ' /
+      DATA GAS_CHEM_SPC( 130 ) / 'MXYL            ' /
+      DATA GAS_CHEM_SPC( 131 ) / 'OXYL            ' /
+      DATA GAS_CHEM_SPC( 132 ) / 'PXYL            ' /
+      DATA GAS_CHEM_SPC( 133 ) / 'APIN            ' /
+      DATA GAS_CHEM_SPC( 134 ) / 'BPIN            ' /
+      DATA GAS_CHEM_SPC( 135 ) / 'HG              ' /
+      DATA GAS_CHEM_SPC( 136 ) / 'HGIIAER         ' /
+      DATA GAS_CHEM_SPC( 137 ) / 'HGIIGAS         ' /
 
 
 
@@ -330,99 +331,100 @@
       DATA CHEMISTRY_SPC(  62 ), SPECIES_MOLWT(  62 ) / 'ISOP            ',   68.00 /
       DATA CHEMISTRY_SPC(  63 ), SPECIES_MOLWT(  63 ) / 'ISPD            ',   70.00 /
       DATA CHEMISTRY_SPC(  64 ), SPECIES_MOLWT(  64 ) / 'ISOPRXN         ',   68.00 /
-      DATA CHEMISTRY_SPC(  65 ), SPECIES_MOLWT(  65 ) / 'NTRM            ',  147.00 /
-      DATA CHEMISTRY_SPC(  66 ), SPECIES_MOLWT(  66 ) / 'MACO3           ',  102.00 /
-      DATA CHEMISTRY_SPC(  67 ), SPECIES_MOLWT(  67 ) / 'NTRI            ',  149.10 /
-      DATA CHEMISTRY_SPC(  68 ), SPECIES_MOLWT(  68 ) / 'TERP            ',  136.00 /
-      DATA CHEMISTRY_SPC(  69 ), SPECIES_MOLWT(  69 ) / 'TRPRXN          ',  136.00 /
-      DATA CHEMISTRY_SPC(  70 ), SPECIES_MOLWT(  70 ) / 'XO2T            ',    1.00 /
-      DATA CHEMISTRY_SPC(  71 ), SPECIES_MOLWT(  71 ) / 'HOM             ',  248.00 /
-      DATA CHEMISTRY_SPC(  72 ), SPECIES_MOLWT(  72 ) / 'SO2             ',   64.00 /
-      DATA CHEMISTRY_SPC(  73 ), SPECIES_MOLWT(  73 ) / 'SULF            ',   98.00 /
-      DATA CHEMISTRY_SPC(  74 ), SPECIES_MOLWT(  74 ) / 'SULRXN          ',   98.00 /
-      DATA CHEMISTRY_SPC(  75 ), SPECIES_MOLWT(  75 ) / 'ETOH            ',   46.00 /
-      DATA CHEMISTRY_SPC(  76 ), SPECIES_MOLWT(  76 ) / 'ETHA            ',   30.00 /
-      DATA CHEMISTRY_SPC(  77 ), SPECIES_MOLWT(  77 ) / 'CL2             ',   71.00 /
-      DATA CHEMISTRY_SPC(  78 ), SPECIES_MOLWT(  78 ) / 'CL              ',   35.50 /
-      DATA CHEMISTRY_SPC(  79 ), SPECIES_MOLWT(  79 ) / 'HOCL            ',   52.50 /
-      DATA CHEMISTRY_SPC(  80 ), SPECIES_MOLWT(  80 ) / 'CLO             ',   51.50 /
-      DATA CHEMISTRY_SPC(  81 ), SPECIES_MOLWT(  81 ) / 'FMCL            ',   64.50 /
-      DATA CHEMISTRY_SPC(  82 ), SPECIES_MOLWT(  82 ) / 'HCL             ',   36.50 /
-      DATA CHEMISTRY_SPC(  83 ), SPECIES_MOLWT(  83 ) / 'CLNO2           ',   81.50 /
-      DATA CHEMISTRY_SPC(  84 ), SPECIES_MOLWT(  84 ) / 'TOLNRXN         ',  141.00 /
-      DATA CHEMISTRY_SPC(  85 ), SPECIES_MOLWT(  85 ) / 'TOLHRXN         ',  141.00 /
-      DATA CHEMISTRY_SPC(  86 ), SPECIES_MOLWT(  86 ) / 'XYLNRXN         ',  155.00 /
-      DATA CHEMISTRY_SPC(  87 ), SPECIES_MOLWT(  87 ) / 'XYLHRXN         ',  155.00 /
-      DATA CHEMISTRY_SPC(  88 ), SPECIES_MOLWT(  88 ) / 'BENZENE         ',   78.00 /
-      DATA CHEMISTRY_SPC(  89 ), SPECIES_MOLWT(  89 ) / 'BENZRO2         ',  127.00 /
-      DATA CHEMISTRY_SPC(  90 ), SPECIES_MOLWT(  90 ) / 'BNZNRXN         ',  127.00 /
-      DATA CHEMISTRY_SPC(  91 ), SPECIES_MOLWT(  91 ) / 'BNZHRXN         ',  127.00 /
-      DATA CHEMISTRY_SPC(  92 ), SPECIES_MOLWT(  92 ) / 'SESQ            ',  204.00 /
-      DATA CHEMISTRY_SPC(  93 ), SPECIES_MOLWT(  93 ) / 'SESQRXN         ',  204.00 /
-      DATA CHEMISTRY_SPC(  94 ), SPECIES_MOLWT(  94 ) / 'PAHNRXN         ',  187.20 /
-      DATA CHEMISTRY_SPC(  95 ), SPECIES_MOLWT(  95 ) / 'PAHHRXN         ',  187.20 /
-      DATA CHEMISTRY_SPC(  96 ), SPECIES_MOLWT(  96 ) / 'SOAALK          ',  112.00 /
-      DATA CHEMISTRY_SPC(  97 ), SPECIES_MOLWT(  97 ) / 'ALKRXN          ',  112.00 /
-      DATA CHEMISTRY_SPC(  98 ), SPECIES_MOLWT(  98 ) / 'MAPAN           ',  148.00 /
-      DATA CHEMISTRY_SPC(  99 ), SPECIES_MOLWT(  99 ) / 'NALKO2          ',  106.00 /
-      DATA CHEMISTRY_SPC( 100 ), SPECIES_MOLWT( 100 ) / 'NTRCN           ',  147.00 /
-      DATA CHEMISTRY_SPC( 101 ), SPECIES_MOLWT( 101 ) / 'NTRCNOH         ',  149.00 /
-      DATA CHEMISTRY_SPC( 102 ), SPECIES_MOLWT( 102 ) / 'NTRPX           ',  151.00 /
-      DATA CHEMISTRY_SPC( 103 ), SPECIES_MOLWT( 103 ) / 'NOHO2           ',  106.00 /
-      DATA CHEMISTRY_SPC( 104 ), SPECIES_MOLWT( 104 ) / 'NCNO2           ',  106.00 /
-      DATA CHEMISTRY_SPC( 105 ), SPECIES_MOLWT( 105 ) / 'NCNOHO2         ',  106.00 /
-      DATA CHEMISTRY_SPC( 106 ), SPECIES_MOLWT( 106 ) / 'NTRMO2          ',  106.00 /
-      DATA CHEMISTRY_SPC( 107 ), SPECIES_MOLWT( 107 ) / 'NTRIO2          ',  106.00 /
-      DATA CHEMISTRY_SPC( 108 ), SPECIES_MOLWT( 108 ) / 'H2NO3PIJ        ',   64.00 /
-      DATA CHEMISTRY_SPC( 109 ), SPECIES_MOLWT( 109 ) / 'H2NO3PK         ',   64.00 /
-      DATA CHEMISTRY_SPC( 110 ), SPECIES_MOLWT( 110 ) / 'ACLI            ',   35.50 /
-      DATA CHEMISTRY_SPC( 111 ), SPECIES_MOLWT( 111 ) / 'ACLJ            ',   35.50 /
-      DATA CHEMISTRY_SPC( 112 ), SPECIES_MOLWT( 112 ) / 'ACLK            ',   35.50 /
-      DATA CHEMISTRY_SPC( 113 ), SPECIES_MOLWT( 113 ) / 'AISO3J          ',  168.20 /
-      DATA CHEMISTRY_SPC( 114 ), SPECIES_MOLWT( 114 ) / 'AXYL1J          ',  174.00 /
-      DATA CHEMISTRY_SPC( 115 ), SPECIES_MOLWT( 115 ) / 'AOLGAJ          ',  206.00 /
-      DATA CHEMISTRY_SPC( 116 ), SPECIES_MOLWT( 116 ) / 'AXYL2J          ',  185.00 /
-      DATA CHEMISTRY_SPC( 117 ), SPECIES_MOLWT( 117 ) / 'ATOL1J          ',  163.00 /
-      DATA CHEMISTRY_SPC( 118 ), SPECIES_MOLWT( 118 ) / 'ATOL2J          ',  175.00 /
-      DATA CHEMISTRY_SPC( 119 ), SPECIES_MOLWT( 119 ) / 'ABNZ1J          ',  161.00 /
-      DATA CHEMISTRY_SPC( 120 ), SPECIES_MOLWT( 120 ) / 'ABNZ2J          ',  134.00 /
-      DATA CHEMISTRY_SPC( 121 ), SPECIES_MOLWT( 121 ) / 'ATRP1J          ',  177.00 /
-      DATA CHEMISTRY_SPC( 122 ), SPECIES_MOLWT( 122 ) / 'AOLGBJ          ',  248.00 /
-      DATA CHEMISTRY_SPC( 123 ), SPECIES_MOLWT( 123 ) / 'ATRP2J          ',  198.00 /
-      DATA CHEMISTRY_SPC( 124 ), SPECIES_MOLWT( 124 ) / 'AISO1J          ',  132.00 /
-      DATA CHEMISTRY_SPC( 125 ), SPECIES_MOLWT( 125 ) / 'AISO2J          ',  133.00 /
-      DATA CHEMISTRY_SPC( 126 ), SPECIES_MOLWT( 126 ) / 'ASQTJ           ',  273.00 /
-      DATA CHEMISTRY_SPC( 127 ), SPECIES_MOLWT( 127 ) / 'APAH1J          ',  195.60 /
-      DATA CHEMISTRY_SPC( 128 ), SPECIES_MOLWT( 128 ) / 'APAH2J          ',  178.70 /
-      DATA CHEMISTRY_SPC( 129 ), SPECIES_MOLWT( 129 ) / 'AALK1J          ',  225.00 /
-      DATA CHEMISTRY_SPC( 130 ), SPECIES_MOLWT( 130 ) / 'AALK2J          ',  205.10 /
-      DATA CHEMISTRY_SPC( 131 ), SPECIES_MOLWT( 131 ) / 'DMA             ',   45.00 /
-      DATA CHEMISTRY_SPC( 132 ), SPECIES_MOLWT( 132 ) / 'PCVOC           ',  170.00 /
-      DATA CHEMISTRY_SPC( 133 ), SPECIES_MOLWT( 133 ) / 'PCSOARXN        ',  170.00 /
-      DATA CHEMISTRY_SPC( 134 ), SPECIES_MOLWT( 134 ) / 'VLVPO1          ',  218.00 /
-      DATA CHEMISTRY_SPC( 135 ), SPECIES_MOLWT( 135 ) / 'VSVPO1          ',  230.00 /
-      DATA CHEMISTRY_SPC( 136 ), SPECIES_MOLWT( 136 ) / 'VSVPO2          ',  241.00 /
-      DATA CHEMISTRY_SPC( 137 ), SPECIES_MOLWT( 137 ) / 'VSVPO3          ',  253.00 /
-      DATA CHEMISTRY_SPC( 138 ), SPECIES_MOLWT( 138 ) / 'VIVPO1          ',  266.00 /
-      DATA CHEMISTRY_SPC( 139 ), SPECIES_MOLWT( 139 ) / 'VLVOO1          ',  136.00 /
-      DATA CHEMISTRY_SPC( 140 ), SPECIES_MOLWT( 140 ) / 'VLVOO2          ',  136.00 /
-      DATA CHEMISTRY_SPC( 141 ), SPECIES_MOLWT( 141 ) / 'VSVOO2          ',  135.00 /
-      DATA CHEMISTRY_SPC( 142 ), SPECIES_MOLWT( 142 ) / 'VSVOO3          ',  134.00 /
-      DATA CHEMISTRY_SPC( 143 ), SPECIES_MOLWT( 143 ) / 'VSVOO1          ',  135.00 /
-      DATA CHEMISTRY_SPC( 144 ), SPECIES_MOLWT( 144 ) / 'FORM_PRIMARY    ',   30.00 /
-      DATA CHEMISTRY_SPC( 145 ), SPECIES_MOLWT( 145 ) / 'ALD2_PRIMARY    ',   44.00 /
-      DATA CHEMISTRY_SPC( 146 ), SPECIES_MOLWT( 146 ) / 'BUTADIENE13     ',   54.00 /
-      DATA CHEMISTRY_SPC( 147 ), SPECIES_MOLWT( 147 ) / 'ACROLEIN        ',   56.10 /
-      DATA CHEMISTRY_SPC( 148 ), SPECIES_MOLWT( 148 ) / 'ACRO_PRIMARY    ',   56.10 /
-      DATA CHEMISTRY_SPC( 149 ), SPECIES_MOLWT( 149 ) / 'TOLU            ',   92.00 /
-      DATA CHEMISTRY_SPC( 150 ), SPECIES_MOLWT( 150 ) / 'MXYL            ',  106.20 /
-      DATA CHEMISTRY_SPC( 151 ), SPECIES_MOLWT( 151 ) / 'OXYL            ',  106.20 /
-      DATA CHEMISTRY_SPC( 152 ), SPECIES_MOLWT( 152 ) / 'PXYL            ',  106.20 /
-      DATA CHEMISTRY_SPC( 153 ), SPECIES_MOLWT( 153 ) / 'APIN            ',  136.30 /
-      DATA CHEMISTRY_SPC( 154 ), SPECIES_MOLWT( 154 ) / 'BPIN            ',  136.30 /
-      DATA CHEMISTRY_SPC( 155 ), SPECIES_MOLWT( 155 ) / 'HG              ',  200.60 /
-      DATA CHEMISTRY_SPC( 156 ), SPECIES_MOLWT( 156 ) / 'HGIIAER         ',  200.60 /
-      DATA CHEMISTRY_SPC( 157 ), SPECIES_MOLWT( 157 ) / 'HGIIGAS         ',  200.60 /
+      DATA CHEMISTRY_SPC(  65 ), SPECIES_MOLWT(  65 ) / 'IHOM            ',  248.00 /
+      DATA CHEMISTRY_SPC(  66 ), SPECIES_MOLWT(  66 ) / 'NTRM            ',  147.00 /
+      DATA CHEMISTRY_SPC(  67 ), SPECIES_MOLWT(  67 ) / 'MACO3           ',  102.00 /
+      DATA CHEMISTRY_SPC(  68 ), SPECIES_MOLWT(  68 ) / 'NTRI            ',  149.10 /
+      DATA CHEMISTRY_SPC(  69 ), SPECIES_MOLWT(  69 ) / 'TERP            ',  136.00 /
+      DATA CHEMISTRY_SPC(  70 ), SPECIES_MOLWT(  70 ) / 'TRPRXN          ',  136.00 /
+      DATA CHEMISTRY_SPC(  71 ), SPECIES_MOLWT(  71 ) / 'XO2T            ',    1.00 /
+      DATA CHEMISTRY_SPC(  72 ), SPECIES_MOLWT(  72 ) / 'THOM            ',  248.00 /
+      DATA CHEMISTRY_SPC(  73 ), SPECIES_MOLWT(  73 ) / 'SO2             ',   64.00 /
+      DATA CHEMISTRY_SPC(  74 ), SPECIES_MOLWT(  74 ) / 'SULF            ',   98.00 /
+      DATA CHEMISTRY_SPC(  75 ), SPECIES_MOLWT(  75 ) / 'SULRXN          ',   98.00 /
+      DATA CHEMISTRY_SPC(  76 ), SPECIES_MOLWT(  76 ) / 'ETOH            ',   46.00 /
+      DATA CHEMISTRY_SPC(  77 ), SPECIES_MOLWT(  77 ) / 'ETHA            ',   30.00 /
+      DATA CHEMISTRY_SPC(  78 ), SPECIES_MOLWT(  78 ) / 'CL2             ',   71.00 /
+      DATA CHEMISTRY_SPC(  79 ), SPECIES_MOLWT(  79 ) / 'CL              ',   35.50 /
+      DATA CHEMISTRY_SPC(  80 ), SPECIES_MOLWT(  80 ) / 'HOCL            ',   52.50 /
+      DATA CHEMISTRY_SPC(  81 ), SPECIES_MOLWT(  81 ) / 'CLO             ',   51.50 /
+      DATA CHEMISTRY_SPC(  82 ), SPECIES_MOLWT(  82 ) / 'FMCL            ',   64.50 /
+      DATA CHEMISTRY_SPC(  83 ), SPECIES_MOLWT(  83 ) / 'HCL             ',   36.50 /
+      DATA CHEMISTRY_SPC(  84 ), SPECIES_MOLWT(  84 ) / 'CLNO2           ',   81.50 /
+      DATA CHEMISTRY_SPC(  85 ), SPECIES_MOLWT(  85 ) / 'TOLNRXN         ',  141.00 /
+      DATA CHEMISTRY_SPC(  86 ), SPECIES_MOLWT(  86 ) / 'TOLHRXN         ',  141.00 /
+      DATA CHEMISTRY_SPC(  87 ), SPECIES_MOLWT(  87 ) / 'XYLNRXN         ',  155.00 /
+      DATA CHEMISTRY_SPC(  88 ), SPECIES_MOLWT(  88 ) / 'XYLHRXN         ',  155.00 /
+      DATA CHEMISTRY_SPC(  89 ), SPECIES_MOLWT(  89 ) / 'BENZENE         ',   78.00 /
+      DATA CHEMISTRY_SPC(  90 ), SPECIES_MOLWT(  90 ) / 'BENZRO2         ',  127.00 /
+      DATA CHEMISTRY_SPC(  91 ), SPECIES_MOLWT(  91 ) / 'BNZNRXN         ',  127.00 /
+      DATA CHEMISTRY_SPC(  92 ), SPECIES_MOLWT(  92 ) / 'BNZHRXN         ',  127.00 /
+      DATA CHEMISTRY_SPC(  93 ), SPECIES_MOLWT(  93 ) / 'SESQ            ',  204.00 /
+      DATA CHEMISTRY_SPC(  94 ), SPECIES_MOLWT(  94 ) / 'SESQRXN         ',  204.00 /
+      DATA CHEMISTRY_SPC(  95 ), SPECIES_MOLWT(  95 ) / 'PAHNRXN         ',  187.20 /
+      DATA CHEMISTRY_SPC(  96 ), SPECIES_MOLWT(  96 ) / 'PAHHRXN         ',  187.20 /
+      DATA CHEMISTRY_SPC(  97 ), SPECIES_MOLWT(  97 ) / 'SOAALK          ',  112.00 /
+      DATA CHEMISTRY_SPC(  98 ), SPECIES_MOLWT(  98 ) / 'ALKRXN          ',  112.00 /
+      DATA CHEMISTRY_SPC(  99 ), SPECIES_MOLWT(  99 ) / 'MAPAN           ',  148.00 /
+      DATA CHEMISTRY_SPC( 100 ), SPECIES_MOLWT( 100 ) / 'NALKO2          ',  106.00 /
+      DATA CHEMISTRY_SPC( 101 ), SPECIES_MOLWT( 101 ) / 'NTRCN           ',  147.00 /
+      DATA CHEMISTRY_SPC( 102 ), SPECIES_MOLWT( 102 ) / 'NTRCNOH         ',  149.00 /
+      DATA CHEMISTRY_SPC( 103 ), SPECIES_MOLWT( 103 ) / 'NTRPX           ',  151.00 /
+      DATA CHEMISTRY_SPC( 104 ), SPECIES_MOLWT( 104 ) / 'NOHO2           ',  106.00 /
+      DATA CHEMISTRY_SPC( 105 ), SPECIES_MOLWT( 105 ) / 'NCNO2           ',  106.00 /
+      DATA CHEMISTRY_SPC( 106 ), SPECIES_MOLWT( 106 ) / 'NCNOHO2         ',  106.00 /
+      DATA CHEMISTRY_SPC( 107 ), SPECIES_MOLWT( 107 ) / 'NTRMO2          ',  106.00 /
+      DATA CHEMISTRY_SPC( 108 ), SPECIES_MOLWT( 108 ) / 'NTRIO2          ',  106.00 /
+      DATA CHEMISTRY_SPC( 109 ), SPECIES_MOLWT( 109 ) / 'H2NO3PIJ        ',   64.00 /
+      DATA CHEMISTRY_SPC( 110 ), SPECIES_MOLWT( 110 ) / 'H2NO3PK         ',   64.00 /
+      DATA CHEMISTRY_SPC( 111 ), SPECIES_MOLWT( 111 ) / 'ACLI            ',   35.50 /
+      DATA CHEMISTRY_SPC( 112 ), SPECIES_MOLWT( 112 ) / 'ACLJ            ',   35.50 /
+      DATA CHEMISTRY_SPC( 113 ), SPECIES_MOLWT( 113 ) / 'ACLK            ',   35.50 /
+      DATA CHEMISTRY_SPC( 114 ), SPECIES_MOLWT( 114 ) / 'AISO3J          ',  168.20 /
+      DATA CHEMISTRY_SPC( 115 ), SPECIES_MOLWT( 115 ) / 'AXYL1J          ',  174.00 /
+      DATA CHEMISTRY_SPC( 116 ), SPECIES_MOLWT( 116 ) / 'AOLGAJ          ',  206.00 /
+      DATA CHEMISTRY_SPC( 117 ), SPECIES_MOLWT( 117 ) / 'AXYL2J          ',  185.00 /
+      DATA CHEMISTRY_SPC( 118 ), SPECIES_MOLWT( 118 ) / 'ATOL1J          ',  163.00 /
+      DATA CHEMISTRY_SPC( 119 ), SPECIES_MOLWT( 119 ) / 'ATOL2J          ',  175.00 /
+      DATA CHEMISTRY_SPC( 120 ), SPECIES_MOLWT( 120 ) / 'ABNZ1J          ',  161.00 /
+      DATA CHEMISTRY_SPC( 121 ), SPECIES_MOLWT( 121 ) / 'ABNZ2J          ',  134.00 /
+      DATA CHEMISTRY_SPC( 122 ), SPECIES_MOLWT( 122 ) / 'ATRP1J          ',  177.00 /
+      DATA CHEMISTRY_SPC( 123 ), SPECIES_MOLWT( 123 ) / 'AOLGBJ          ',  248.00 /
+      DATA CHEMISTRY_SPC( 124 ), SPECIES_MOLWT( 124 ) / 'ATRP2J          ',  198.00 /
+      DATA CHEMISTRY_SPC( 125 ), SPECIES_MOLWT( 125 ) / 'AISO1J          ',  132.00 /
+      DATA CHEMISTRY_SPC( 126 ), SPECIES_MOLWT( 126 ) / 'AISO2J          ',  133.00 /
+      DATA CHEMISTRY_SPC( 127 ), SPECIES_MOLWT( 127 ) / 'ASQTJ           ',  273.00 /
+      DATA CHEMISTRY_SPC( 128 ), SPECIES_MOLWT( 128 ) / 'APAH1J          ',  195.60 /
+      DATA CHEMISTRY_SPC( 129 ), SPECIES_MOLWT( 129 ) / 'APAH2J          ',  178.70 /
+      DATA CHEMISTRY_SPC( 130 ), SPECIES_MOLWT( 130 ) / 'AALK1J          ',  225.00 /
+      DATA CHEMISTRY_SPC( 131 ), SPECIES_MOLWT( 131 ) / 'AALK2J          ',  205.10 /
+      DATA CHEMISTRY_SPC( 132 ), SPECIES_MOLWT( 132 ) / 'DMA             ',   45.00 /
+      DATA CHEMISTRY_SPC( 133 ), SPECIES_MOLWT( 133 ) / 'PCVOC           ',  170.00 /
+      DATA CHEMISTRY_SPC( 134 ), SPECIES_MOLWT( 134 ) / 'PCSOARXN        ',  170.00 /
+      DATA CHEMISTRY_SPC( 135 ), SPECIES_MOLWT( 135 ) / 'VLVPO1          ',  218.00 /
+      DATA CHEMISTRY_SPC( 136 ), SPECIES_MOLWT( 136 ) / 'VSVPO1          ',  230.00 /
+      DATA CHEMISTRY_SPC( 137 ), SPECIES_MOLWT( 137 ) / 'VSVPO2          ',  241.00 /
+      DATA CHEMISTRY_SPC( 138 ), SPECIES_MOLWT( 138 ) / 'VSVPO3          ',  253.00 /
+      DATA CHEMISTRY_SPC( 139 ), SPECIES_MOLWT( 139 ) / 'VIVPO1          ',  266.00 /
+      DATA CHEMISTRY_SPC( 140 ), SPECIES_MOLWT( 140 ) / 'VLVOO1          ',  136.00 /
+      DATA CHEMISTRY_SPC( 141 ), SPECIES_MOLWT( 141 ) / 'VLVOO2          ',  136.00 /
+      DATA CHEMISTRY_SPC( 142 ), SPECIES_MOLWT( 142 ) / 'VSVOO2          ',  135.00 /
+      DATA CHEMISTRY_SPC( 143 ), SPECIES_MOLWT( 143 ) / 'VSVOO3          ',  134.00 /
+      DATA CHEMISTRY_SPC( 144 ), SPECIES_MOLWT( 144 ) / 'VSVOO1          ',  135.00 /
+      DATA CHEMISTRY_SPC( 145 ), SPECIES_MOLWT( 145 ) / 'FORM_PRIMARY    ',   30.00 /
+      DATA CHEMISTRY_SPC( 146 ), SPECIES_MOLWT( 146 ) / 'ALD2_PRIMARY    ',   44.00 /
+      DATA CHEMISTRY_SPC( 147 ), SPECIES_MOLWT( 147 ) / 'BUTADIENE13     ',   54.00 /
+      DATA CHEMISTRY_SPC( 148 ), SPECIES_MOLWT( 148 ) / 'ACROLEIN        ',   56.10 /
+      DATA CHEMISTRY_SPC( 149 ), SPECIES_MOLWT( 149 ) / 'ACRO_PRIMARY    ',   56.10 /
+      DATA CHEMISTRY_SPC( 150 ), SPECIES_MOLWT( 150 ) / 'TOLU            ',   92.00 /
+      DATA CHEMISTRY_SPC( 151 ), SPECIES_MOLWT( 151 ) / 'MXYL            ',  106.20 /
+      DATA CHEMISTRY_SPC( 152 ), SPECIES_MOLWT( 152 ) / 'OXYL            ',  106.20 /
+      DATA CHEMISTRY_SPC( 153 ), SPECIES_MOLWT( 153 ) / 'PXYL            ',  106.20 /
+      DATA CHEMISTRY_SPC( 154 ), SPECIES_MOLWT( 154 ) / 'APIN            ',  136.30 /
+      DATA CHEMISTRY_SPC( 155 ), SPECIES_MOLWT( 155 ) / 'BPIN            ',  136.30 /
+      DATA CHEMISTRY_SPC( 156 ), SPECIES_MOLWT( 156 ) / 'HG              ',  200.60 /
+      DATA CHEMISTRY_SPC( 157 ), SPECIES_MOLWT( 157 ) / 'HGIIAER         ',  200.60 /
+      DATA CHEMISTRY_SPC( 158 ), SPECIES_MOLWT( 158 ) / 'HGIIGAS         ',  200.60 /
 
 
 
@@ -498,101 +500,102 @@
       DATA CGRID_INDEX(  62 ), SPECIES_TYPE(  62 ), CONVERT_CONC(  62 ) /   63, 'GC', F /  ! ISOP
       DATA CGRID_INDEX(  63 ), SPECIES_TYPE(  63 ), CONVERT_CONC(  63 ) /   64, 'GC', F /  ! ISPD
       DATA CGRID_INDEX(  64 ), SPECIES_TYPE(  64 ), CONVERT_CONC(  64 ) /   65, 'GC', F /  ! ISOPRXN
-      DATA CGRID_INDEX(  65 ), SPECIES_TYPE(  65 ), CONVERT_CONC(  65 ) /   66, 'GC', F /  ! NTRM
-      DATA CGRID_INDEX(  66 ), SPECIES_TYPE(  66 ), CONVERT_CONC(  66 ) /   67, 'GC', F /  ! MACO3
-      DATA CGRID_INDEX(  67 ), SPECIES_TYPE(  67 ), CONVERT_CONC(  67 ) /   68, 'GC', F /  ! NTRI
-      DATA CGRID_INDEX(  68 ), SPECIES_TYPE(  68 ), CONVERT_CONC(  68 ) /   69, 'GC', F /  ! TERP
-      DATA CGRID_INDEX(  69 ), SPECIES_TYPE(  69 ), CONVERT_CONC(  69 ) /   70, 'GC', F /  ! TRPRXN
-      DATA CGRID_INDEX(  70 ), SPECIES_TYPE(  70 ), CONVERT_CONC(  70 ) /   71, 'GC', F /  ! XO2T
-      DATA CGRID_INDEX(  71 ), SPECIES_TYPE(  71 ), CONVERT_CONC(  71 ) /  124, 'GC', F /  ! HOM
-      DATA CGRID_INDEX(  72 ), SPECIES_TYPE(  72 ), CONVERT_CONC(  72 ) /   72, 'GC', F /  ! SO2
-      DATA CGRID_INDEX(  73 ), SPECIES_TYPE(  73 ), CONVERT_CONC(  73 ) /   73, 'GC', F /  ! SULF
-      DATA CGRID_INDEX(  74 ), SPECIES_TYPE(  74 ), CONVERT_CONC(  74 ) /   74, 'GC', F /  ! SULRXN
-      DATA CGRID_INDEX(  75 ), SPECIES_TYPE(  75 ), CONVERT_CONC(  75 ) /   75, 'GC', F /  ! ETOH
-      DATA CGRID_INDEX(  76 ), SPECIES_TYPE(  76 ), CONVERT_CONC(  76 ) /   76, 'GC', F /  ! ETHA
-      DATA CGRID_INDEX(  77 ), SPECIES_TYPE(  77 ), CONVERT_CONC(  77 ) /   77, 'GC', F /  ! CL2
-      DATA CGRID_INDEX(  78 ), SPECIES_TYPE(  78 ), CONVERT_CONC(  78 ) /   78, 'GC', F /  ! CL
-      DATA CGRID_INDEX(  79 ), SPECIES_TYPE(  79 ), CONVERT_CONC(  79 ) /   79, 'GC', F /  ! HOCL
-      DATA CGRID_INDEX(  80 ), SPECIES_TYPE(  80 ), CONVERT_CONC(  80 ) /   80, 'GC', F /  ! CLO
-      DATA CGRID_INDEX(  81 ), SPECIES_TYPE(  81 ), CONVERT_CONC(  81 ) /   81, 'GC', F /  ! FMCL
-      DATA CGRID_INDEX(  82 ), SPECIES_TYPE(  82 ), CONVERT_CONC(  82 ) /   82, 'GC', F /  ! HCL
-      DATA CGRID_INDEX(  83 ), SPECIES_TYPE(  83 ), CONVERT_CONC(  83 ) /   83, 'GC', F /  ! CLNO2
-      DATA CGRID_INDEX(  84 ), SPECIES_TYPE(  84 ), CONVERT_CONC(  84 ) /   84, 'GC', F /  ! TOLNRXN
-      DATA CGRID_INDEX(  85 ), SPECIES_TYPE(  85 ), CONVERT_CONC(  85 ) /   85, 'GC', F /  ! TOLHRXN
-      DATA CGRID_INDEX(  86 ), SPECIES_TYPE(  86 ), CONVERT_CONC(  86 ) /   86, 'GC', F /  ! XYLNRXN
-      DATA CGRID_INDEX(  87 ), SPECIES_TYPE(  87 ), CONVERT_CONC(  87 ) /   87, 'GC', F /  ! XYLHRXN
-      DATA CGRID_INDEX(  88 ), SPECIES_TYPE(  88 ), CONVERT_CONC(  88 ) /   88, 'GC', F /  ! BENZENE
-      DATA CGRID_INDEX(  89 ), SPECIES_TYPE(  89 ), CONVERT_CONC(  89 ) /   89, 'GC', F /  ! BENZRO2
-      DATA CGRID_INDEX(  90 ), SPECIES_TYPE(  90 ), CONVERT_CONC(  90 ) /   90, 'GC', F /  ! BNZNRXN
-      DATA CGRID_INDEX(  91 ), SPECIES_TYPE(  91 ), CONVERT_CONC(  91 ) /   91, 'GC', F /  ! BNZHRXN
-      DATA CGRID_INDEX(  92 ), SPECIES_TYPE(  92 ), CONVERT_CONC(  92 ) /   92, 'GC', F /  ! SESQ
-      DATA CGRID_INDEX(  93 ), SPECIES_TYPE(  93 ), CONVERT_CONC(  93 ) /   93, 'GC', F /  ! SESQRXN
-      DATA CGRID_INDEX(  94 ), SPECIES_TYPE(  94 ), CONVERT_CONC(  94 ) /   94, 'GC', F /  ! PAHNRXN
-      DATA CGRID_INDEX(  95 ), SPECIES_TYPE(  95 ), CONVERT_CONC(  95 ) /   95, 'GC', F /  ! PAHHRXN
-      DATA CGRID_INDEX(  96 ), SPECIES_TYPE(  96 ), CONVERT_CONC(  96 ) /   96, 'GC', F /  ! SOAALK
-      DATA CGRID_INDEX(  97 ), SPECIES_TYPE(  97 ), CONVERT_CONC(  97 ) /   97, 'GC', F /  ! ALKRXN
-      DATA CGRID_INDEX(  98 ), SPECIES_TYPE(  98 ), CONVERT_CONC(  98 ) /   98, 'GC', F /  ! MAPAN
-      DATA CGRID_INDEX(  99 ), SPECIES_TYPE(  99 ), CONVERT_CONC(  99 ) /   43, 'GC', F /  ! NALKO2
-      DATA CGRID_INDEX( 100 ), SPECIES_TYPE( 100 ), CONVERT_CONC( 100 ) /   99, 'GC', F /  ! NTRCN
-      DATA CGRID_INDEX( 101 ), SPECIES_TYPE( 101 ), CONVERT_CONC( 101 ) /  100, 'GC', F /  ! NTRCNOH
-      DATA CGRID_INDEX( 102 ), SPECIES_TYPE( 102 ), CONVERT_CONC( 102 ) /  101, 'GC', F /  ! NTRPX
-      DATA CGRID_INDEX( 103 ), SPECIES_TYPE( 103 ), CONVERT_CONC( 103 ) /  102, 'GC', F /  ! NOHO2
-      DATA CGRID_INDEX( 104 ), SPECIES_TYPE( 104 ), CONVERT_CONC( 104 ) /  103, 'GC', F /  ! NCNO2
-      DATA CGRID_INDEX( 105 ), SPECIES_TYPE( 105 ), CONVERT_CONC( 105 ) /  104, 'GC', F /  ! NCNOHO2
-      DATA CGRID_INDEX( 106 ), SPECIES_TYPE( 106 ), CONVERT_CONC( 106 ) /  105, 'GC', F /  ! NTRMO2
-      DATA CGRID_INDEX( 107 ), SPECIES_TYPE( 107 ), CONVERT_CONC( 107 ) /  106, 'GC', F /  ! NTRIO2
-      DATA CGRID_INDEX( 108 ), SPECIES_TYPE( 108 ), CONVERT_CONC( 108 ) /  107, 'GC', F /  ! H2NO3PIJ
-      DATA CGRID_INDEX( 109 ), SPECIES_TYPE( 109 ), CONVERT_CONC( 109 ) /  108, 'GC', F /  ! H2NO3PK
-      DATA CGRID_INDEX( 110 ), SPECIES_TYPE( 110 ), CONVERT_CONC( 110 ) /  211, 'AE', T /  ! ACLI
-      DATA CGRID_INDEX( 111 ), SPECIES_TYPE( 111 ), CONVERT_CONC( 111 ) /  210, 'AE', T /  ! ACLJ
-      DATA CGRID_INDEX( 112 ), SPECIES_TYPE( 112 ), CONVERT_CONC( 112 ) /  213, 'AE', T /  ! ACLK
-      DATA CGRID_INDEX( 113 ), SPECIES_TYPE( 113 ), CONVERT_CONC( 113 ) /  175, 'AE', T /  ! AISO3J
-      DATA CGRID_INDEX( 114 ), SPECIES_TYPE( 114 ), CONVERT_CONC( 114 ) /  149, 'AE', T /  ! AXYL1J
-      DATA CGRID_INDEX( 115 ), SPECIES_TYPE( 115 ), CONVERT_CONC( 115 ) /  219, 'AE', T /  ! AOLGAJ
-      DATA CGRID_INDEX( 116 ), SPECIES_TYPE( 116 ), CONVERT_CONC( 116 ) /  150, 'AE', T /  ! AXYL2J
-      DATA CGRID_INDEX( 117 ), SPECIES_TYPE( 117 ), CONVERT_CONC( 117 ) /  154, 'AE', T /  ! ATOL1J
-      DATA CGRID_INDEX( 118 ), SPECIES_TYPE( 118 ), CONVERT_CONC( 118 ) /  155, 'AE', T /  ! ATOL2J
-      DATA CGRID_INDEX( 119 ), SPECIES_TYPE( 119 ), CONVERT_CONC( 119 ) /  159, 'AE', T /  ! ABNZ1J
-      DATA CGRID_INDEX( 120 ), SPECIES_TYPE( 120 ), CONVERT_CONC( 120 ) /  160, 'AE', T /  ! ABNZ2J
-      DATA CGRID_INDEX( 121 ), SPECIES_TYPE( 121 ), CONVERT_CONC( 121 ) /  169, 'AE', T /  ! ATRP1J
-      DATA CGRID_INDEX( 122 ), SPECIES_TYPE( 122 ), CONVERT_CONC( 122 ) /  220, 'AE', T /  ! AOLGBJ
-      DATA CGRID_INDEX( 123 ), SPECIES_TYPE( 123 ), CONVERT_CONC( 123 ) /  170, 'AE', T /  ! ATRP2J
-      DATA CGRID_INDEX( 124 ), SPECIES_TYPE( 124 ), CONVERT_CONC( 124 ) /  171, 'AE', T /  ! AISO1J
-      DATA CGRID_INDEX( 125 ), SPECIES_TYPE( 125 ), CONVERT_CONC( 125 ) /  172, 'AE', T /  ! AISO2J
-      DATA CGRID_INDEX( 126 ), SPECIES_TYPE( 126 ), CONVERT_CONC( 126 ) /  178, 'AE', T /  ! ASQTJ
-      DATA CGRID_INDEX( 127 ), SPECIES_TYPE( 127 ), CONVERT_CONC( 127 ) /  164, 'AE', T /  ! APAH1J
-      DATA CGRID_INDEX( 128 ), SPECIES_TYPE( 128 ), CONVERT_CONC( 128 ) /  165, 'AE', T /  ! APAH2J
-      DATA CGRID_INDEX( 129 ), SPECIES_TYPE( 129 ), CONVERT_CONC( 129 ) /  147, 'AE', T /  ! AALK1J
-      DATA CGRID_INDEX( 130 ), SPECIES_TYPE( 130 ), CONVERT_CONC( 130 ) /  148, 'AE', T /  ! AALK2J
-      DATA CGRID_INDEX( 131 ), SPECIES_TYPE( 131 ), CONVERT_CONC( 131 ) /  123, 'GC', F /  ! DMA
-      DATA CGRID_INDEX( 132 ), SPECIES_TYPE( 132 ), CONVERT_CONC( 132 ) /  135, 'GC', F /  ! PCVOC
-      DATA CGRID_INDEX( 133 ), SPECIES_TYPE( 133 ), CONVERT_CONC( 133 ) /  136, 'GC', F /  ! PCSOARXN
-      DATA CGRID_INDEX( 134 ), SPECIES_TYPE( 134 ), CONVERT_CONC( 134 ) /  125, 'GC', F /  ! VLVPO1
-      DATA CGRID_INDEX( 135 ), SPECIES_TYPE( 135 ), CONVERT_CONC( 135 ) /  126, 'GC', F /  ! VSVPO1
-      DATA CGRID_INDEX( 136 ), SPECIES_TYPE( 136 ), CONVERT_CONC( 136 ) /  127, 'GC', F /  ! VSVPO2
-      DATA CGRID_INDEX( 137 ), SPECIES_TYPE( 137 ), CONVERT_CONC( 137 ) /  128, 'GC', F /  ! VSVPO3
-      DATA CGRID_INDEX( 138 ), SPECIES_TYPE( 138 ), CONVERT_CONC( 138 ) /  129, 'GC', F /  ! VIVPO1
-      DATA CGRID_INDEX( 139 ), SPECIES_TYPE( 139 ), CONVERT_CONC( 139 ) /  130, 'GC', F /  ! VLVOO1
-      DATA CGRID_INDEX( 140 ), SPECIES_TYPE( 140 ), CONVERT_CONC( 140 ) /  131, 'GC', F /  ! VLVOO2
-      DATA CGRID_INDEX( 141 ), SPECIES_TYPE( 141 ), CONVERT_CONC( 141 ) /  133, 'GC', F /  ! VSVOO2
-      DATA CGRID_INDEX( 142 ), SPECIES_TYPE( 142 ), CONVERT_CONC( 142 ) /  134, 'GC', F /  ! VSVOO3
-      DATA CGRID_INDEX( 143 ), SPECIES_TYPE( 143 ), CONVERT_CONC( 143 ) /  132, 'GC', F /  ! VSVOO1
-      DATA CGRID_INDEX( 144 ), SPECIES_TYPE( 144 ), CONVERT_CONC( 144 ) /  109, 'GC', F /  ! FORM_PRIMARY
-      DATA CGRID_INDEX( 145 ), SPECIES_TYPE( 145 ), CONVERT_CONC( 145 ) /  110, 'GC', F /  ! ALD2_PRIMARY
-      DATA CGRID_INDEX( 146 ), SPECIES_TYPE( 146 ), CONVERT_CONC( 146 ) /  111, 'GC', F /  ! BUTADIENE13
-      DATA CGRID_INDEX( 147 ), SPECIES_TYPE( 147 ), CONVERT_CONC( 147 ) /  112, 'GC', F /  ! ACROLEIN
-      DATA CGRID_INDEX( 148 ), SPECIES_TYPE( 148 ), CONVERT_CONC( 148 ) /  113, 'GC', F /  ! ACRO_PRIMARY
-      DATA CGRID_INDEX( 149 ), SPECIES_TYPE( 149 ), CONVERT_CONC( 149 ) /  114, 'GC', F /  ! TOLU
-      DATA CGRID_INDEX( 150 ), SPECIES_TYPE( 150 ), CONVERT_CONC( 150 ) /  115, 'GC', F /  ! MXYL
-      DATA CGRID_INDEX( 151 ), SPECIES_TYPE( 151 ), CONVERT_CONC( 151 ) /  116, 'GC', F /  ! OXYL
-      DATA CGRID_INDEX( 152 ), SPECIES_TYPE( 152 ), CONVERT_CONC( 152 ) /  117, 'GC', F /  ! PXYL
-      DATA CGRID_INDEX( 153 ), SPECIES_TYPE( 153 ), CONVERT_CONC( 153 ) /  118, 'GC', F /  ! APIN
-      DATA CGRID_INDEX( 154 ), SPECIES_TYPE( 154 ), CONVERT_CONC( 154 ) /  119, 'GC', F /  ! BPIN
-      DATA CGRID_INDEX( 155 ), SPECIES_TYPE( 155 ), CONVERT_CONC( 155 ) /  120, 'GC', F /  ! HG
-      DATA CGRID_INDEX( 156 ), SPECIES_TYPE( 156 ), CONVERT_CONC( 156 ) /  121, 'GC', F /  ! HGIIAER
-      DATA CGRID_INDEX( 157 ), SPECIES_TYPE( 157 ), CONVERT_CONC( 157 ) /  122, 'GC', F /  ! HGIIGAS
+      DATA CGRID_INDEX(  65 ), SPECIES_TYPE(  65 ), CONVERT_CONC(  65 ) /  124, 'GC', F /  ! IHOM
+      DATA CGRID_INDEX(  66 ), SPECIES_TYPE(  66 ), CONVERT_CONC(  66 ) /   66, 'GC', F /  ! NTRM
+      DATA CGRID_INDEX(  67 ), SPECIES_TYPE(  67 ), CONVERT_CONC(  67 ) /   67, 'GC', F /  ! MACO3
+      DATA CGRID_INDEX(  68 ), SPECIES_TYPE(  68 ), CONVERT_CONC(  68 ) /   68, 'GC', F /  ! NTRI
+      DATA CGRID_INDEX(  69 ), SPECIES_TYPE(  69 ), CONVERT_CONC(  69 ) /   69, 'GC', F /  ! TERP
+      DATA CGRID_INDEX(  70 ), SPECIES_TYPE(  70 ), CONVERT_CONC(  70 ) /   70, 'GC', F /  ! TRPRXN
+      DATA CGRID_INDEX(  71 ), SPECIES_TYPE(  71 ), CONVERT_CONC(  71 ) /   71, 'GC', F /  ! XO2T
+      DATA CGRID_INDEX(  72 ), SPECIES_TYPE(  72 ), CONVERT_CONC(  72 ) /  125, 'GC', F /  ! THOM
+      DATA CGRID_INDEX(  73 ), SPECIES_TYPE(  73 ), CONVERT_CONC(  73 ) /   72, 'GC', F /  ! SO2
+      DATA CGRID_INDEX(  74 ), SPECIES_TYPE(  74 ), CONVERT_CONC(  74 ) /   73, 'GC', F /  ! SULF
+      DATA CGRID_INDEX(  75 ), SPECIES_TYPE(  75 ), CONVERT_CONC(  75 ) /   74, 'GC', F /  ! SULRXN
+      DATA CGRID_INDEX(  76 ), SPECIES_TYPE(  76 ), CONVERT_CONC(  76 ) /   75, 'GC', F /  ! ETOH
+      DATA CGRID_INDEX(  77 ), SPECIES_TYPE(  77 ), CONVERT_CONC(  77 ) /   76, 'GC', F /  ! ETHA
+      DATA CGRID_INDEX(  78 ), SPECIES_TYPE(  78 ), CONVERT_CONC(  78 ) /   77, 'GC', F /  ! CL2
+      DATA CGRID_INDEX(  79 ), SPECIES_TYPE(  79 ), CONVERT_CONC(  79 ) /   78, 'GC', F /  ! CL
+      DATA CGRID_INDEX(  80 ), SPECIES_TYPE(  80 ), CONVERT_CONC(  80 ) /   79, 'GC', F /  ! HOCL
+      DATA CGRID_INDEX(  81 ), SPECIES_TYPE(  81 ), CONVERT_CONC(  81 ) /   80, 'GC', F /  ! CLO
+      DATA CGRID_INDEX(  82 ), SPECIES_TYPE(  82 ), CONVERT_CONC(  82 ) /   81, 'GC', F /  ! FMCL
+      DATA CGRID_INDEX(  83 ), SPECIES_TYPE(  83 ), CONVERT_CONC(  83 ) /   82, 'GC', F /  ! HCL
+      DATA CGRID_INDEX(  84 ), SPECIES_TYPE(  84 ), CONVERT_CONC(  84 ) /   83, 'GC', F /  ! CLNO2
+      DATA CGRID_INDEX(  85 ), SPECIES_TYPE(  85 ), CONVERT_CONC(  85 ) /   84, 'GC', F /  ! TOLNRXN
+      DATA CGRID_INDEX(  86 ), SPECIES_TYPE(  86 ), CONVERT_CONC(  86 ) /   85, 'GC', F /  ! TOLHRXN
+      DATA CGRID_INDEX(  87 ), SPECIES_TYPE(  87 ), CONVERT_CONC(  87 ) /   86, 'GC', F /  ! XYLNRXN
+      DATA CGRID_INDEX(  88 ), SPECIES_TYPE(  88 ), CONVERT_CONC(  88 ) /   87, 'GC', F /  ! XYLHRXN
+      DATA CGRID_INDEX(  89 ), SPECIES_TYPE(  89 ), CONVERT_CONC(  89 ) /   88, 'GC', F /  ! BENZENE
+      DATA CGRID_INDEX(  90 ), SPECIES_TYPE(  90 ), CONVERT_CONC(  90 ) /   89, 'GC', F /  ! BENZRO2
+      DATA CGRID_INDEX(  91 ), SPECIES_TYPE(  91 ), CONVERT_CONC(  91 ) /   90, 'GC', F /  ! BNZNRXN
+      DATA CGRID_INDEX(  92 ), SPECIES_TYPE(  92 ), CONVERT_CONC(  92 ) /   91, 'GC', F /  ! BNZHRXN
+      DATA CGRID_INDEX(  93 ), SPECIES_TYPE(  93 ), CONVERT_CONC(  93 ) /   92, 'GC', F /  ! SESQ
+      DATA CGRID_INDEX(  94 ), SPECIES_TYPE(  94 ), CONVERT_CONC(  94 ) /   93, 'GC', F /  ! SESQRXN
+      DATA CGRID_INDEX(  95 ), SPECIES_TYPE(  95 ), CONVERT_CONC(  95 ) /   94, 'GC', F /  ! PAHNRXN
+      DATA CGRID_INDEX(  96 ), SPECIES_TYPE(  96 ), CONVERT_CONC(  96 ) /   95, 'GC', F /  ! PAHHRXN
+      DATA CGRID_INDEX(  97 ), SPECIES_TYPE(  97 ), CONVERT_CONC(  97 ) /   96, 'GC', F /  ! SOAALK
+      DATA CGRID_INDEX(  98 ), SPECIES_TYPE(  98 ), CONVERT_CONC(  98 ) /   97, 'GC', F /  ! ALKRXN
+      DATA CGRID_INDEX(  99 ), SPECIES_TYPE(  99 ), CONVERT_CONC(  99 ) /   98, 'GC', F /  ! MAPAN
+      DATA CGRID_INDEX( 100 ), SPECIES_TYPE( 100 ), CONVERT_CONC( 100 ) /   43, 'GC', F /  ! NALKO2
+      DATA CGRID_INDEX( 101 ), SPECIES_TYPE( 101 ), CONVERT_CONC( 101 ) /   99, 'GC', F /  ! NTRCN
+      DATA CGRID_INDEX( 102 ), SPECIES_TYPE( 102 ), CONVERT_CONC( 102 ) /  100, 'GC', F /  ! NTRCNOH
+      DATA CGRID_INDEX( 103 ), SPECIES_TYPE( 103 ), CONVERT_CONC( 103 ) /  101, 'GC', F /  ! NTRPX
+      DATA CGRID_INDEX( 104 ), SPECIES_TYPE( 104 ), CONVERT_CONC( 104 ) /  102, 'GC', F /  ! NOHO2
+      DATA CGRID_INDEX( 105 ), SPECIES_TYPE( 105 ), CONVERT_CONC( 105 ) /  103, 'GC', F /  ! NCNO2
+      DATA CGRID_INDEX( 106 ), SPECIES_TYPE( 106 ), CONVERT_CONC( 106 ) /  104, 'GC', F /  ! NCNOHO2
+      DATA CGRID_INDEX( 107 ), SPECIES_TYPE( 107 ), CONVERT_CONC( 107 ) /  105, 'GC', F /  ! NTRMO2
+      DATA CGRID_INDEX( 108 ), SPECIES_TYPE( 108 ), CONVERT_CONC( 108 ) /  106, 'GC', F /  ! NTRIO2
+      DATA CGRID_INDEX( 109 ), SPECIES_TYPE( 109 ), CONVERT_CONC( 109 ) /  107, 'GC', F /  ! H2NO3PIJ
+      DATA CGRID_INDEX( 110 ), SPECIES_TYPE( 110 ), CONVERT_CONC( 110 ) /  108, 'GC', F /  ! H2NO3PK
+      DATA CGRID_INDEX( 111 ), SPECIES_TYPE( 111 ), CONVERT_CONC( 111 ) /  212, 'AE', T /  ! ACLI
+      DATA CGRID_INDEX( 112 ), SPECIES_TYPE( 112 ), CONVERT_CONC( 112 ) /  211, 'AE', T /  ! ACLJ
+      DATA CGRID_INDEX( 113 ), SPECIES_TYPE( 113 ), CONVERT_CONC( 113 ) /  214, 'AE', T /  ! ACLK
+      DATA CGRID_INDEX( 114 ), SPECIES_TYPE( 114 ), CONVERT_CONC( 114 ) /  176, 'AE', T /  ! AISO3J
+      DATA CGRID_INDEX( 115 ), SPECIES_TYPE( 115 ), CONVERT_CONC( 115 ) /  150, 'AE', T /  ! AXYL1J
+      DATA CGRID_INDEX( 116 ), SPECIES_TYPE( 116 ), CONVERT_CONC( 116 ) /  220, 'AE', T /  ! AOLGAJ
+      DATA CGRID_INDEX( 117 ), SPECIES_TYPE( 117 ), CONVERT_CONC( 117 ) /  151, 'AE', T /  ! AXYL2J
+      DATA CGRID_INDEX( 118 ), SPECIES_TYPE( 118 ), CONVERT_CONC( 118 ) /  155, 'AE', T /  ! ATOL1J
+      DATA CGRID_INDEX( 119 ), SPECIES_TYPE( 119 ), CONVERT_CONC( 119 ) /  156, 'AE', T /  ! ATOL2J
+      DATA CGRID_INDEX( 120 ), SPECIES_TYPE( 120 ), CONVERT_CONC( 120 ) /  160, 'AE', T /  ! ABNZ1J
+      DATA CGRID_INDEX( 121 ), SPECIES_TYPE( 121 ), CONVERT_CONC( 121 ) /  161, 'AE', T /  ! ABNZ2J
+      DATA CGRID_INDEX( 122 ), SPECIES_TYPE( 122 ), CONVERT_CONC( 122 ) /  170, 'AE', T /  ! ATRP1J
+      DATA CGRID_INDEX( 123 ), SPECIES_TYPE( 123 ), CONVERT_CONC( 123 ) /  221, 'AE', T /  ! AOLGBJ
+      DATA CGRID_INDEX( 124 ), SPECIES_TYPE( 124 ), CONVERT_CONC( 124 ) /  171, 'AE', T /  ! ATRP2J
+      DATA CGRID_INDEX( 125 ), SPECIES_TYPE( 125 ), CONVERT_CONC( 125 ) /  172, 'AE', T /  ! AISO1J
+      DATA CGRID_INDEX( 126 ), SPECIES_TYPE( 126 ), CONVERT_CONC( 126 ) /  173, 'AE', T /  ! AISO2J
+      DATA CGRID_INDEX( 127 ), SPECIES_TYPE( 127 ), CONVERT_CONC( 127 ) /  179, 'AE', T /  ! ASQTJ
+      DATA CGRID_INDEX( 128 ), SPECIES_TYPE( 128 ), CONVERT_CONC( 128 ) /  165, 'AE', T /  ! APAH1J
+      DATA CGRID_INDEX( 129 ), SPECIES_TYPE( 129 ), CONVERT_CONC( 129 ) /  166, 'AE', T /  ! APAH2J
+      DATA CGRID_INDEX( 130 ), SPECIES_TYPE( 130 ), CONVERT_CONC( 130 ) /  148, 'AE', T /  ! AALK1J
+      DATA CGRID_INDEX( 131 ), SPECIES_TYPE( 131 ), CONVERT_CONC( 131 ) /  149, 'AE', T /  ! AALK2J
+      DATA CGRID_INDEX( 132 ), SPECIES_TYPE( 132 ), CONVERT_CONC( 132 ) /  123, 'GC', F /  ! DMA
+      DATA CGRID_INDEX( 133 ), SPECIES_TYPE( 133 ), CONVERT_CONC( 133 ) /  136, 'GC', F /  ! PCVOC
+      DATA CGRID_INDEX( 134 ), SPECIES_TYPE( 134 ), CONVERT_CONC( 134 ) /  137, 'GC', F /  ! PCSOARXN
+      DATA CGRID_INDEX( 135 ), SPECIES_TYPE( 135 ), CONVERT_CONC( 135 ) /  126, 'GC', F /  ! VLVPO1
+      DATA CGRID_INDEX( 136 ), SPECIES_TYPE( 136 ), CONVERT_CONC( 136 ) /  127, 'GC', F /  ! VSVPO1
+      DATA CGRID_INDEX( 137 ), SPECIES_TYPE( 137 ), CONVERT_CONC( 137 ) /  128, 'GC', F /  ! VSVPO2
+      DATA CGRID_INDEX( 138 ), SPECIES_TYPE( 138 ), CONVERT_CONC( 138 ) /  129, 'GC', F /  ! VSVPO3
+      DATA CGRID_INDEX( 139 ), SPECIES_TYPE( 139 ), CONVERT_CONC( 139 ) /  130, 'GC', F /  ! VIVPO1
+      DATA CGRID_INDEX( 140 ), SPECIES_TYPE( 140 ), CONVERT_CONC( 140 ) /  131, 'GC', F /  ! VLVOO1
+      DATA CGRID_INDEX( 141 ), SPECIES_TYPE( 141 ), CONVERT_CONC( 141 ) /  132, 'GC', F /  ! VLVOO2
+      DATA CGRID_INDEX( 142 ), SPECIES_TYPE( 142 ), CONVERT_CONC( 142 ) /  134, 'GC', F /  ! VSVOO2
+      DATA CGRID_INDEX( 143 ), SPECIES_TYPE( 143 ), CONVERT_CONC( 143 ) /  135, 'GC', F /  ! VSVOO3
+      DATA CGRID_INDEX( 144 ), SPECIES_TYPE( 144 ), CONVERT_CONC( 144 ) /  133, 'GC', F /  ! VSVOO1
+      DATA CGRID_INDEX( 145 ), SPECIES_TYPE( 145 ), CONVERT_CONC( 145 ) /  109, 'GC', F /  ! FORM_PRIMARY
+      DATA CGRID_INDEX( 146 ), SPECIES_TYPE( 146 ), CONVERT_CONC( 146 ) /  110, 'GC', F /  ! ALD2_PRIMARY
+      DATA CGRID_INDEX( 147 ), SPECIES_TYPE( 147 ), CONVERT_CONC( 147 ) /  111, 'GC', F /  ! BUTADIENE13
+      DATA CGRID_INDEX( 148 ), SPECIES_TYPE( 148 ), CONVERT_CONC( 148 ) /  112, 'GC', F /  ! ACROLEIN
+      DATA CGRID_INDEX( 149 ), SPECIES_TYPE( 149 ), CONVERT_CONC( 149 ) /  113, 'GC', F /  ! ACRO_PRIMARY
+      DATA CGRID_INDEX( 150 ), SPECIES_TYPE( 150 ), CONVERT_CONC( 150 ) /  114, 'GC', F /  ! TOLU
+      DATA CGRID_INDEX( 151 ), SPECIES_TYPE( 151 ), CONVERT_CONC( 151 ) /  115, 'GC', F /  ! MXYL
+      DATA CGRID_INDEX( 152 ), SPECIES_TYPE( 152 ), CONVERT_CONC( 152 ) /  116, 'GC', F /  ! OXYL
+      DATA CGRID_INDEX( 153 ), SPECIES_TYPE( 153 ), CONVERT_CONC( 153 ) /  117, 'GC', F /  ! PXYL
+      DATA CGRID_INDEX( 154 ), SPECIES_TYPE( 154 ), CONVERT_CONC( 154 ) /  118, 'GC', F /  ! APIN
+      DATA CGRID_INDEX( 155 ), SPECIES_TYPE( 155 ), CONVERT_CONC( 155 ) /  119, 'GC', F /  ! BPIN
+      DATA CGRID_INDEX( 156 ), SPECIES_TYPE( 156 ), CONVERT_CONC( 156 ) /  120, 'GC', F /  ! HG
+      DATA CGRID_INDEX( 157 ), SPECIES_TYPE( 157 ), CONVERT_CONC( 157 ) /  121, 'GC', F /  ! HGIIAER
+      DATA CGRID_INDEX( 158 ), SPECIES_TYPE( 158 ), CONVERT_CONC( 158 ) /  122, 'GC', F /  ! HGIIGAS
 
-      INTEGER, PARAMETER :: N_ACT_SP = 157
+      INTEGER, PARAMETER :: N_ACT_SP = 158
 
       INTEGER, PARAMETER :: NRXNS = 351
 
@@ -854,25 +857,25 @@
      &     52,   52,   53,   53,   54,   54,   48,   48,   48,   48, & ! 4   
      &     50,   50,   56,   56,   55,   55,   57,    7,    7,    7, & ! 5   
      &     26,    3,   62,   23,   23,   23,    4,    5,    7,    4, & ! 6   
-     &      5,   63,   68,   68,   70,   70,   70,   14,   68,   68, & ! 7   
-     &     72,    7,    7,    1,   77,   79,   78,   80,   80,   80, & ! 8   
-     &      7,   81,   78,   78,   78,   78,   78,   78,   78,   78, & ! 9   
-     &     78,   78,   78,   78,   82,   78,   78,   78,   78,   83, & ! O   
-     &     47,   47,   59,   59,   88,   89,   89,   92,   92,   92, & ! 1   
-     &     61,   61,   96,   66,   66,   98,   98,   98,   66,   66, & ! 2   
-     &     66,   66,   66,   17,   99,   99,   16,  103,  103,  100, & ! 3   
-     &    104,  104,  101,  105,  105,  102,   65,  106,  106,   67, & ! 4   
-     &    107,  107,   65,   67,   17,   16,  100,  101,  102,   17, & ! 5   
-     &     16,  100,  101,  102,   65,   67,    9,    9,  108,  109, & ! 6   
-     &    108,  108,  109,    1,    4,   22,  114,  116,  117,  118, & ! 7   
-     &    119,  120,  121,  123,  124,  125,  126,  127,  128,  129, & ! 8   
-     &    130,  131,  132,  134,  135,  136,  137,  138,  139,  140, & ! 9   
-     &    143,  141,  142,  144,  144,  144,  144,  144,  144,  145, & ! O   
-     &    145,  145,  145,  145,  146,  146,  146,  146,  148,  148, & ! 1   
-     &    148,  148,  148,  147,  147,  147,  147,  147,  149,  149, & ! 2   
-     &    150,  150,  151,  151,  152,  152,  153,  153,  153,  153, & ! 3   
-     &    153,  154,  154,  154,  154,  154,  155,  155,  155,  155, & ! 4   
-     &    155/     !  5   
+     &      5,   63,   69,   69,   71,   71,   71,   14,   69,   69, & ! 7   
+     &     73,    7,    7,    1,   78,   80,   79,   81,   81,   81, & ! 8   
+     &      7,   82,   79,   79,   79,   79,   79,   79,   79,   79, & ! 9   
+     &     79,   79,   79,   79,   83,   79,   79,   79,   79,   84, & ! O   
+     &     47,   47,   59,   59,   89,   90,   90,   93,   93,   93, & ! 1   
+     &     61,   61,   97,   67,   67,   99,   99,   99,   67,   67, & ! 2   
+     &     67,   67,   67,   17,  100,  100,   16,  104,  104,  101, & ! 3   
+     &    105,  105,  102,  106,  106,  103,   66,  107,  107,   68, & ! 4   
+     &    108,  108,   66,   68,   17,   16,  101,  102,  103,   17, & ! 5   
+     &     16,  101,  102,  103,   66,   68,    9,    9,  109,  110, & ! 6   
+     &    109,  109,  110,    1,    4,   22,  115,  117,  118,  119, & ! 7   
+     &    120,  121,  122,  124,  125,  126,  127,  128,  129,  130, & ! 8   
+     &    131,  132,  133,  135,  136,  137,  138,  139,  140,  141, & ! 9   
+     &    144,  142,  143,  145,  145,  145,  145,  145,  145,  146, & ! O   
+     &    146,  146,  146,  146,  147,  147,  147,  147,  149,  149, & ! 1   
+     &    149,  149,  149,  148,  148,  148,  148,  148,  150,  150, & ! 2   
+     &    151,  151,  152,  152,  153,  153,  154,  154,  154,  154, & ! 3   
+     &    154,  155,  155,  155,  155,  155,  156,  156,  156,  156, & ! 4   
+     &    156/     !  5   
 
       DATA ( IRR( IRXXN,  2 ), IRXXN = 1, NRXNS ) / & 
      &      0,    0,    2,    1,    1,    2,    4,    0,    0,    0, & ! O   
@@ -892,25 +895,25 @@
      &      1,    4,    2,    8,    0,    7,    0,    7,    4,    5, & ! 4   
      &      7,    5,    2,    8,    2,    1,    0,   58,   60,   26, & ! 5   
      &      0,   62,    7,    2,   31,    8,   62,   62,   63,   63, & ! 6   
-     &     63,    0,    3,    7,    2,    8,   70,   70,    4,    5, & ! 7   
-     &      7,   75,   76,   62,    0,    0,    4,   80,    2,    8, & ! 8   
-     &     81,    0,    0,   30,   76,   43,   42,   24,   62,   27, & ! 9   
-     &     19,   20,   35,   75,    7,   44,   58,   60,    1,    0, & ! O   
+     &     63,    0,    3,    7,    2,    8,   71,   71,    4,    5, & ! 7   
+     &      7,   76,   77,   62,    0,    0,    4,   81,    2,    8, & ! 8   
+     &     82,    0,    0,   30,   77,   43,   42,   24,   62,   27, & ! 9   
+     &     19,   20,   35,   76,    7,   44,   58,   60,    1,    0, & ! O   
      &      2,    8,    2,    8,    7,    2,    8,    4,    7,    5, & ! 1   
      &      2,    8,    7,    2,    1,    0,    0,    7,    8,   32, & ! 2   
      &     14,   39,   31,    7,    2,    8,    7,    2,    8,    7, & ! 3   
      &      2,    8,    7,    2,    8,    7,    7,    2,    8,    7, & ! 4   
      &      2,    8,    0,    0,    0,    0,    0,    0,    0,    0, & ! 5   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
-     &    110,  111,  112,    0,    0,    0,    0,    0,    0,    0, & ! 7   
+     &    111,  112,  113,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
      &      0,    7,    7,    7,    7,    7,    7,    7,    7,    7, & ! 9   
-     &      7,    7,    7,    7,    5,    3,    0,    0,   78,    7, & ! O   
-     &      5,    3,    0,   78,    7,    4,    5,   78,    7,    4, & ! 1   
-     &      5,    0,   78,    7,    4,    5,    0,   78,    7,   78, & ! 2   
-     &      7,   78,    7,   78,    7,   78,    3,    7,    4,    5, & ! 3   
-     &     78,    3,    7,    4,    5,   78,    4,   77,   13,    7, & ! 4   
-     &     78/     !  5   
+     &      7,    7,    7,    7,    5,    3,    0,    0,   79,    7, & ! O   
+     &      5,    3,    0,   79,    7,    4,    5,   79,    7,    4, & ! 1   
+     &      5,    0,   79,    7,    4,    5,    0,   79,    7,   79, & ! 2   
+     &      7,   79,    7,   79,    7,   79,    3,    7,    4,    5, & ! 3   
+     &     79,    3,    7,    4,    5,   79,    4,   78,   13,    7, & ! 4   
+     &     79/     !  5   
 
       DATA ( IRR( IRXXN,  3 ), IRXXN = 1, NRXNS ) / & 
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -967,26 +970,26 @@
      &     19,    8,    1,    0,   49,   49,   51,   45,   52,   52, & ! 3   
      &     16,   53,   52,   54,   52,   53,   55,   55,   20,   55, & ! 4   
      &     56,   49,    1,    0,    1,   57,   55,    8,    8,   14, & ! 5   
-     &     31,   63,   23,   65,   27,   21,   63,   63,   30,   31, & ! 6   
-     &     20,   29,   20,    8,   65,   18,    0,    0,    7,    1, & ! 7   
-     &     73,    8,   19,   63,   78,    7,   80,   77,   78,   79, & ! 8   
-     &     78,   78,   82,   82,   82,   81,   81,   82,   82,   82, & ! 9   
-     &     82,   82,   82,   82,   78,   82,   82,   82,   83,   78, & ! O   
+     &     31,   63,   23,   66,   27,   21,   63,   63,   30,   31, & ! 6   
+     &     20,   29,   20,    8,   66,   18,    0,    0,    7,    1, & ! 7   
+     &     74,    8,   19,   63,   79,    7,   81,   78,   79,   80, & ! 8   
+     &     79,   79,   83,   83,   83,   82,   82,   83,   83,   83, & ! 9   
+     &     83,   83,   83,   83,   79,   83,   83,   83,   84,   79, & ! O   
      &      2,    8,    2,    8,    7,    2,    8,    4,    7,    5, & ! 1   
-     &      2,    8,    7,   27,   98,   66,   66,   19,   31,   27, & ! 2   
-     &     19,   19,   32,   99,    1,  102,  103,    1,  102,  104, & ! 3   
-     &      1,  102,  105,    1,  102,  100,  106,    1,   67,  107, & ! 4   
-     &      1,   67,    1,    1,    1,    1,    1,    1,    1,   10, & ! 5   
+     &      2,    8,    7,   27,   99,   67,   67,   19,   31,   27, & ! 2   
+     &     19,   19,   32,  100,    1,  103,  104,    1,  103,  105, & ! 3   
+     &      1,  103,  106,    1,  103,  101,  107,    1,   68,  108, & ! 4   
+     &      1,   68,    1,    1,    1,    1,    1,    1,    1,   10, & ! 5   
      &     10,   10,   10,   10,   10,   10,   10,   10,   10,   10, & ! 6   
-     &     83,   83,   83,   11,    0,  113,  115,  115,  115,  115, & ! 7   
-     &    115,  115,  122,  122,  122,  122,  122,  115,  115,  115, & ! 8   
-     &    115,    7,    7,    7,    7,    7,    7,    7,    7,    7, & ! 9   
-     &      7,    7,    7,    7,    5,    3,    0,    0,   78,    7, & ! O   
-     &      5,    3,    0,   78,    7,    4,    5,   78,    7,    4, & ! 1   
-     &      5,    0,   78,    7,    4,    5,    0,   78,    7,   78, & ! 2   
-     &      7,   78,    7,   78,    7,   78,    3,    7,    4,    5, & ! 3   
-     &     78,    3,    7,    4,    5,   78,  156,  157,  157,  156, & ! 4   
-     &    155/     !  5   
+     &     84,   84,   84,   11,    0,  114,  116,  116,  116,  116, & ! 7   
+     &    116,  116,  123,  123,  123,  123,  123,  116,  116,  116, & ! 8   
+     &    116,    7,    7,    7,    7,    7,    7,    7,    7,    7, & ! 9   
+     &      7,    7,    7,    7,    5,    3,    0,    0,   79,    7, & ! O   
+     &      5,    3,    0,   79,    7,    4,    5,   79,    7,    4, & ! 1   
+     &      5,    0,   79,    7,    4,    5,    0,   79,    7,   79, & ! 2   
+     &      7,   79,    7,   79,    7,   79,    3,    7,    4,    5, & ! 3   
+     &     79,    3,    7,    4,    5,   79,  157,  158,  158,  157, & ! 4   
+     &    156/     !  5   
 
       DATA ( IRR( IRXXN,  5 ), IRXXN = 1, NRXNS ) / & 
      &      3,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -1005,26 +1008,26 @@
      &     20,   14,    8,    0,   14,   10,    0,    0,    0,   10, & ! 3   
      &      0,    0,    1,    0,    7,    0,    8,   56,   55,   10, & ! 4   
      &      0,   10,    8,    0,   14,    0,    1,   14,   14,   31, & ! 5   
-     &      8,   27,   64,    1,   63,    0,   27,   65,   27,   27, & ! 6   
+     &      8,   27,   64,    1,   63,    0,   27,   66,   27,   27, & ! 6   
      &     27,   19,   30,   14,    0,    0,    0,    0,    8,    8, & ! 7   
-     &      8,   19,   14,   16,    0,   78,    0,   78,    1,    0, & ! 8   
-     &     29,   29,   32,   14,   19,   14,   19,   81,   14,    8, & ! 9   
+     &      8,   19,   14,   16,    0,   79,    0,   79,    1,    0, & ! 8   
+     &     29,   29,   32,   14,   19,   14,   19,   82,   14,    8, & ! 9   
      &     31,   39,    8,    8,    0,   14,   14,   14,    0,    1, & ! O   
-     &     84,   85,   86,   87,   89,   90,   91,   93,   93,   93, & ! 1   
-     &     94,   95,   97,    1,    0,    1,    1,   29,   27,    8, & ! 2   
-     &     31,   14,   27,    0,  100,    0,    0,  100,    0,    0, & ! 3   
-     &    100,    0,    0,  101,    0,    7,    0,   67,    0,    0, & ! 4   
-     &     67,    0,    8,    8,    8,    8,    8,    8,    8,    0, & ! 5   
-     &      0,    0,    0,    0,    0,    0,  108,  109,    0,    0, & ! 6   
+     &     85,   86,   87,   88,   90,   91,   92,   94,   94,   94, & ! 1   
+     &     95,   96,   98,    1,    0,    1,    1,   29,   27,    8, & ! 2   
+     &     31,   14,   27,    0,  101,    0,    0,  101,    0,    0, & ! 3   
+     &    101,    0,    0,  102,    0,    7,    0,   68,    0,    0, & ! 4   
+     &     68,    0,    8,    8,    8,    8,    8,    8,    8,    0, & ! 5   
+     &      0,    0,    0,    0,    0,    0,  109,  110,    0,    0, & ! 6   
      &      0,    0,    0,   10,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,  133,  134,  134,  134,  134,  134,  139,  139, & ! 9   
-     &    139,  139,  139,    0,    0,    0,    0,    0,    0,    0, & ! O   
-     &      0,    0,    0,    0,  147,  147,  147,  147,    0,    0, & ! 1   
+     &      0,    0,  134,  135,  135,  135,  135,  135,  140,  140, & ! 9   
+     &    140,  140,  140,    0,    0,    0,    0,    0,    0,    0, & ! O   
+     &      0,    0,    0,    0,  148,  148,  148,  148,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 3   
-     &      0,    0,    0,    0,    0,    0,  157,   77,   13,  157, & ! 4   
-     &    157/     !  5   
+     &      0,    0,    0,    0,    0,    0,  158,   78,   13,  158, & ! 4   
+     &    158/     !  5   
 
       DATA ( IRR( IRXXN,  6 ), IRXXN = 1, NRXNS ) / & 
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -1043,26 +1046,26 @@
      &      8,   45,   48,    0,    8,   14,    0,    0,    0,    0, & ! 3   
      &      0,    0,    0,    0,    0,    0,   29,    0,   27,    0, & ! 4   
      &      0,    0,   27,    0,    8,    0,    0,   45,   45,    0, & ! 5   
-     &     29,   14,    0,   27,    8,    0,   14,   14,   14,   26, & ! 6   
-     &     30,   27,   69,   70,    0,    0,    0,    0,   14,   14, & ! 7   
-     &     74,   20,   15,   14,    0,    0,    0,    0,    0,    0, & ! 8   
+     &     29,   14,   65,   27,    8,    0,   14,   14,   14,   26, & ! 6   
+     &     30,   27,   70,   71,    0,    0,    0,    0,   14,   14, & ! 7   
+     &     75,   20,   15,   14,    0,    0,    0,    0,    0,    0, & ! 8   
      &      0,    8,    0,   15,   14,    8,   20,   19,    8,   29, & ! 9   
      &      0,    0,   27,   19,    0,    8,    8,    8,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,   32,    0,    0,    5,    1,   32,   31, & ! 2   
-     &     27,    8,   31,    0,  101,    0,    0,  101,    0,    0, & ! 3   
-     &    101,    0,    0,  100,    0,    0,    0,    8,    0,    0, & ! 4   
+     &     27,    8,   31,    0,  102,    0,    0,  102,    0,    0, & ! 3   
+     &    102,    0,    0,  101,    0,    0,    0,    8,    0,    0, & ! 4   
      &      0,    0,   19,   27,   27,   27,   27,   27,   18,    0, & ! 5   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,  135,  135,  135,  135,  135,  140,  140, & ! 9   
-     &    140,  140,  140,    0,    0,    0,    0,    0,    0,    0, & ! O   
+     &      0,    0,    0,  136,  136,  136,  136,  136,  141,  141, & ! 9   
+     &    141,  141,  141,    0,    0,    0,    0,    0,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 3   
      &      0,    0,    0,    0,    0,    0,    4,    0,    0,    7, & ! 4   
-     &     78/     !  5   
+     &     79/     !  5   
 
       DATA ( IRR( IRXXN,  7 ), IRXXN = 1, NRXNS ) / & 
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -1082,9 +1085,9 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,   14,    0, & ! 4   
      &      0,    0,   29,    0,   20,    0,    0,   26,   26,    0, & ! 5   
      &      0,    8,    0,   63,   32,    0,    8,    8,    8,    8, & ! 6   
-     &      8,   30,    0,   27,    0,    0,    0,    0,   70,   70, & ! 7   
+     &      8,   30,    0,   27,    0,    0,    0,    0,   71,   71, & ! 7   
      &      0,   27,    8,    8,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,    8,   15,   27,   14,   20,   81,    0, & ! 9   
+     &      0,    0,    0,    8,   15,   27,   14,   20,   82,    0, & ! 9   
      &      0,    0,    0,    0,    0,   15,   15,   15,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,   27,    0,   29,   32, & ! 2   
@@ -1094,8 +1097,8 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,  136,  136,  136,  136,  136,  143,  143, & ! 9   
-     &    143,  143,  143,    0,    0,    0,    0,    0,    0,    0, & ! O   
+     &      0,    0,    0,  137,  137,  137,  137,  137,  144,  144, & ! 9   
+     &    144,  144,  144,    0,    0,    0,    0,    0,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 3   
@@ -1132,8 +1135,8 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,  137,  137,  137,  137,  139,  141,  141, & ! 9   
-     &    141,  141,  141,    0,    0,    0,    0,    0,    0,    0, & ! O   
+     &      0,    0,    0,  138,  138,  138,  138,  140,  142,  142, & ! 9   
+     &    142,  142,  142,    0,    0,    0,    0,    0,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 3   
@@ -1157,8 +1160,8 @@
      &      0,   47,   27,    0,   29,   27,    0,    0,    0,    0, & ! 3   
      &      0,    0,    0,    0,    0,    0,    0,    0,    7,    0, & ! 4   
      &      0,    0,    0,    0,    0,    0,    0,   46,   46,    0, & ! 5   
-     &      0,   30,    0,    0,    0,    0,   66,   20,   26,   14, & ! 6   
-     &     67,    8,    0,   20,    0,    0,    0,    0,   29,   65, & ! 7   
+     &      0,   30,    0,    0,    0,    0,   67,   20,   26,   14, & ! 6   
+     &     68,    8,    0,   20,    0,    0,    0,    0,   29,   66, & ! 7   
      &      0,    0,    0,   20,    0,    0,    0,    0,    0,    0, & ! 8   
      &      0,    0,    0,   30,    0,    0,   30,   30,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -1170,8 +1173,8 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,  138,  139,  139,  139,  140,  142,  142, & ! 9   
-     &    142,  142,  142,    0,    0,    0,    0,    0,    0,    0, & ! O   
+     &      0,    0,    0,  139,  140,  140,  140,  141,  143,  143, & ! 9   
+     &    143,  143,  143,    0,    0,    0,    0,    0,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 3   
@@ -1196,7 +1199,7 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    8,    0, & ! 4   
      &      0,    0,    0,    0,    0,    0,    0,   59,   61,    0, & ! 5   
      &      0,    0,    0,    0,    0,    0,   20,   64,   19,   19, & ! 6   
-     &     66,   66,    0,   71,    0,    0,    0,    0,   30,   69, & ! 7   
+     &     67,   67,    0,   72,    0,    0,    0,    0,   30,   70, & ! 7   
      &      0,    0,    0,   30,    0,    0,    0,    0,    0,    0, & ! 8   
      &      0,    0,    0,   41,    0,    0,    0,   14,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -1208,7 +1211,7 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,  139,  140,  140,  140,    0,    0,    0, & ! 9   
+     &      0,    0,    0,  140,  141,  141,  141,    0,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
@@ -1234,7 +1237,7 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,   26,    0, & ! 4   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 5   
      &      0,    0,    0,    0,    0,    0,   30,   30,   31,   30, & ! 6   
-     &     14,   31,    0,   69,    0,    0,    0,    0,   20,    0, & ! 7   
+     &     14,   31,    0,   70,    0,    0,    0,    0,   20,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
      &      0,    0,    0,   20,    0,    0,    0,    8,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -1246,7 +1249,7 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,  140,    0,    0,    0,    0,    0,    0, & ! 9   
+     &      0,    0,    0,  141,    0,    0,    0,    0,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
@@ -1271,7 +1274,7 @@
      &      0,    0,    0,    0,    0,   15,    0,    0,    0,    0, & ! 3   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 4   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 5   
-     &      0,    0,    0,    0,    0,    0,   29,    0,   66,   29, & ! 6   
+     &      0,    0,    0,    0,    0,    0,   65,    0,   67,   29, & ! 6   
      &     10,    0,    0,    0,    0,    0,    0,    0,   39,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 9   
@@ -1284,7 +1287,7 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,  141,    0,    0,    0,    0,    0,    0, & ! 9   
+     &      0,    0,    0,  142,    0,    0,    0,    0,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
@@ -1309,8 +1312,8 @@
      &      0,    0,    0,    0,    0,   29,    0,    0,    0,    0, & ! 3   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 4   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 5   
-     &      0,    0,    0,    0,    0,    0,    0,    0,   20,    0, & ! 6   
-     &      0,    0,    0,    0,    0,    0,    0,    0,   71,    0, & ! 7   
+     &      0,    0,    0,    0,    0,    0,   29,    0,   20,    0, & ! 6   
+     &      0,    0,    0,    0,    0,    0,    0,    0,   72,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -1322,7 +1325,7 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
-     &      0,    0,    0,  142,    0,    0,    0,    0,    0,    0, & ! 9   
+     &      0,    0,    0,  143,    0,    0,    0,    0,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 1   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 2   
@@ -1348,7 +1351,7 @@
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 4   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 5   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 6   
-     &      0,    0,    0,    0,    0,    0,    0,    0,   69,    0, & ! 7   
+     &      0,    0,    0,    0,    0,    0,    0,    0,   70,    0, & ! 7   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 8   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! 9   
      &      0,    0,    0,    0,    0,    0,    0,    0,    0,    0, & ! O   
@@ -1809,7 +1812,7 @@
      &        0.00000,    1.00000,    0.00000,    0.70000,    0.00000, & ! +   
      &        0.00000,    0.00000,    0.34400,    0.00000,    1.00000, & ! 5   
      &        0.00000,    0.00000,    0.20000,    0.20000,    0.00000, & ! +   
-     &        1.00000,    0.25000,    0.00000,    0.67300,    0.80000, & ! 6   
+     &        1.00000,    0.25000,    0.00030,    0.67300,    0.80000, & ! 6   
      &        0.00000,    0.20000,    1.00000,    0.71300,    0.85000, & ! +   
      &        1.28200,    0.90000,    1.00000,    0.25000,    0.00000, & ! 7   
      &        0.00000,    0.00000,    0.00000,    0.76000,    1.03000, & ! +   
@@ -2103,7 +2106,7 @@
      &        0.00000,    0.00000,    1.00000,    1.00000,    0.00000, & ! +   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 6   
      &        0.00000,    0.15000,    1.00000,    0.25200,    0.02000, & ! +   
-     &        0.07500,    0.70000,    0.00000,    0.00440,    0.00000, & ! 7   
+     &        0.07500,    0.70000,    0.00000,    0.00500,    0.00000, & ! 7   
      &        0.00000,    0.00000,    0.00000,    7.00000,    1.00000, & ! +   
      &        0.00000,    0.00000,    0.00000,    2.40000,    0.00000, & ! 8   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! +   
@@ -2248,7 +2251,7 @@
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 5   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! +   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 6   
-     &        0.00000,    0.06600,    0.00000,    0.13000,    0.22500, & ! +   
+     &        0.00000,    0.00010,    0.00000,    0.13000,    0.22500, & ! +   
      &        0.15000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 7   
      &        0.00000,    0.00000,    0.00000,    0.39000,    0.00000, & ! +   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 8   
@@ -2321,9 +2324,9 @@
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 5   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! +   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 6   
-     &        0.00000,    0.00000,    0.00000,    0.12000,    0.00000, & ! +   
+     &        0.00000,    0.06600,    0.00000,    0.12000,    0.00000, & ! +   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 7   
-     &        0.00000,    0.00000,    0.00000,    0.03400,    0.00000, & ! +   
+     &        0.00000,    0.00000,    0.00000,    0.02280,    0.00000, & ! +   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 8   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! +   
      &        0.00000,    0.00000,    0.00000,    0.00000,    0.00000, & ! 9   
@@ -2491,7 +2494,7 @@
      &      4,    6,    7,    0,    8,   10,    1,    1,    1,    2, & ! 3   
      &      1,    1,    2,    1,    2,    1,    3,    2,    8,    2, & ! 4   
      &      1,    2,    5,    0,    4,    1,    2,    7,    7,    2, & ! 5   
-     &      3,    6,    2,    5,    5,    1,    9,    8,   10,    9, & ! 6   
+     &      3,    6,    3,    5,    5,    1,   10,    8,   10,    9, & ! 6   
      &      9,    8,    3,    8,    1,    1,    0,    0,   11,    7, & ! 7   
      &      3,    5,    4,    7,    1,    2,    1,    2,    2,    1, & ! 8   
      &      2,    3,    2,    8,    5,    4,    6,    8,    5,    3, & ! 9   

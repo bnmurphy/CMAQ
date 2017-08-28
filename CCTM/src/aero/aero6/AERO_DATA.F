@@ -736,7 +736,7 @@ C results of the Atmospheric Cluster Dynamics Code
       Real, Save :: ACDC_TERN( 12, 11, 15, 21, 9 ) !! subscripted ( IAC, IDM, ITK, IRH, ICS )
 
 C New Particle Formation Diagnostic Variables
-      REAL :: JDIAG     ( 9 ) ! Pathway resolved NPF Rates [N/cm3/s]
+      REAL :: JDIAG     ( 14 ) ! Pathway resolved NPF Rates [N/cm3/s]
       REAL :: JM2DIAG   ( 9 ) ! Pathway resolved 2nd Moment Changes [m2/m3/s]
       REAL :: JDGASDIAG ( 8 ) ! Changes to each Chemical Species [ug/m3/s]
       REAL :: CONDSINK4_SO4  ( 4 ) ! Condensation Sink term (s-1)
@@ -1918,9 +1918,9 @@ C *** environment variable for ACDC
         if ( flteq( CS, 2.0E-01 ) ) then
           CS1 = ACDC_DMA( IAC, IDM, ITK, ICS-1 )
           !Renormalize table entry so that DCS==1.0
-          ACDC_DMA( IAC, IDM, ITK, ICS ) = CS1 + 5.0*( JVAL - CS1 )
+          ACDC_DMA( IAC, IDM, ITK, ICS ) = LOG10( CS1 + 5.0*( JVAL - CS1 ) )
         else
-          ACDC_DMA( IAC, IDM, ITK, ICS ) = JVAL
+          ACDC_DMA( IAC, IDM, ITK, ICS ) = LOG10( JVAL )
         endif
  
       enddo  !Reading Table Lines
@@ -1960,7 +1960,7 @@ C *** environment variable for ACDC
         IRH  = 1 + NINT( RH   )
         ICS  = 1 + NINT( CS   )
 
-        ACDC_TERN( IAC, INH, ITK, IRH, ICS ) = JVAL
+        ACDC_TERN( IAC, INH, ITK, IRH, ICS ) = LOG10( JVAL )
  
       enddo  !Reading Table Lines
 
