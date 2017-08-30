@@ -857,6 +857,7 @@ C.. Particle size parameters:
       REAL, PARAMETER :: R = 8.314             ! m3 Pa K-1 mol-1                 
       REAL, PARAMETER :: SCALEFAC = 1.0E-06    ! for [ 1 / m**3 ] ->  [ 1 / cm**3 ]
       REAL, PARAMETER :: MUG2G = 1.0E-6        ! [ ug  ] -> [ g ]                 
+      REAL(8), PARAMETER :: LN10  = 2.30258509299404568402D0 ! ln(10)                
 
 C.. Assert Size of New Particles
       REAL, PARAMETER :: RNUC = 0.6       ! radius of a new particle [nm]
@@ -994,7 +995,7 @@ C.. Calculate New Particle Formation Rate in Log10 space
 
 C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] by 
 C.. converting from log10 and multiplying it by 1.0E6  
-      DNDT = ( 10.D0 ** DBLE(JNUC) ) * 1.0D06  ! (1/(m**3 s))
+      DNDT = EXP( LN10 * DBLE(JNUC) ) * 1.0D06  ! (1/(m**3 s))
 
 C.. Calculate NPF second moment [m2]
       m20  = ( 1.D-9*REAL(d20,8) ) ** 2 * exp( 2.D0 * ( log( sg ))**2 )
@@ -1049,6 +1050,7 @@ C.. Particle size parameters:
       REAL, PARAMETER :: R = 8.314             ! m3 Pa K-1 mol-1                 
       REAL, PARAMETER :: SCALEFAC = 1.0E-06    ! for [ 1 / m**3 ] ->  [ 1 / cm**3 ]
       REAL, PARAMETER :: MUG2G = 1.0E-6        ! [ ug  ] -> [ g ]                 
+      REAL(8), PARAMETER :: LN10  = 2.30258509299404568402D0 ! ln(10)                
 
 C.. Assert Size of New Particles
       REAL, PARAMETER :: RNUC = 0.6      ! radius of a new particle [nm]
@@ -1153,7 +1155,7 @@ C.. Calculate New Particle Formation Rate (particle cm-3 s-1)
 
 C.. Convert the unit of particle nucleation rate into [ 1 / m**3 s] by
 C.. converting from log10 and multiplying it by 1.0E6  
-      DNDT = ( 10.D0 ** DBLE(JNUC) ) * 1.0D06  ! (1/(m**3 s))
+      DNDT = EXP ( LN10 * DBLE(JNUC) ) * 1.0D06  ! (1/(m**3 s))
 
       RETURN    
       END SUBROUTINE ACDC_AMINE 

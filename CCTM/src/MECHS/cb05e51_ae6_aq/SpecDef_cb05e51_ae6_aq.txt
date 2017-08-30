@@ -82,21 +82,32 @@ SO2_UGM3        ,ug/m3     ,1000.0*(SO2[1]*2.2118*DENS[2])
 TERP            ,ppbV      ,1000.0*TERP[1]
 TOL             ,ppbV      ,1000.0*TOLU[1]
 XYL             ,ppbV      ,1000.0*(MXYL[1]+OXYL[1]+PXYL[1])
+DMA             ,ppbV      ,DMA[1]*1000.0
+IHOM            ,ppbV      ,IHOM[1]*1000.0
+THOM            ,ppbV      ,THOM[1]*1000.0
+
+!! Variable for Havala
+HO2             ,ppbV      ,1000.0*HO2[1]
+IEPOX           ,ppbV      ,1000.0*IEPOX[1]
+ISOPX           ,ppbV      ,1000.0*ISOPX[1]
+ISOPO2          ,ppbV      ,1000.0*ISOPO2[1]
+IEPXO2          ,ppbV      ,1000.0*IEPXO2[1]
+MGLY            ,ppbV      ,1000.0*MGLY[1]
 
 !! Unused Gases. Presented Here for illustration. Users can uncomment
 !! them if they choose.
-!ALDX            ,ppbV      ,1000.0*ALDX[1]
-!CLNO2           ,ppbV      ,1000.0*CLNO2[1] 
-!IOLE            ,ppbV      ,1000.0*IOLE[1]
-!OLE             ,ppbV      ,1000.0*OLE[1]
-!PAR             ,ppbV      ,1000.0*PAR[1]
-!PAN             ,ppbV      ,1000.0*PAN[1]
-!PANX            ,ppbV      ,1000.0*PANX[1]
-!SULF            ,ppbV      ,1000.0*SULF[1]
-!VOC             ,ppbC      ,1000.0* ( PAR[1]      + 2.0*ETH[1]  + MEOH[1]     + 2.0*ETOH[1]  \
-!                                     +2.0*OLE[1]  + 7.0*TOL[1]  + 8.0*XYLMN[1]+ FORM[1]      \
-!                                     +2.0*ALD2[1] + 2.0*ETHA[1] + 4.0*IOLE[1] + 2.0*ALDX[1]  \
-!                                     +5.0*ISOP[1] + 10.0*TERP[1]+ 10.0*NAPH[1])
+ALDX            ,ppbV      ,1000.0*ALDX[1]
+CLNO2           ,ppbV      ,1000.0*CLNO2[1] 
+IOLE            ,ppbV      ,1000.0*IOLE[1]
+OLE             ,ppbV      ,1000.0*OLE[1]
+PAR             ,ppbV      ,1000.0*PAR[1]
+PAN             ,ppbV      ,1000.0*PAN[1]
+PANX            ,ppbV      ,1000.0*PANX[1]
+SULF            ,ppbV      ,1000.0*SULF[1]
+VOC             ,ppbC      ,1000.0* ( PAR[1]      + 2.0*ETH[1]  + MEOH[1]     + 2.0*ETOH[1]  \
+                                     +2.0*OLE[1]  + 7.0*TOL[1]  + 8.0*XYLMN[1]+ FORM[1]      \
+                                     +2.0*ALD2[1] + 2.0*ETHA[1] + 4.0*IOLE[1] + 2.0*ALDX[1]  \
+                                     +5.0*ISOP[1] + 10.0*TERP[1]+ 10.0*NAPH[1])
 
 
 !-------------------------------------------!
@@ -122,25 +133,28 @@ ACAK            ,ug/m3     ,0.0320*ASEACAT[1]+0.0838*ASOIL[1]+0.0562*ACORS[1]
 ACLIJ           ,ug/m3     ,ACLI[1]+ACLJ[1]
 AECIJ           ,ug/m3     ,AECI[1]+AECJ[1]
 ANAIJ           ,ug/m3     ,ANAJ[1]+ANAI[1]
-ANO3IJ          ,ug/m3     ,ANO3I[1]+ANO3J[1]
+ANO3HIJ         ,ug/m3     ,ANO3H[1]+ANO3I[1]+ANO3J[1]
 ANO3K           ,ug/m3     ,ANO3K[1]
-TNO3            ,ug/m3     ,2175.6*(HNO3[1]*DENS[2])+ANO3I[1]+ANO3J[1]+ANO3K[1]
-ANH4IJ          ,ug/m3     ,ANH4I[1]+ANH4J[1]
+TNO3            ,ug/m3     ,2175.6*(HNO3[1]*DENS[2])+ANO3HIJ[0]+ANO3K[1]
+ANH4HIJ         ,ug/m3     ,ANH4H[1]+ANH4I[1]+ANH4J[1]
 ANH4K           ,ug/m3     ,ANH4K[1]
-ASO4IJ          ,ug/m3     ,ASO4I[1]+ASO4J[1]
+ASO4HIJ         ,ug/m3     ,ASO4H[1]+ASO4I[1]+ASO4J[1]
 ASO4K           ,ug/m3     ,ASO4K[1]
 
 !! Organic Particle Species
+APOCH           ,ugC/m3    ,ALVPO1H[1]/1.39 
 APOCI           ,ugC/m3    ,ALVPO1I[1]/1.39 + ASVPO1I[1]/1.32 + ASVPO2I[1]/1.26 
 APOCJ           ,ugC/m3    ,ALVPO1J[1]/1.39 + ASVPO1J[1]/1.32 + ASVPO2J[1]/1.26 \
                            +ASVPO3J[1]/1.21 + AIVPO1J[1]/1.17
-APOCIJ          ,ugC/m3    ,APOCI[0] + APOCJ[0]
+APOCHIJ         ,ugC/m3    ,APOCH[0] + APOCI[0] + APOCJ[0]
 
+APOMH           ,ug/m3     ,ALVPO1I[1] 
 APOMI           ,ug/m3     ,ALVPO1I[1] + ASVPO1I[1] + ASVPO2I[1]   
 APOMJ           ,ug/m3     ,ALVPO1J[1] + ASVPO1J[1] + ASVPO2J[1]   \
                            +ASVPO3J[1] + AIVPO1J[1]
-APOMIJ          ,ug/m3     ,APOMI[0] + APOMJ[0]                           
+APOMHIJ         ,ug/m3     ,APOMH[0] + APOMI[0] + APOMJ[0]                           
 
+ASOCH           ,ugC/m3    ,ALVOO1H[1]/2.27 + ALVOO2H[1]/2.06  
 ASOCI           ,ugC/m3    ,ALVOO1I[1]/2.27 + ALVOO2I[1]/2.06  \
                            +ASVOO1I[1]/1.88 + ASVOO2I[1]/1.73  
 ASOCJ           ,ugC/m3    ,AXYL1J[1]/2.42  + AXYL2J[1]/1.93  + AXYL3J[1]/2.30 \
@@ -153,8 +167,9 @@ ASOCJ           ,ugC/m3    ,AXYL1J[1]/2.42  + AXYL2J[1]/1.93  + AXYL3J[1]/2.30 \
                            +APAH1J[1]/1.63  + APAH2J[1]/1.49  + APAH3J[1]/1.77 \
                            +ALVOO1J[1]/2.27 + ALVOO2J[1]/2.06 + ASVOO1J[1]/1.88\
                            +ASVOO2J[1]/1.73 + ASVOO3J[1]/1.60 + APCSOJ[1] /2.00      
-ASOCIJ          ,ugC/m3    ,ASOCI[0] + ASOCJ[0]
+ASOCHIJ         ,ugC/m3    ,ASOCH[0] + ASOCI[0] + ASOCJ[0]
 
+ASOMH           ,ug/m3     ,ALVOO1H[1] + ALVOO2H[1] 
 ASOMI           ,ug/m3     ,ALVOO1I[1] + ALVOO2I[1] + ASVOO1I[1] + ASVOO2I[1] 
 ASOMJ           ,ug/m3     ,AXYL1J[1]  + AXYL2J[1]  + AXYL3J[1]  + ATOL1J[1] \
                            +ATOL2J[1]  + ATOL3J[1]  + ABNZ1J[1]  + ABNZ2J[1] \
@@ -164,31 +179,41 @@ ASOMJ           ,ug/m3     ,AXYL1J[1]  + AXYL2J[1]  + AXYL3J[1]  + ATOL1J[1] \
                            +AORGCJ[1]  + AOLGBJ[1]  + AOLGAJ[1]              \
                            +ALVOO1J[1] + ALVOO2J[1] + ASVOO1J[1] + ASVOO2J[1]\
                            +ASVOO3J[1] + APCSOJ[1]  
-ASOMIJ          ,ug/m3     ,ASOMI[0] + ASOMJ[0]
- 
+ASOMHIJ         ,ug/m3     ,ASOMH[0] + ASOMI[0] + ASOMJ[0]
+
+AOCH            ,ugC/m3    ,APOCH[0]  + ASOCH[0]
 AOCI            ,ugC/m3    ,APOCI[0]  + ASOCI[0]
 AOCJ            ,ugC/m3    ,APOCJ[0]  + ASOCJ[0]
-AOCIJ           ,ugC/m3    ,APOCIJ[0] + ASOCIJ[0]
+AOCHIJ          ,ugC/m3    ,APOCHIJ[0]+ ASOCHIJ[0]
 
+AOMH            ,ug/m3     ,APOMH[0]  + ASOMH[0]
 AOMI            ,ug/m3     ,APOMI[0]  + ASOMI[0]
 AOMJ            ,ug/m3     ,APOMJ[0]  + ASOMJ[0]
-AOMIJ           ,ug/m3     ,APOMIJ[0] + ASOMIJ[0]
+AOMHIJ          ,ug/m3     ,APOMHIJ[0]+ ASOMHIJ[0]
 
 !!! Anthropogenic-VOC Derived Organic Aerosol
-AORGAJ          ,ug/m3     ,AXYL1J[1]+AXYL2J[1]+AXYL3J[1]+ATOL1J[1]+ATOL2J[1]+ATOL3J[1] \
-                           +ABNZ1J[1]+ABNZ2J[1]+ABNZ3J[1]+AALK1J[1]+AALK2J[1]+AOLGAJ[1] \
-                           +APAH1J[1]+APAH2J[1]+APAH3J[1]
+AORGAJ          ,ug/m3     ,AXYL3H[1]+AXYL3I[1]+AXYL3J[1] \
+                           +ATOL3H[1]+ATOL3I[1]+ATOL3J[1] \
+                           +ABNZ3H[1]+ABNZ3I[1]+ABNZ3J[1] \
+                           +APAH3H[1]+APAH3I[1]+APAH3J[1] \
+                           +AXYL1J[1]+AXYL2J[1]+ATOL1J[1]+ATOL2J[1] \
+                           +ABNZ1J[1]+ABNZ2J[1]+AALK1J[1]+AALK2J[1]+AOLGAJ[1] \
+                           +APAH1J[1]+APAH2J[1]
 
 !!! Biogenic-VOC Derived Organic Aerosol
-AORGBJ          ,ug/m3     ,AISO1J[1]+AISO2J[1]+AISO3J[1]+ATRP1J[1]+ATRP2J[1]+ASQTJ[1]+AOLGBJ[1]
+AORGBJ          ,ug/m3     ,AISO3H[1]+AISO3I[1]+AISO3J[1] \
+                           +ASQTH[1] +ASQTI[1] +ASQTJ[1]  \
+                           +AISO1J[1]+AISO2J[1]+ATRP1J[1]+ATRP2J[1] \
+                           +AOLGBJ[1]
 
 !!! Cloud-Processed  SOA
 AORGCJ          ,ug/m3     ,AORGCJ[1]
 
 !!! OM/OC ratios
-AOMOCRAT_TOT    ,none      ,AOMIJ[0]/AOCIJ[0]
+AOMOCRAT_TOT    ,none      ,AOMHIJ[0]/AOCHIJ[0]
 
 !! Total PM Aggregates
+ATOTH           ,ug/m3     ,ASO4H[1]+ANO3H[1]+ANH4H[1]+AOMH[0] 
 ATOTI           ,ug/m3     ,ASO4I[1]+ANO3I[1]+ANH4I[1]+ANAI[1]+ACLI[1] \
                            +AECI[1]+AOMI[0]+AOTHRI[1] 
 ATOTJ           ,ug/m3     ,ASO4J[1]+ANO3J[1]+ANH4J[1]+ANAJ[1]+ACLJ[1] \
@@ -196,42 +221,76 @@ ATOTJ           ,ug/m3     ,ASO4J[1]+ANO3J[1]+ANH4J[1]+ANAJ[1]+ACLJ[1] \
                            +ATIJ[1]+ACAJ[1]+AMGJ[1]+AMNJ[1]+AALJ[1]+AKJ[1]
 ATOTK           ,ug/m3     ,ASOIL[1]+ACORS[1]+ASEACAT[1]+ACLK[1]+ASO4K[1] \
                            +ANO3K[1]+ANH4K[1]
-ATOTIJ          ,ug/m3     ,ATOTI[0]+ATOTJ[0]
-ATOTIJK         ,ug/m3     ,ATOTIJ[0]+ATOTK[0]
+ATOTHIJ         ,ug/m3     ,ATOTH[0]+ATOTI[0]+ATOTJ[0]
+ATOTHIJK        ,ug/m3     ,ATOTHIJ[0]+ATOTK[0]
 
 !! Unspeciated PM including non-carbon organic mass
-AUNSPEC1IJ      ,ug/m3     ,ATOTIJ[0] - (ASOILJ[0] + ANO3IJ[0] + ASO4IJ[0] + ANH4IJ[0] \
-                                      +AOCIJ[0]  + AECIJ[0]  + ANAIJ[0]  + ACLIJ[0])
+AUNSPEC1HIJ     ,ug/m3     ,ATOTHIJ[0] - (ASOILJ[0] + ANO3HIJ[0] + ASO4HIJ[0] + ANH4HIJ[0] \
+                                      +AOCHIJ[0]  + AECIJ[0]  + ANAIJ[0]  + ACLIJ[0])
 !! Non-Carbon Organic Mass
-ANCOMIJ         ,ug/m3     ,AOMIJ[0]-AOCIJ[0]
+ANCOMHIJ        ,ug/m3     ,AOMHIJ[0]-AOCHIJ[0]
 
 !! Unspeciated PM excluding non-carbon organic mass
-AUNSPEC2IJ      ,ug/m3     ,AUNSPEC1IJ[0] - ANCOMIJ[0]
+AUNSPEC2HIJ     ,ug/m3     ,AUNSPEC1HIJ[0] - ANCOMHIJ[0]
 
 !! AMS Projection of Output Concentrations
 PMAMS_CL        ,ug/m3     ,ACLI[1]*AMSAT[3]+ACLJ[1]*AMSAC[3]+ACLK[1]*AMSCO[3]
-PMAMS_NH4       ,ug/m3     ,ANH4I[1]*AMSAT[3]+ANH4J[1]*AMSAC[3]+ANH4K[1]*AMSCO[3]
-PMAMS_NO3       ,ug/m3     ,ANO3I[1]*AMSAT[3]+ANO3J[1]*AMSAC[3]+ANO3K[1]*AMSCO[3]
-PMAMS_OM        ,ugC/m3    ,AOMI[0]*AMSAT[3]+AOMJ[0]*AMSAC[3]
-PMAMS_SO4       ,ug/m3     ,ASO4I[1]*AMSAT[3]+ASO4J[1]*AMSAC[3]+ASO4K[1]*AMSCO[3]
+PMAMS_NH4       ,ug/m3     ,ANH4H[1]*AMSNU[3]+ANH4I[1]*AMSAT[3] \
+                           +ANH4J[1]*AMSAC[3]+ANH4K[1]*AMSCO[3]
+PMAMS_NO3       ,ug/m3     ,ANO3H[1]*AMSNU[3]+ANO3I[1]*AMSAT[3] \
+                           +ANO3J[1]*AMSAC[3]+ANO3K[1]*AMSCO[3]
+PMAMS_OM        ,ugC/m3    ,AOMH[0]*AMSNU[3]+AOMI[0]*AMSAT[3]   \
+                           +AOMJ[0]*AMSAC[3]
+PMAMS_SO4       ,ug/m3     ,ASO4H[1]*AMSNU[3]+ASO4I[1]*AMSAT[3] \
+                           +ASO4J[1]*AMSAC[3]+ASO4K[1]*AMSCO[3]
 
 !! PM1 Cutoff Output
 PM1_TOT         ,ug/m3     ,ATOTI[0]*PM1AT[3]+ATOTJ[0]*PM1AC[3]+ATOTK[0]*PM1CO[3]
 
+!! PM0.1 Cutoff Output
+PM01_CL        ,ug/m3     ,ACLI[1]*PM01AT[3]+ACLJ[1]*PM01AC[3]+ACLK[1]*PM01CO[3]
+PM01_EC        ,ug/m3     ,AECI[1]*PM01AT[3]+AECJ[1]*PM01AC[3]
+PM01_NA        ,ug/m3     ,ANAI[1]*PM01AT[3]+ANAJ[1]*PM01AC[3]+ANAK[0]*PM01CO[3]
+PM01_MG        ,ug/m3     ,                  AMGJ[1]*PM01AC[3]+AMGK[0]*PM01CO[3]
+PM01_K         ,ug/m3     ,                  AKJ[1] *PM01AC[3]+AKK[0] *PM01CO[3]
+PM01_CA        ,ug/m3     ,                  ACAJ[1]*PM01AC[3]+ACAK[0]*PM01CO[3]
+PM01_NH4       ,ug/m3     ,ANH4H[1]*PM01NU[3]+ANH4I[1]*PM01AT[3] \
+                          +ANH4J[1]*PM01AC[3]+ANH4K[1]*PM01CO[3]
+PM01_NO3       ,ug/m3     ,ANO3H[1]*PM01NU[3]+ANO3I[1]*PM01AT[3] \
+                          +ANO3J[1]*PM01AC[3]+ANO3K[1]*PM01CO[3]
+PM01_OC        ,ugC/m3    ,AOCH[0]*PM01NU[3]+AOCI[0]*PM01AT[3]   \
+                          +AOCJ[0]*PM01AC[3]
+PM01_OM        ,ugC/m3    ,AOMH[0]*PM01NU[3]+AOMI[0]*PM01AT[3]   \
+                          +AOMJ[0]*PM01AC[3]
+PM01_SOIL      ,ug/m3     ,ASOILJ[0]*PM01AC[3]+(ASOIL[1]+ACORS[1])*PM01CO[3]
+PM01_SO4       ,ug/m3     ,ASO4H[1]*PM01NU[3]+ASO4I[1]*PM01AT[3] \
+                          +ASO4J[1]*PM01AC[3]+ASO4K[1]*PM01CO[3]
+PM01_TOT       ,ug/m3     ,ATOTH[0]*PM01NU[3]+ATOTI[0]*PM01AT[3] \
+                          +ATOTJ[0]*PM01AC[3]+ATOTK[0]*PM01CO[3]
+PM01_UNSPEC1   ,ug/m3     ,PM01_TOT[0]-(PM01_CL[0]+PM01_EC[0]+PM01_NA[0]   \
+                                       +PM01_NH4[0]+PM01_NO3[0]+PM01_OC[0] \
+                                       +PM01_SOIL[0]+PM01_SO4[0])
+
+
 !! Unused PM1 Species. Included Here for demonstration
-!PM1_EC         ,ug/m3     ,AECI[1]*PM1AT[3]+AECJ[1]*PM1AC[3]
-!PM1_OC         ,ugC/m3    ,AOCI[0]*PM1AT[3]+AOCJ[0]*PM1AC[3]
-!PM1_OM         ,ug/m3     ,AOMI[0]*PM1AT[3]+AOMJ[0]*PM1AC[3]
-!PM1_SO4        ,ug/m3     ,ASO4I[1]*PM1AT[3]+ASO4J[1]*PM1AC[3]+ASO4K[1]*PM1CO[3]
-!PM1_CL         ,ug/m3     ,ACLI[1]*PM1AT[3]+ACLJ[1]*PM1AC[3]+ACLK[1]*PM1CO[3]
-!PM1_NA         ,ug/m3     ,ANAI[1]*PM1AT[3]+ANAJ[1]*PM1AC[3]+ANAK[0]*PM1CO[3]
-!PM1_MG         ,ug/m3     ,                  AMGJ[1]*PM1AC[3]+AMGK[0]*PM1CO[3]
-!PM1_K          ,ug/m3     ,                  AKJ[1] *PM1AC[3]+AKK[0] *PM1CO[3]
-!PM1_CA         ,ug/m3     ,                  ACAJ[1]*PM1AC[3]+ACAK[0]*PM1CO[3]
-!PM1_NH4        ,ug/m3     ,ANH4I[1]*PM1AT[3]+ANH4J[1]*PM1AC[3]+ANH4K[1]*PM1CO[3]
-!PM1_NO3        ,ug/m3     ,ANO3I[1]*PM1AT[3]+ANO3J[1]*PM1AC[3]+ANO3K[1]*PM1CO[3] 
-!PM1_SOIL       ,ug/m3     ,ASOILJ[0]*PM1AC[3]+(ASOIL[1]+ACORS[1])*PM1CO[3]
-!PM1_UNSPEC1    ,ug/m3     ,PM1_TOT[0]-(PM1_CL[0]+PM1_EC[0]+PM1_NA[0]+PM1_NH4[0]+PM1_NO3[0]+PM1_OC[0]+PM1_SOIL[0]+PM1_SO4[0]) 
+PM1_EC          ,ug/m3     ,AECI[1]*PM1AT[3]+AECJ[1]*PM1AC[3]
+PM1_OC          ,ugC/m3    ,AOCH[0]*PM1NU[3]+AOCI[0]*PM1AT[3]+AOCJ[0]*PM1AC[3]
+PM1_OM          ,ug/m3     ,AOMH[0]*PM1NU[3]+AOMI[0]*PM1AT[3]+AOMJ[0]*PM1AC[3]
+PM1_SO4         ,ug/m3     ,ASO4H[1]*PM1NU[3]+ASO4I[1]*PM1AT[3]  \
+                           +ASO4J[1]*PM1AC[3]+ASO4K[1]*PM1CO[3]
+PM1_CL          ,ug/m3     ,ACLI[1]*PM1AT[3]+ACLJ[1]*PM1AC[3]+ACLK[1]*PM1CO[3]
+PM1_NA          ,ug/m3     ,ANAI[1]*PM1AT[3]+ANAJ[1]*PM1AC[3]+ANAK[0]*PM1CO[3]
+PM1_MG          ,ug/m3     ,                 AMGJ[1]*PM1AC[3]+AMGK[0]*PM1CO[3]
+PM1_K           ,ug/m3     ,                 AKJ[1] *PM1AC[3]+AKK[0] *PM1CO[3]
+PM1_CA          ,ug/m3     ,                 ACAJ[1]*PM1AC[3]+ACAK[0]*PM1CO[3]
+PM1_NH4         ,ug/m3     ,ANH4H[1]*PM1NU[3]+ANH4I[1]*PM1AT[3]  \
+                           +ANH4J[1]*PM1AC[3]+ANH4K[1]*PM1CO[3]
+PM1_NO3         ,ug/m3     ,ANO3H[1]*PM1NU[3]+ANO3I[1]*PM1AT[3]  \
+                           +ANO3J[1]*PM1AC[3]+ANO3K[1]*PM1CO[3] 
+PM1_SOIL        ,ug/m3     ,ASOILJ[0]*PM1AC[3]+(ASOIL[1]+ACORS[1])*PM1CO[3]
+PM1_UNSPEC1     ,ug/m3     ,PM1_TOT[0]-(PM1_CL[0]+PM1_EC[0]+PM1_NA[0]   \
+                                       +PM1_NH4[0]+PM1_NO3[0]+PM1_OC[0] \
+                                       +PM1_SOIL[0]+PM1_SO4[0]) 
 
 !! PM2.5 species computed using modeled size distribution
 PM25_HP         ,ug/m3     ,(AH3OPI[1]*PM25AT[3]+AH3OPJ[1]*PM25AC[3]+AH3OPK[1]*PM25CO[3])*1.0/19.0
@@ -241,25 +300,30 @@ PM25_NA         ,ug/m3     ,ANAI[1]*PM25AT[3]+ANAJ[1]*PM25AC[3]+ANAK[0]*PM25CO[3
 PM25_MG         ,ug/m3     ,                  AMGJ[1]*PM25AC[3]+AMGK[0]*PM25CO[3]
 PM25_K          ,ug/m3     ,                  AKJ[1] *PM25AC[3]+AKK[0] *PM25CO[3]
 PM25_CA         ,ug/m3     ,                  ACAJ[1]*PM25AC[3]+ACAK[0]*PM25CO[3]
-PM25_NH4        ,ug/m3     ,ANH4I[1]*PM25AT[3]+ANH4J[1]*PM25AC[3]+ANH4K[1]*PM25CO[3]
-PM25_NO3        ,ug/m3     ,ANO3I[1]*PM25AT[3]+ANO3J[1]*PM25AC[3]+ANO3K[1]*PM25CO[3]
-PM25_OC         ,ugC/m3    ,AOCI[0]*PM25AT[3]+AOCJ[0]*PM25AC[3]
-PM25_OM         ,ug/m3     ,AOMI[0]*PM25AT[3]+AOMJ[0]*PM25AC[3]
+PM25_NH4        ,ug/m3     ,ANH4H[1]*PM25NU[3]+ANH4I[1]*PM25AT[3] \
+                           +ANH4J[1]*PM25AC[3]+ANH4K[1]*PM25CO[3]
+PM25_NO3        ,ug/m3     ,ANO3H[1]*PM25NU[3]+ANO3I[1]*PM25AT[3] \
+                           +ANO3J[1]*PM25AC[3]+ANO3K[1]*PM25CO[3]
+PM25_OC         ,ugC/m3    ,AOCH[0]*PM25NU[3]+AOCI[0]*PM25AT[3]+AOCJ[0]*PM25AC[3]
+PM25_OM         ,ug/m3     ,AOMH[0]*PM25NU[3]+AOMI[0]*PM25AT[3]+AOMJ[0]*PM25AC[3]
 PM25_SOIL       ,ug/m3     ,ASOILJ[0]*PM25AC[3]+ASOIL[1]*PM25CO[3]
-PM25_SO4        ,ug/m3     ,ASO4I[1]*PM25AT[3]+ASO4J[1]*PM25AC[3]+ASO4K[1]*PM25CO[3]
-PM25_TOT        ,ug/m3     ,ATOTI[0]*PM25AT[3]+ATOTJ[0]*PM25AC[3]+ATOTK[0]*PM25CO[3]
-PM25_UNSPEC1    ,ug/m3     ,PM25_TOT[0]-(PM25_CL[0]+PM25_EC[0]+PM25_NA[0]+PM25_NH4[0] \
-                           +PM25_NO3[0]+PM25_OC[0]+PM25_SOIL[0]+PM25_SO4[0])
+PM25_SO4        ,ug/m3     ,ASO4H[1]*PM25NU[3]+ASO4I[1]*PM25AT[3] \
+                           +ASO4J[1]*PM25AC[3]+ASO4K[1]*PM25CO[3]
+PM25_TOT        ,ug/m3     ,ATOTH[0]*PM25NU[3]+ATOTI[0]*PM25AT[3] \
+                           +ATOTJ[0]*PM25AC[3]+ATOTK[0]*PM25CO[3]
+PM25_UNSPEC1    ,ug/m3     ,PM25_TOT[0]-(PM25_CL[0]+PM25_EC[0]+PM25_NA[0]   \
+                                        +PM25_NH4[0]+PM25_NO3[0]+PM25_OC[0] \
+                                        +PM25_SOIL[0]+PM25_SO4[0])
 
 !! PM10.0 and Coarse-Sized Species
 PM10            ,ug/m3     ,ATOTI[0]*PM10AT[3]+ATOTJ[0]*PM10AC[3]+ATOTK[0]*PM10CO[3]
 
 PMC_CL          ,ug/m3     ,ACLI[1]+ACLJ[1]+ACLK[1]-PM25_CL[0]
 PMC_NA          ,ug/m3     ,ANAIJ[0]+ANAK[0]-PM25_NA[0]
-PMC_NH4         ,ug/m3     ,ANH4I[1]+ANH4J[1]+ANH4K[1]-PM25_NH4[0]
-PMC_NO3         ,ug/m3     ,ANO3I[1]+ANO3J[1]+ANO3K[1]-PM25_NO3[0]
-PMC_SO4         ,ug/m3     ,ASO4I[1]+ASO4J[1]+ASO4K[1]-PM25_SO4[0]
-PMC_TOT         ,ug/m3     ,ATOTIJK[0]-PM25_TOT[0]
+PMC_NH4         ,ug/m3     ,ANH4HIJ[0] + ANH4K[0] - PM25_NH4[0]
+PMC_NO3         ,ug/m3     ,ANO3HIJ[0] + ANO3K[0] - PM25_NO3[0]
+PMC_SO4         ,ug/m3     ,ASO4HIJ[0] + ASO4K[0] - PM25_SO4[0]
+PMC_TOT         ,ug/m3     ,ATOTHIJ[0] + ATOTK[0] - PM25_TOT[0]
 
 !! FRM PM Equivalent Calculation
 !! This section calculates the FRM applicable PM species, PMIJ_FRM and
@@ -274,10 +338,78 @@ K_prime         ,ppb^2     ,(P1[0]-P2[0]*a[0]+(P3[0]*a[0]*a[0]))*(a[0]^1.75)*K[0
 sqrt_Ki         ,ppb       ,sqrt(RH[0]<=61 ? K[0] : K_prime[0])
 max_NO3_loss    ,ug/m3     ,745.7/TEMP2[4]*sqrt_Ki[0]
 PM25_NO3_loss   ,ug/m3     ,max_NO3_loss[0]<=PM25_NO3[0] ? max_NO3_loss[0] : PM25_NO3[0]
-ANO3IJ_loss     ,ug/m3     ,max_NO3_loss[0]<=ANO3IJ[0] ? max_NO3_loss[0] : ANO3IJ[0]
+ANO3HIJ_loss    ,ug/m3     ,max_NO3_loss[0]<=ANO3HIJ[0] ? max_NO3_loss[0] : ANO3HIJ[0]
 PM25_NH4_loss   ,ug/m3     ,PM25_NO3_loss[0]*(18/62)
-ANH4IJ_loss     ,ug/m3     ,ANO3IJ_loss[0]*(18/62)
-PMIJ_FRM        ,ug/m3     ,ATOTIJ[0]-(ANO3IJ_loss[0]+ANH4IJ_loss[0]) \
-                            +0.24*(ASO4IJ[0]+ANH4IJ[0]-ANH4IJ_loss[0])+0.5
+ANH4HIJ_loss    ,ug/m3     ,ANO3HIJ_loss[0]*(18/62)
+PMHIJ_FRM       ,ug/m3     ,ATOTHIJ[0]-(ANO3HIJ_loss[0]+ANH4HIJ_loss[0]) \
+                            +0.24*(ASO4HIJ[0]+ANH4HIJ[0]-ANH4HIJ_loss[0])+0.5
 PM25_FRM        ,ug/m3     ,PM25_TOT[0]-(PM25_NO3_loss[0]+PM25_NH4_loss[0]) \
                             +0.24*(PM25_SO4[0]+PM25_NH4[0]-PM25_NH4_loss[0])+0.5
+
+!! Particle Size Distribution Diagnostics
+NUMNUC          ,N/m3      ,NUMNUC[1]
+NUMATKN         ,N/m3      ,NUMATKN[1]
+NUMACC          ,N/m3      ,NUMACC[1]
+NUMCOR          ,N/m3      ,NUMCOR[1]
+SRFNUC          ,m2/m3     ,SRFNUC[1]
+SRFATKN         ,m2/m3     ,SRFATKN[1]
+SRFACC          ,m2/m3     ,SRFACC[1]
+SRFCOR          ,m2/m3     ,SRFCOR[1]
+MNUC            ,ug/m3     ,ATOTH[0]
+MAIT            ,ug/m3     ,ATOTI[0]
+MACC            ,ug/m3     ,ATOTJ[0]
+MCOR            ,ug/m3     ,ATOTK[0]
+DGNUC_WET       ,um        ,DGNUC_WET[3]
+DGATKN_WET      ,um        ,DGATKN_WET[3]
+DGACC_WET       ,um        ,DGACC_WET[3]
+DGCOR_WET       ,um        ,DGCOR_WET[3]
+SDNUC           ,none      ,STDEVNUC[3]
+SDAIT           ,none      ,STDEVATKN[3]
+SDACC           ,none      ,STDEVACC[3]
+SDCOR           ,none      ,STDEVCOR[3]
+M3NUC_WET       ,m3/m3     ,M3NUC_WET[3]
+M3ATKN_WET      ,m3/m3     ,M3ATKN_WET[3]
+M3ACC_WET       ,m3/m3     ,M3ACC_WET[3]
+M3COR_WET       ,m3/m3     ,M3COR_WET[3]
+RHONUC          ,kg/m3     ,DENS_NUC[3]
+RHOAIT          ,kg/m3     ,DENS_ATKN[3]
+RHOACC          ,kg/m3     ,DENS_ACC[3]
+RHOCOR          ,kg/m3     ,DENS_COR[3]
+
+NUMTOT          ,N/m3      ,NUMNUC[1]+NUMATKN[1]+NUMACC[1]+NUMCOR[1]
+SRFTOT          ,m2/m3     ,SRFNUC[1]+SRFATKN[1]+SRFACC[1]+SRFCOR[1]
+
+
+!! Lower-Priority Particle Diagnostics
+DGNUC_DRY       ,um        ,DGNUC_DRY[3]
+DGATKN_DRY      ,um        ,DGATKN_DRY[3]
+DGACC_DRY       ,um        ,DGACC_DRY[3]
+DGCOR_DRY       ,um        ,DGCOR_DRY[3]
+M3NUC_DRY       ,m3/m3     ,M3NUC_DRY[3]
+M3ATKN_DRY      ,m3/m3     ,M3ATKN_DRY[3]
+M3ACC_DRY       ,m3/m3     ,M3ACC_DRY[3]
+M3COR_DRY       ,m3/m3     ,M3COR_DRY[3]
+
+!! New Particle Formation Diagnostics
+J_BIN           ,N/cm3/s   ,NPF_BINARY[3]
+J_TERN          ,N/cm3/s   ,NPF_TERNARY[3]
+J_SO4_DMA       ,N/cm3/s   ,NPF_SO4_DMA[3]
+J_SO4_ORG       ,N/cm3/s   ,NPF_SO4_ORG[3]
+J_ORG_ORG       ,N/cm3/s   ,NPF_ORG_ORG[3]
+J_ION_SO4       ,N/cm3/s   ,NPF_ION_SO4[3]
+J_ION_ORG       ,N/cm3/s   ,NPF_ION_ORG[3]
+J_RICCO         ,N/cm3/s   ,NPF_RICCO[3]
+
+J_TOT           ,N/cm3/s   ,J_BIN[0]    + J_TERN[0]   + J_SO4_DMA[0] \
+                           +J_SO4_ORG[0]+ J_ORG_ORG[0]+ J_ION_SO4[0] \
+                           +J_ION_ORG[0]
+
+SULF_PSSA       ,molec/cm3 ,SULF_PSSA[3]
+SULF_RT_MOLEC ,molec/cm3/s ,SULF_RATE_MOLEC[3]
+SULF_RT_MASS    ,ug/m3/s   ,SULF_RATE_MASS[3]
+SULF_CS         ,1/s       ,SULF_CS[3]
+SULF_NPF        ,ug/m3/s   ,SULF_NPF[3]
+ION_RATE        ,N/cm3/s   ,Ion_Rate[3]
+
+
+
