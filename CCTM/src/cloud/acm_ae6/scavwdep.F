@@ -257,17 +257,17 @@ C...  load the CGRID to scavenged species pointers for the tracers
 
 C...create the pointers from CGRID to the species needed by AQCHEM
 
-        N_NUMNUC = INDEXN( 'NUM_NUCLN       ', N_CGRID_SCAV, CGRID_SCAV,
+        N_NUMNUC = INDEXN( 'NUM_NUCLN ', N_CGRID_SCAV, CGRID_SCAV,
      &                     L_NUMNUC )
-        N_MASNUC = INDEXN( 'NUCLN           ', N_CGRID_SCAV, CGRID_SCAV, 
+        N_MASNUC = INDEXN( 'NUCLN ', N_CGRID_SCAV, CGRID_SCAV, 
      &                     L_MASNUC )
-        N_SRFNUC = INDEXN( 'SRF_NUCLN       ', N_CGRID_SCAV, CGRID_SCAV,
+        N_SRFNUC = INDEXN( 'SRF_NUCLN ', N_CGRID_SCAV, CGRID_SCAV,
      &                     L_SRFNUC )
-        N_NUMAIT = INDEXN( 'NUM_AITKEN      ', N_CGRID_SCAV, CGRID_SCAV,
+        N_NUMAIT = INDEXN( 'NUM_AITKEN ', N_CGRID_SCAV, CGRID_SCAV,
      &                     L_NUMAIT )
-        N_MASAIT = INDEXN( 'AITKEN     ', N_CGRID_SCAV, CGRID_SCAV, 
+        N_MASAIT = INDEXN( 'AITKEN ', N_CGRID_SCAV, CGRID_SCAV, 
      &                     L_MASAIT )
-        N_SRFAIT = INDEXN( 'SRF_AITKEN      ', N_CGRID_SCAV, CGRID_SCAV,
+        N_SRFAIT = INDEXN( 'SRF_AITKEN ', N_CGRID_SCAV, CGRID_SCAV,
      &                     L_SRFAIT )
 
       END IF
